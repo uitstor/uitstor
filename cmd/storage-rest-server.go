@@ -41,11 +41,11 @@ import (
 	jwtreq "github.com/golang-jwt/jwt/v4/request"
 	"github.com/gorilla/mux"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/config"
-	xhttp "github.com/minio/minio/internal/http"
-	xioutil "github.com/minio/minio/internal/ioutil"
-	xjwt "github.com/minio/minio/internal/jwt"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/config"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	xioutil "github.com/uitstor/uitstor/internal/ioutil"
+	xjwt "github.com/uitstor/uitstor/internal/jwt"
+	"github.com/uitstor/uitstor/internal/logger"
 	xnet "github.com/minio/pkg/net"
 )
 
@@ -65,7 +65,7 @@ func (s *storageRESTServer) writeErrorResponse(w http.ResponseWriter, err error)
 	w.Write([]byte(err.Error()))
 }
 
-// DefaultSkewTime - skew time is 15 minutes between minio peers.
+// DefaultSkewTime - skew time is 15 minutes between uitstor peers.
 const DefaultSkewTime = 15 * time.Minute
 
 // Authenticates storage client's requests and validates for skewed time.

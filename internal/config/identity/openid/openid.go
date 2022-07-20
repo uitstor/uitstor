@@ -32,11 +32,11 @@ import (
 
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/internal/arn"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/config/identity/openid/provider"
-	"github.com/minio/minio/internal/hash/sha256"
+	"github.com/uitstor/uitstor/internal/arn"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/config/identity/openid/provider"
+	"github.com/uitstor/uitstor/internal/hash/sha256"
 	iampolicy "github.com/minio/pkg/iam/policy"
 	xnet "github.com/minio/pkg/net"
 )

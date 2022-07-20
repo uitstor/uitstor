@@ -22,8 +22,8 @@ import (
 	"errors"
 
 	"github.com/minio/minio-go/v7/pkg/s3utils"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 )
 
 // list all errors that can be ignore in a bucket operation.
@@ -183,7 +183,7 @@ func (er erasureObjects) DeleteBucket(ctx context.Context, bucket string, opts D
 		// we should proceed to attempt a force delete of such buckets.
 		for index, err := range dErrs {
 			if err == errVolumeNotEmpty && storageDisks[index] != nil {
-				storageDisks[index].RenameFile(ctx, bucket, "", minioMetaTmpDeletedBucket, mustGetUUID())
+				storageDisks[index].RenameFile(ctx, bucket, "", uitstorMetaTmpDeletedBucket, mustGetUUID())
 				purgedDangling = true
 			}
 		}

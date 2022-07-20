@@ -36,19 +36,19 @@ For best deployment experience MinIO recommends operating systems RHEL/CentOS 8.
 
 ## List of Amazon S3 API's not supported on MinIO
 
-We found the following APIs to be redundant or less useful outside of AWS S3. If you have a different view on any of the APIs we missed, please open a [GitHub issue](https://github.com/minio/minio/issues).
+We found the following APIs to be redundant or less useful outside of AWS S3. If you have a different view on any of the APIs we missed, please open a [GitHub issue](https://github.com/uitstor/uitstor/issues).
 
 ### List of Amazon S3 Bucket API's not supported on MinIO
 
-- BucketACL (Use [bucket policies](https://docs.min.io/docs/minio-client-complete-guide#policy) instead)
+- BucketACL (Use [bucket policies](https://docs.min.io/docs/uitstor-client-complete-guide#policy) instead)
 - BucketCORS (CORS enabled by default on all buckets for all HTTP verbs)
 - BucketWebsite (Use [`caddy`](https://github.com/caddyserver/caddy) or [`nginx`](https://www.nginx.com/resources/wiki/))
-- BucketAnalytics, BucketMetrics, BucketLogging (Use [bucket notification](https://docs.min.io/docs/minio-client-complete-guide#events) APIs)
+- BucketAnalytics, BucketMetrics, BucketLogging (Use [bucket notification](https://docs.min.io/docs/uitstor-client-complete-guide#events) APIs)
 - BucketRequestPayment
 
 ### List of Amazon S3 Object API's not supported on MinIO
 
-- ObjectACL (Use [bucket policies](https://docs.min.io/docs/minio-client-complete-guide#policy) instead)
+- ObjectACL (Use [bucket policies](https://docs.min.io/docs/uitstor-client-complete-guide#policy) instead)
 
 ## Object name restrictions on MinIO
 

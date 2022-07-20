@@ -23,12 +23,12 @@ import (
 	"strings"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 const (
 	dataUsageRoot   = SlashSeparator
-	dataUsageBucket = minioMetaBucket + SlashSeparator + bucketMetaPrefix
+	dataUsageBucket = uitstorMetaBucket + SlashSeparator + bucketMetaPrefix
 
 	dataUsageObjName       = ".usage.json"
 	dataUsageObjNamePath   = bucketMetaPrefix + SlashSeparator + dataUsageObjName
@@ -96,7 +96,7 @@ func loadDataUsageFromBackend(ctx context.Context, objAPI ObjectLayer) (DataUsag
 		if errors.Is(err, errConfigNotFound) {
 			return DataUsageInfo{}, nil
 		}
-		return DataUsageInfo{}, toObjectErr(err, minioMetaBucket, dataUsageObjNamePath)
+		return DataUsageInfo{}, toObjectErr(err, uitstorMetaBucket, dataUsageObjNamePath)
 	}
 
 	var dataUsageInfo DataUsageInfo

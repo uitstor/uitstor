@@ -60,8 +60,8 @@ func TestRunRegisteredGatewayCommand(t *testing.T) {
 		t.Errorf("RegisterGatewayCommand got unexpected error: %s", err)
 	}
 
-	if err = newApp("minio").Run(
-		[]string{"minio", "gateway", cmd.Name, fmt.Sprintf("--%s", flagName), flagValue}); err != nil {
+	if err = newApp("uitstor").Run(
+		[]string{"uitstor", "gateway", cmd.Name, fmt.Sprintf("--%s", flagName), flagValue}); err != nil {
 		t.Errorf("running registered gateway command got unexpected error: %s", err)
 	}
 }

@@ -35,27 +35,27 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"github.com/klauspost/compress/gzhttp"
-	miniogo "github.com/minio/minio-go/v7"
+	uitstorgo "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	sse "github.com/minio/minio/internal/bucket/encryption"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	objectlock "github.com/minio/minio/internal/bucket/object/lock"
-	"github.com/minio/minio/internal/bucket/replication"
-	"github.com/minio/minio/internal/config/dns"
-	"github.com/minio/minio/internal/config/storageclass"
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/etag"
-	"github.com/minio/minio/internal/event"
-	"github.com/minio/minio/internal/fips"
-	"github.com/minio/minio/internal/handlers"
-	"github.com/minio/minio/internal/hash"
-	xhttp "github.com/minio/minio/internal/http"
-	xioutil "github.com/minio/minio/internal/ioutil"
-	"github.com/minio/minio/internal/kms"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/s3select"
+	sse "github.com/uitstor/uitstor/internal/bucket/encryption"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	objectlock "github.com/uitstor/uitstor/internal/bucket/object/lock"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
+	"github.com/uitstor/uitstor/internal/config/dns"
+	"github.com/uitstor/uitstor/internal/config/storageclass"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/etag"
+	"github.com/uitstor/uitstor/internal/event"
+	"github.com/uitstor/uitstor/internal/fips"
+	"github.com/uitstor/uitstor/internal/handlers"
+	"github.com/uitstor/uitstor/internal/hash"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	xioutil "github.com/uitstor/uitstor/internal/ioutil"
+	"github.com/uitstor/uitstor/internal/kms"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/s3select"
 	"github.com/minio/pkg/bucket/policy"
 	iampolicy "github.com/minio/pkg/iam/policy"
 	xnet "github.com/minio/pkg/net"
@@ -890,13 +890,13 @@ var (
 	getRemoteInstanceTransportOnce sync.Once
 )
 
-// Returns a minio-go Client configured to access remote host described by destDNSRecord
+// Returns a uitstor-go Client configured to access remote host described by destDNSRecord
 // Applicable only in a federated deployment
-var getRemoteInstanceClient = func(r *http.Request, host string) (*miniogo.Core, error) {
+var getRemoteInstanceClient = func(r *http.Request, host string) (*uitstorgo.Core, error) {
 	cred := getReqAccessCred(r, globalSite.Region)
 	// In a federated deployment, all the instances share config files
 	// and hence expected to have same credentials.
-	return miniogo.NewCore(host, &miniogo.Options{
+	return uitstorgo.NewCore(host, &uitstorgo.Options{
 		Creds:     credentials.NewStaticV4(cred.AccessKey, cred.SecretKey, ""),
 		Secure:    globalIsTLS,
 		Transport: getRemoteInstanceTransport,
@@ -1476,7 +1476,7 @@ func (api objectAPIHandlers) CopyObjectHandler(w http.ResponseWriter, r *http.Re
 		// Remove the metadata for remote calls.
 		delete(srcInfo.UserDefined, ReservedMetadataPrefix+"compression")
 		delete(srcInfo.UserDefined, ReservedMetadataPrefix+"actual-size")
-		opts := miniogo.PutObjectOptions{
+		opts := uitstorgo.PutObjectOptions{
 			UserMetadata:         srcInfo.UserDefined,
 			ServerSideEncryption: dstOpts.ServerSideEncryption,
 			UserTags:             tag.ToMap(),

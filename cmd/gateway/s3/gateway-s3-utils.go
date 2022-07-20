@@ -17,7 +17,7 @@
 package s3
 
 import (
-	minio "github.com/minio/minio/cmd"
+	uitstor "github.com/uitstor/uitstor/cmd"
 )
 
 // List of header keys to be filtered, usually
@@ -39,10 +39,10 @@ var defaultFilterKeys = []string{
 }
 
 // FromGatewayObjectPart converts ObjectInfo for custom part stored as object to PartInfo
-func FromGatewayObjectPart(partID int, oi minio.ObjectInfo) (pi minio.PartInfo) {
-	return minio.PartInfo{
+func FromGatewayObjectPart(partID int, oi uitstor.ObjectInfo) (pi uitstor.PartInfo) {
+	return uitstor.PartInfo{
 		Size:         oi.Size,
-		ETag:         minio.CanonicalizeETag(oi.ETag),
+		ETag:         uitstor.CanonicalizeETag(oi.ETag),
 		LastModified: oi.ModTime,
 		PartNumber:   partID,
 	}

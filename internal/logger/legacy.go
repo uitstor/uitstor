@@ -18,8 +18,8 @@
 package logger
 
 import (
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/logger/target/http"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/logger/target/http"
 )
 
 // Legacy envs

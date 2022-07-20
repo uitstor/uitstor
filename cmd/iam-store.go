@@ -30,15 +30,15 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/config/identity/openid"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/config/identity/openid"
+	"github.com/uitstor/uitstor/internal/logger"
 	iampolicy "github.com/minio/pkg/iam/policy"
 )
 
 const (
 	// IAM configuration directory.
-	iamConfigPrefix = minioConfigPrefix + "/iam"
+	iamConfigPrefix = uitstorConfigPrefix + "/iam"
 
 	// IAM users directory.
 	iamConfigUsersPrefix = iamConfigPrefix + "/users/"

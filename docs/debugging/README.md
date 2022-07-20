@@ -1,31 +1,31 @@
-# MinIO Server Debugging Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# MinIO Server Debugging Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
 ## HTTP Trace
 
-HTTP tracing can be enabled by using [`mc admin trace`](https://github.com/minio/mc/blob/master/docs/minio-admin-complete-guide.md#command-trace---display-minio-server-http-trace) command.
+HTTP tracing can be enabled by using [`mc admin trace`](https://github.com/minio/mc/blob/master/docs/uitstor-admin-complete-guide.md#command-trace---display-uitstor-server-http-trace) command.
 
 Example:
 
 ```sh
-minio server /data
+uitstor server /data
 ```
 
 Default trace is succinct only to indicate the API operations being called and the HTTP response status.
 
 ```sh
-mc admin trace myminio
+mc admin trace myuitstor
 ```
 
 To trace entire HTTP request
 
 ```sh
-mc admin trace --verbose myminio
+mc admin trace --verbose myuitstor
 ```
 
 To trace entire HTTP request and also internode communication
 
 ```sh
-mc admin trace --all --verbose myminio
+mc admin trace --all --verbose myuitstor
 ```
 
 ## Subnet Health
@@ -35,13 +35,13 @@ Subnet Health diagnostics help ensure that the underlying infrastructure that ru
 Example:
 
 ```sh
-minio server /data{1...4}
+uitstor server /data{1...4}
 ```
 
 The command takes no flags
 
 ```sh
-mc support diagnostics myminio/
+mc support diagnostics myuitstor/
 ```
 
 The output printed will be of the form
@@ -75,7 +75,7 @@ Metadata is stored in `xl.meta` files for erasure coded objects. Each disk in th
 To install, [Go](https://golang.org/dl/) must be installed. Once installed, execute this to install the binary:
 
 ```bash
-go install github.com/minio/minio/docs/debugging/xl-meta@latest
+go install github.com/uitstor/uitstor/docs/debugging/xl-meta@latest
 ```
 
 ### Using xl-meta
@@ -95,10 +95,10 @@ $ mc support inspect play/test123/test*/xl.meta
 mc: File data successfully downloaded as inspect.6f96b336.zip
 $ xl-meta inspect.6f96b336.zip
 {
-        "bf6178f9-4014-4008-9699-86f2fac62226/test123/testw3c.pdf/xl.meta": {"Versions":[{"Type":1,"V2Obj":{"ID":"aGEA/ZUOR4ueRIZsAgfDqA==","DDir":"9MMwM47bS+K6KvQqN3hlDw==","EcAlgo":1,"EcM":2,"EcN":2,"EcBSize":1048576,"EcIndex":4,"EcDist":[4,1,2,3],"CSumAlgo":1,"PartNums":[1],"PartETags":[""],"PartSizes":[101974],"PartASizes":[176837],"Size":101974,"MTime":1634106631319256439,"MetaSys":{"X-Minio-Internal-compression":"a2xhdXNwb3N0L2NvbXByZXNzL3My","X-Minio-Internal-actual-size":"MTc2ODM3","x-minio-internal-objectlock-legalhold-timestamp":"MjAyMS0xMC0xOVQyMjozNTo0Ni4zNTE4MDU3NTda"},"MetaUsr":{"x-amz-object-lock-mode":"COMPLIANCE","x-amz-object-lock-retain-until-date":"2022-10-13T06:30:31.319Z","etag":"67ed8f49b7137cb957858ce468f2e79e","content-type":"application/pdf","x-amz-object-lock-legal-hold":"OFF"}}}]},
-        "fe012443-6ba9-4ef2-bb94-b729d2060c78/test123/testw3c.pdf/xl.meta": {"Versions":[{"Type":1,"V2Obj":{"ID":"aGEA/ZUOR4ueRIZsAgfDqA==","DDir":"9MMwM47bS+K6KvQqN3hlDw==","EcAlgo":1,"EcM":2,"EcN":2,"EcBSize":1048576,"EcIndex":1,"EcDist":[4,1,2,3],"CSumAlgo":1,"PartNums":[1],"PartETags":[""],"PartSizes":[101974],"PartASizes":[176837],"Size":101974,"MTime":1634106631319256439,"MetaSys":{"X-Minio-Internal-compression":"a2xhdXNwb3N0L2NvbXByZXNzL3My","X-Minio-Internal-actual-size":"MTc2ODM3","x-minio-internal-objectlock-legalhold-timestamp":"MjAyMS0xMC0xOVQyMjozNTo0Ni4zNTE4MDU3NTda"},"MetaUsr":{"content-type":"application/pdf","x-amz-object-lock-legal-hold":"OFF","x-amz-object-lock-mode":"COMPLIANCE","x-amz-object-lock-retain-until-date":"2022-10-13T06:30:31.319Z","etag":"67ed8f49b7137cb957858ce468f2e79e"}}}]},
-        "5dcb9f38-08ea-4728-bb64-5cecc7102436/test123/testw3c.pdf/xl.meta": {"Versions":[{"Type":1,"V2Obj":{"ID":"aGEA/ZUOR4ueRIZsAgfDqA==","DDir":"9MMwM47bS+K6KvQqN3hlDw==","EcAlgo":1,"EcM":2,"EcN":2,"EcBSize":1048576,"EcIndex":2,"EcDist":[4,1,2,3],"CSumAlgo":1,"PartNums":[1],"PartETags":[""],"PartSizes":[101974],"PartASizes":[176837],"Size":101974,"MTime":1634106631319256439,"MetaSys":{"X-Minio-Internal-compression":"a2xhdXNwb3N0L2NvbXByZXNzL3My","X-Minio-Internal-actual-size":"MTc2ODM3","x-minio-internal-objectlock-legalhold-timestamp":"MjAyMS0xMC0xOVQyMjozNTo0Ni4zNTE4MDU3NTda"},"MetaUsr":{"content-type":"application/pdf","x-amz-object-lock-legal-hold":"OFF","x-amz-object-lock-mode":"COMPLIANCE","x-amz-object-lock-retain-until-date":"2022-10-13T06:30:31.319Z","etag":"67ed8f49b7137cb957858ce468f2e79e"}}}]},
-        "48beacc7-4be0-4660-9026-4eceaf147504/test123/testw3c.pdf/xl.meta": {"Versions":[{"Type":1,"V2Obj":{"ID":"aGEA/ZUOR4ueRIZsAgfDqA==","DDir":"9MMwM47bS+K6KvQqN3hlDw==","EcAlgo":1,"EcM":2,"EcN":2,"EcBSize":1048576,"EcIndex":3,"EcDist":[4,1,2,3],"CSumAlgo":1,"PartNums":[1],"PartETags":[""],"PartSizes":[101974],"PartASizes":[176837],"Size":101974,"MTime":1634106631319256439,"MetaSys":{"X-Minio-Internal-compression":"a2xhdXNwb3N0L2NvbXByZXNzL3My","X-Minio-Internal-actual-size":"MTc2ODM3","x-minio-internal-objectlock-legalhold-timestamp":"MjAyMS0xMC0xOVQyMjozNTo0Ni4zNTE4MDU3NTda"},"MetaUsr":{"x-amz-object-lock-retain-until-date":"2022-10-13T06:30:31.319Z","x-amz-object-lock-legal-hold":"OFF","etag":"67ed8f49b7137cb957858ce468f2e79e","content-type":"application/pdf","x-amz-object-lock-mode":"COMPLIANCE"}}}]}
+        "bf6178f9-4014-4008-9699-86f2fac62226/test123/testw3c.pdf/xl.meta": {"Versions":[{"Type":1,"V2Obj":{"ID":"aGEA/ZUOR4ueRIZsAgfDqA==","DDir":"9MMwM47bS+K6KvQqN3hlDw==","EcAlgo":1,"EcM":2,"EcN":2,"EcBSize":1048576,"EcIndex":4,"EcDist":[4,1,2,3],"CSumAlgo":1,"PartNums":[1],"PartETags":[""],"PartSizes":[101974],"PartASizes":[176837],"Size":101974,"MTime":1634106631319256439,"MetaSys":{"X-Minio-Internal-compression":"a2xhdXNwb3N0L2NvbXByZXNzL3My","X-Minio-Internal-actual-size":"MTc2ODM3","x-uitstor-internal-objectlock-legalhold-timestamp":"MjAyMS0xMC0xOVQyMjozNTo0Ni4zNTE4MDU3NTda"},"MetaUsr":{"x-amz-object-lock-mode":"COMPLIANCE","x-amz-object-lock-retain-until-date":"2022-10-13T06:30:31.319Z","etag":"67ed8f49b7137cb957858ce468f2e79e","content-type":"application/pdf","x-amz-object-lock-legal-hold":"OFF"}}}]},
+        "fe012443-6ba9-4ef2-bb94-b729d2060c78/test123/testw3c.pdf/xl.meta": {"Versions":[{"Type":1,"V2Obj":{"ID":"aGEA/ZUOR4ueRIZsAgfDqA==","DDir":"9MMwM47bS+K6KvQqN3hlDw==","EcAlgo":1,"EcM":2,"EcN":2,"EcBSize":1048576,"EcIndex":1,"EcDist":[4,1,2,3],"CSumAlgo":1,"PartNums":[1],"PartETags":[""],"PartSizes":[101974],"PartASizes":[176837],"Size":101974,"MTime":1634106631319256439,"MetaSys":{"X-Minio-Internal-compression":"a2xhdXNwb3N0L2NvbXByZXNzL3My","X-Minio-Internal-actual-size":"MTc2ODM3","x-uitstor-internal-objectlock-legalhold-timestamp":"MjAyMS0xMC0xOVQyMjozNTo0Ni4zNTE4MDU3NTda"},"MetaUsr":{"content-type":"application/pdf","x-amz-object-lock-legal-hold":"OFF","x-amz-object-lock-mode":"COMPLIANCE","x-amz-object-lock-retain-until-date":"2022-10-13T06:30:31.319Z","etag":"67ed8f49b7137cb957858ce468f2e79e"}}}]},
+        "5dcb9f38-08ea-4728-bb64-5cecc7102436/test123/testw3c.pdf/xl.meta": {"Versions":[{"Type":1,"V2Obj":{"ID":"aGEA/ZUOR4ueRIZsAgfDqA==","DDir":"9MMwM47bS+K6KvQqN3hlDw==","EcAlgo":1,"EcM":2,"EcN":2,"EcBSize":1048576,"EcIndex":2,"EcDist":[4,1,2,3],"CSumAlgo":1,"PartNums":[1],"PartETags":[""],"PartSizes":[101974],"PartASizes":[176837],"Size":101974,"MTime":1634106631319256439,"MetaSys":{"X-Minio-Internal-compression":"a2xhdXNwb3N0L2NvbXByZXNzL3My","X-Minio-Internal-actual-size":"MTc2ODM3","x-uitstor-internal-objectlock-legalhold-timestamp":"MjAyMS0xMC0xOVQyMjozNTo0Ni4zNTE4MDU3NTda"},"MetaUsr":{"content-type":"application/pdf","x-amz-object-lock-legal-hold":"OFF","x-amz-object-lock-mode":"COMPLIANCE","x-amz-object-lock-retain-until-date":"2022-10-13T06:30:31.319Z","etag":"67ed8f49b7137cb957858ce468f2e79e"}}}]},
+        "48beacc7-4be0-4660-9026-4eceaf147504/test123/testw3c.pdf/xl.meta": {"Versions":[{"Type":1,"V2Obj":{"ID":"aGEA/ZUOR4ueRIZsAgfDqA==","DDir":"9MMwM47bS+K6KvQqN3hlDw==","EcAlgo":1,"EcM":2,"EcN":2,"EcBSize":1048576,"EcIndex":3,"EcDist":[4,1,2,3],"CSumAlgo":1,"PartNums":[1],"PartETags":[""],"PartSizes":[101974],"PartASizes":[176837],"Size":101974,"MTime":1634106631319256439,"MetaSys":{"X-Minio-Internal-compression":"a2xhdXNwb3N0L2NvbXByZXNzL3My","X-Minio-Internal-actual-size":"MTc2ODM3","x-uitstor-internal-objectlock-legalhold-timestamp":"MjAyMS0xMC0xOVQyMjozNTo0Ni4zNTE4MDU3NTda"},"MetaUsr":{"x-amz-object-lock-retain-until-date":"2022-10-13T06:30:31.319Z","x-amz-object-lock-legal-hold":"OFF","etag":"67ed8f49b7137cb957858ce468f2e79e","content-type":"application/pdf","x-amz-object-lock-mode":"COMPLIANCE"}}}]}
 }
 ```
 
@@ -123,7 +123,7 @@ To install, [Go](https://golang.org/dl/) must be installed.
 Once installed, execute this to install the binary:
 
 ```bash
-go install github.com/minio/minio/docs/debugging/inspect@latest
+go install github.com/uitstor/uitstor/docs/debugging/inspect@latest
 ```
 
 ### Usage

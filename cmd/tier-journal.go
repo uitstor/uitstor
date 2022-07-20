@@ -28,7 +28,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/tinylib/msgp/msgp"
 )
 
@@ -98,11 +98,11 @@ func (jd *tierDiskJournal) rotate() error {
 type walkFn func(ctx context.Context, objName, rvID, tierName string) error
 
 func (jd *tierDiskJournal) ReadOnlyPath() string {
-	return filepath.Join(jd.diskPath, minioMetaBucket, "ilm", "deletion-journal.ro.bin")
+	return filepath.Join(jd.diskPath, uitstorMetaBucket, "ilm", "deletion-journal.ro.bin")
 }
 
 func (jd *tierDiskJournal) JournalPath() string {
-	return filepath.Join(jd.diskPath, minioMetaBucket, "ilm", "deletion-journal.bin")
+	return filepath.Join(jd.diskPath, uitstorMetaBucket, "ilm", "deletion-journal.bin")
 }
 
 func (jd *tierDiskJournal) WalkEntries(ctx context.Context, fn walkFn) {

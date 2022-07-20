@@ -31,7 +31,7 @@ import (
 	"time"
 
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 //go:generate stringer -type=storageMetric -trimprefix=storageMetric $GOFILE
@@ -776,15 +776,15 @@ func (p *xlStorageDiskIDCheck) monitorDiskStatus() {
 			// Queue is still full, no need to check.
 			continue
 		}
-		err := p.storage.WriteAll(context.Background(), minioMetaTmpBucket, fn, []byte{10000: 42})
+		err := p.storage.WriteAll(context.Background(), uitstorMetaTmpBucket, fn, []byte{10000: 42})
 		if err != nil {
 			continue
 		}
-		b, err := p.storage.ReadAll(context.Background(), minioMetaTmpBucket, fn)
+		b, err := p.storage.ReadAll(context.Background(), uitstorMetaTmpBucket, fn)
 		if err != nil || len(b) != 10001 {
 			continue
 		}
-		err = p.storage.Delete(context.Background(), minioMetaTmpBucket, fn, DeleteOptions{
+		err = p.storage.Delete(context.Background(), uitstorMetaTmpBucket, fn, DeleteOptions{
 			Recursive: false,
 			Force:     false,
 		})

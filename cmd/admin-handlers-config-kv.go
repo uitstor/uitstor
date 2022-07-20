@@ -28,19 +28,19 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/config/cache"
-	"github.com/minio/minio/internal/config/etcd"
-	xldap "github.com/minio/minio/internal/config/identity/ldap"
-	"github.com/minio/minio/internal/config/identity/openid"
-	idplugin "github.com/minio/minio/internal/config/identity/plugin"
-	polplugin "github.com/minio/minio/internal/config/policy/plugin"
-	"github.com/minio/minio/internal/config/storageclass"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/config/cache"
+	"github.com/uitstor/uitstor/internal/config/etcd"
+	xldap "github.com/uitstor/uitstor/internal/config/identity/ldap"
+	"github.com/uitstor/uitstor/internal/config/identity/openid"
+	idplugin "github.com/uitstor/uitstor/internal/config/identity/plugin"
+	polplugin "github.com/uitstor/uitstor/internal/config/policy/plugin"
+	"github.com/uitstor/uitstor/internal/config/storageclass"
+	"github.com/uitstor/uitstor/internal/logger"
 	iampolicy "github.com/minio/pkg/iam/policy"
 )
 
-// DelConfigKVHandler - DELETE /minio/admin/v3/del-config-kv
+// DelConfigKVHandler - DELETE /uitstor/admin/v3/del-config-kv
 func (a adminAPIHandlers) DelConfigKVHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "DeleteConfigKV")
 
@@ -110,7 +110,7 @@ func applyDynamic(ctx context.Context, objectAPI ObjectLayer, cfg config.Config,
 	w.Header().Set(madmin.ConfigAppliedHeader, madmin.ConfigAppliedTrue)
 }
 
-// SetConfigKVHandler - PUT /minio/admin/v3/set-config-kv
+// SetConfigKVHandler - PUT /uitstor/admin/v3/set-config-kv
 func (a adminAPIHandlers) SetConfigKVHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SetConfigKV")
 
@@ -176,7 +176,7 @@ func (a adminAPIHandlers) SetConfigKVHandler(w http.ResponseWriter, r *http.Requ
 	writeSuccessResponseHeadersOnly(w)
 }
 
-// GetConfigKVHandler - GET /minio/admin/v3/get-config-kv?key={key}
+// GetConfigKVHandler - GET /uitstor/admin/v3/get-config-kv?key={key}
 func (a adminAPIHandlers) GetConfigKVHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "GetConfigKV")
 
@@ -328,7 +328,7 @@ func (a adminAPIHandlers) ListConfigHistoryKVHandler(w http.ResponseWriter, r *h
 	writeSuccessResponseJSON(w, econfigData)
 }
 
-// HelpConfigKVHandler - GET /minio/admin/v3/help-config-kv?subSys={subSys}&key={key}
+// HelpConfigKVHandler - GET /uitstor/admin/v3/help-config-kv?subSys={subSys}&key={key}
 func (a adminAPIHandlers) HelpConfigKVHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "HelpConfigKV")
 
@@ -355,7 +355,7 @@ func (a adminAPIHandlers) HelpConfigKVHandler(w http.ResponseWriter, r *http.Req
 	json.NewEncoder(w).Encode(rd)
 }
 
-// SetConfigHandler - PUT /minio/admin/v3/config
+// SetConfigHandler - PUT /uitstor/admin/v3/config
 func (a adminAPIHandlers) SetConfigHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SetConfig")
 
@@ -406,8 +406,8 @@ func (a adminAPIHandlers) SetConfigHandler(w http.ResponseWriter, r *http.Reques
 	writeSuccessResponseHeadersOnly(w)
 }
 
-// GetConfigHandler - GET /minio/admin/v3/config
-// Get config.json of this minio setup.
+// GetConfigHandler - GET /uitstor/admin/v3/config
+// Get config.json of this uitstor setup.
 func (a adminAPIHandlers) GetConfigHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "GetConfig")
 

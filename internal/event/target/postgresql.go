@@ -32,7 +32,7 @@ import (
 
 	_ "github.com/lib/pq" // Register postgres driver
 
-	"github.com/minio/minio/internal/event"
+	"github.com/uitstor/uitstor/internal/event"
 	xnet "github.com/minio/pkg/net"
 )
 
@@ -82,7 +82,7 @@ type PostgreSQLArgs struct {
 	Table              string    `json:"table"`
 	Host               xnet.Host `json:"host"`     // default: localhost
 	Port               string    `json:"port"`     // default: 5432
-	Username           string    `json:"username"` // default: user running minio
+	Username           string    `json:"username"` // default: user running uitstor
 	Password           string    `json:"password"` // default: no password
 	Database           string    `json:"database"` // default: same as user
 	QueueDir           string    `json:"queueDir"`

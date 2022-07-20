@@ -24,7 +24,7 @@ import (
 	"time"
 
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 	uatomic "go.uber.org/atomic"
 )
 
@@ -95,7 +95,7 @@ func initCallhome(ctx context.Context, objAPI ObjectLayer) {
 
 func runCallhome(ctx context.Context, objAPI ObjectLayer) {
 	// Make sure only 1 callhome is running on the cluster.
-	locker := objAPI.NewNSLock(minioMetaBucket, "callhome/runCallhome.lock")
+	locker := objAPI.NewNSLock(uitstorMetaBucket, "callhome/runCallhome.lock")
 	lkctx, err := locker.GetLock(ctx, callhomeLeaderLockTimeout)
 	if err != nil {
 		return

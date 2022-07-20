@@ -46,14 +46,14 @@ var (
 	insecure                                         bool
 )
 
-func buildS3Client(endpoint, accessKey, secretKey string, insecure bool) (*minio.Client, error) {
+func buildS3Client(endpoint, accessKey, secretKey string, insecure bool) (*uitstor.Client, error) {
 	u, err := url.Parse(endpoint)
 	if err != nil {
 		return nil, err
 	}
 
 	secure := strings.EqualFold(u.Scheme, "https")
-	transport, err := minio.DefaultTransport(secure)
+	transport, err := uitstor.DefaultTransport(secure)
 	if err != nil {
 		return nil, err
 	}
@@ -62,7 +62,7 @@ func buildS3Client(endpoint, accessKey, secretKey string, insecure bool) (*minio
 		transport.TLSClientConfig.InsecureSkipVerify = true
 	}
 
-	clnt, err := minio.New(u.Host, &minio.Options{
+	clnt, err := uitstor.New(u.Host, &uitstor.Options{
 		Creds:     credentials.NewStaticV4(accessKey, secretKey, ""),
 		Secure:    secure,
 		Transport: transport,
@@ -130,7 +130,7 @@ func main() {
 	}
 
 	ssecure := strings.EqualFold(srcU.Scheme, "https")
-	stransport, err := minio.DefaultTransport(ssecure)
+	stransport, err := uitstor.DefaultTransport(ssecure)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -147,11 +147,11 @@ func main() {
 	maxObjectModTime := time.Now().Add(-ageDelta)
 
 	// Next object is used to ignore new objects in the source & target
-	nextObject := func(ch <-chan minio.ObjectInfo) (ctnt minio.ObjectInfo, ok bool) {
+	nextObject := func(ch <-chan uitstor.ObjectInfo) (ctnt uitstor.ObjectInfo, ok bool) {
 		for {
 			ctnt, ok := <-ch
 			if !ok {
-				return minio.ObjectInfo{}, false
+				return uitstor.ObjectInfo{}, false
 			}
 			if ctnt.LastModified.Before(maxObjectModTime) {
 				return ctnt, ok
@@ -174,12 +174,12 @@ func main() {
 		tclnt.TraceOn(os.Stderr)
 	}
 
-	sopts := minio.ListObjectsOptions{
+	sopts := uitstor.ListObjectsOptions{
 		Recursive: true,
 		Prefix:    sourcePrefix,
 	}
 
-	topts := minio.ListObjectsOptions{
+	topts := uitstor.ListObjectsOptions{
 		Recursive: true,
 		Prefix:    targetPrefix,
 	}
@@ -250,8 +250,8 @@ func main() {
 	}
 }
 
-func verifyChecksum(sclnt *minio.Client, srcSha256, tgtSha256 hash.Hash, srcCtnt, tgtCtnt minio.ObjectInfo) (allgood bool) {
-	opts := minio.GetObjectOptions{}
+func verifyChecksum(sclnt *uitstor.Client, srcSha256, tgtSha256 hash.Hash, srcCtnt, tgtCtnt uitstor.ObjectInfo) (allgood bool) {
+	opts := uitstor.GetObjectOptions{}
 	if srcCtnt.Size != tgtCtnt.Size {
 		fmt.Printf("differ in size sourceSize: %d, targetSize: %d\n", srcCtnt.Size, tgtCtnt.Size)
 		return false
@@ -260,7 +260,7 @@ func verifyChecksum(sclnt *minio.Client, srcSha256, tgtSha256 hash.Hash, srcCtnt
 		return false
 	}
 
-	core := minio.Core{Client: sclnt}
+	core := uitstor.Core{Client: sclnt}
 	sobj, _, _, err := core.GetObject(context.Background(), sourceBucket, srcCtnt.Key, opts)
 	if err != nil {
 		fmt.Printf("unreadable on source: %s (%s)\n", srcCtnt.Key, err)

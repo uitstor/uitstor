@@ -27,8 +27,8 @@ import (
 	"time"
 
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 )
 
 const reservedMetadataPrefixLowerDataShardFix = ReservedMetadataPrefixLower + "data-shard-fix"
@@ -37,7 +37,7 @@ const reservedMetadataPrefixLowerDataShardFix = ReservedMetadataPrefixLower + "d
 // acceptable delta of "delta" duration with maxTime.
 //
 // This code is primarily used for heuristic detection of
-// incorrect shards, as per https://github.com/minio/minio/pull/13803
+// incorrect shards, as per https://github.com/uitstor/uitstor/pull/13803
 //
 // This check only is active if we could find maximally
 // occurring disk mtimes that are somewhat same across
@@ -101,7 +101,7 @@ func (er erasureObjects) healBucket(ctx context.Context, storageDisks []StorageA
 			beforeState[index] = madmin.DriveStateOk
 			afterState[index] = madmin.DriveStateOk
 
-			if bucket == minioReservedBucket {
+			if bucket == uitstorReservedBucket {
 				return nil
 			}
 
@@ -488,7 +488,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 
 	if !latestMeta.Deleted && !latestMeta.IsRemote() {
 		// Heal each part. erasureHealFile() will write the healed
-		// part to .minio/tmp/uuid/ which needs to be renamed later to
+		// part to .uitstor/tmp/uuid/ which needs to be renamed later to
 		// the final location.
 		erasure, err := NewErasure(ctx, latestMeta.Erasure.DataBlocks,
 			latestMeta.Erasure.ParityBlocks, latestMeta.Erasure.BlockSize)
@@ -525,7 +525,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 					inlineBuffers[i] = bytes.NewBuffer(make([]byte, 0, erasure.ShardFileSize(latestMeta.Size)+32))
 					writers[i] = newStreamingBitrotWriterBuffer(inlineBuffers[i], DefaultBitrotAlgorithm, erasure.ShardSize())
 				} else {
-					writers[i] = newBitrotWriter(disk, minioMetaTmpBucket, partPath,
+					writers[i] = newBitrotWriter(disk, uitstorMetaTmpBucket, partPath,
 						tillOffset, DefaultBitrotAlgorithm, erasure.ShardSize())
 				}
 			}
@@ -574,7 +574,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 
 	}
 
-	defer er.renameAll(context.Background(), minioMetaTmpBucket, tmpID)
+	defer er.renameAll(context.Background(), uitstorMetaTmpBucket, tmpID)
 
 	// Rename from tmp location to the actual location.
 	for i, disk := range outDatedDisks {
@@ -586,7 +586,7 @@ func (er erasureObjects) healObject(ctx context.Context, bucket string, object s
 		partsMetadata[i].Erasure.Index = i + 1
 
 		// Attempt a rename now from healed data to final location.
-		if err = disk.RenameData(ctx, minioMetaTmpBucket, tmpID, partsMetadata[i], bucket, object); err != nil {
+		if err = disk.RenameData(ctx, uitstorMetaTmpBucket, tmpID, partsMetadata[i], bucket, object); err != nil {
 			logger.LogIf(ctx, err)
 			return result, err
 		}

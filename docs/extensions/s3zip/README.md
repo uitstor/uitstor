@@ -1,4 +1,4 @@
-# Perform S3 operations in a ZIP content[![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Perform S3 operations in a ZIP content[![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
 ## Overview
 
@@ -8,7 +8,7 @@ The main limitation is that to update or delete content of a file inside a ZIP f
 
 ## How to enable S3 ZIP behavior ?
 
-Ensure to set the following header `x-minio-extract` to `true` in your S3 requests.
+Ensure to set the following header `x-uitstor-extract` to `true` in your S3 requests.
 
 ## How to access to files inside a ZIP archive
 
@@ -23,9 +23,9 @@ All properties except the file size are tied to the zip file. This means that mo
 
 ## Code Examples
 
-[Using minio-go library](https://github.com/minio/minio/blob/master/docs/extensions/s3zip/examples/minio-go/main.go)
-[Using AWS JS SDK v2](https://github.com/minio/minio/blob/master/docs/extensions/s3zip/examples/aws-js/main.js)
-[Using boto3](https://github.com/minio/minio/blob/master/docs/extensions/s3zip/examples/boto3/main.py)
+[Using uitstor-go library](https://github.com/uitstor/uitstor/blob/master/docs/extensions/s3zip/examples/uitstor-go/main.go)
+[Using AWS JS SDK v2](https://github.com/uitstor/uitstor/blob/master/docs/extensions/s3zip/examples/aws-js/main.js)
+[Using boto3](https://github.com/uitstor/uitstor/blob/master/docs/extensions/s3zip/examples/boto3/main.py)
 
 ## Requirements and limits
 

@@ -34,10 +34,10 @@ import (
 	"github.com/cespare/xxhash/v2"
 	"github.com/google/uuid"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/bucket/replication"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/tinylib/msgp/msgp"
 )
 

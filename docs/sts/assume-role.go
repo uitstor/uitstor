@@ -39,8 +39,8 @@ var (
 	stsEndpoint string
 
 	// User account credentials
-	minioUsername string
-	minioPassword string
+	uitstorUsername string
+	uitstorPassword string
 
 	// Display credentials flag
 	displayCreds bool
@@ -51,14 +51,14 @@ var (
 	// Bucket to list
 	bucketToList string
 
-	// Session policy file (FIXME: add support in minio-go)
+	// Session policy file (FIXME: add support in uitstor-go)
 	sessionPolicyFile string
 )
 
 func init() {
 	flag.StringVar(&stsEndpoint, "sts-ep", "http://localhost:9000", "STS endpoint")
-	flag.StringVar(&minioUsername, "u", "", "MinIO Username")
-	flag.StringVar(&minioPassword, "p", "", "MinIO Password")
+	flag.StringVar(&uitstorUsername, "u", "", "MinIO Username")
+	flag.StringVar(&uitstorPassword, "p", "", "MinIO Password")
 	flag.BoolVar(&displayCreds, "d", false, "Only show generated credentials")
 	flag.DurationVar(&expiryDuration, "e", 0, "Request a duration of validity for the generated credential")
 	flag.StringVar(&bucketToList, "b", "", "Bucket to list (defaults to username)")
@@ -67,18 +67,18 @@ func init() {
 
 func main() {
 	flag.Parse()
-	if minioUsername == "" || minioPassword == "" {
+	if uitstorUsername == "" || uitstorPassword == "" {
 		flag.PrintDefaults()
 		return
 	}
 
-	// The credentials package in minio-go provides an interface to call the
+	// The credentials package in uitstor-go provides an interface to call the
 	// STS API.
 
 	// Initialize credential options
 	var stsOpts cr.STSAssumeRoleOptions
-	stsOpts.AccessKey = minioUsername
-	stsOpts.SecretKey = minioPassword
+	stsOpts.AccessKey = uitstorUsername
+	stsOpts.SecretKey = uitstorPassword
 
 	if sessionPolicyFile != "" {
 		var policy string
@@ -106,7 +106,7 @@ func main() {
 		log.Fatalf("Error parsing sts endpoint: %v", err)
 	}
 
-	opts := &minio.Options{
+	opts := &uitstor.Options{
 		Creds:  li,
 		Secure: stsEndpointURL.Scheme == "https",
 	}
@@ -125,17 +125,17 @@ func main() {
 	}
 
 	// Use generated credentials to authenticate with MinIO server
-	minioClient, err := minio.New(stsEndpointURL.Host, opts)
+	uitstorClient, err := uitstor.New(stsEndpointURL.Host, opts)
 	if err != nil {
 		log.Fatalf("Error initializing client: %v", err)
 	}
 
 	// Use minIO Client object normally like the regular client.
 	if bucketToList == "" {
-		bucketToList = minioUsername
+		bucketToList = uitstorUsername
 	}
 	fmt.Printf("Calling list objects on bucket named `%s` with temp creds:\n===\n", bucketToList)
-	objCh := minioClient.ListObjects(context.Background(), bucketToList, minio.ListObjectsOptions{})
+	objCh := uitstorClient.ListObjects(context.Background(), bucketToList, uitstor.ListObjectsOptions{})
 	for obj := range objCh {
 		if obj.Err != nil {
 			log.Fatalf("Listing error: %v", obj.Err)

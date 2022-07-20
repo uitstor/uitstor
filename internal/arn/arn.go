@@ -34,7 +34,7 @@ import (
 type arnPartition string
 
 const (
-	arnPartitionMinio arnPartition = "minio"
+	arnPartitionMinio arnPartition = "uitstor"
 )
 
 type arnService string

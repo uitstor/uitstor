@@ -69,7 +69,7 @@ var globalHandlers = []mux.MiddlewareFunc{
 // configureServer handler returns final handler for the http server.
 func configureServerHandler(endpointServerPools EndpointServerPools) (http.Handler, error) {
 	// Initialize router. `SkipClean(true)` stops gorilla/mux from
-	// normalizing URL path minio/minio#3256
+	// normalizing URL path uitstor/uitstor#3256
 	router := mux.NewRouter().SkipClean(true).UseEncodedPath()
 
 	// Initialize distributed NS lock.

@@ -1,4 +1,4 @@
-# MinIO Server Throttling Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# MinIO Server Throttling Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
 MinIO server allows to throttle incoming requests:
 
@@ -19,14 +19,14 @@ Example: Limit a MinIO cluster to accept at max 1600 simultaneous S3 API request
 export MINIO_API_REQUESTS_MAX=1600
 export MINIO_ROOT_USER=your-access-key
 export MINIO_ROOT_PASSWORD=your-secret-key
-minio server http://server{1...8}/mnt/hdd{1...16}
+uitstor server http://server{1...8}/mnt/hdd{1...16}
 ```
 
 or
 
 ```sh
-mc admin config set myminio/ api requests_max=1600
-mc admin service restart myminio/
+mc admin config set myuitstor/ api requests_max=1600
+mc admin service restart myuitstor/
 ```
 
 > NOTE: A zero value of `requests_max` means MinIO will automatically calculate requests based on available RAM size and that is the default behavior.
@@ -44,12 +44,12 @@ export MINIO_API_REQUESTS_MAX=1600
 export MINIO_API_REQUESTS_DEADLINE=2m
 export MINIO_ROOT_USER=your-access-key
 export MINIO_ROOT_PASSWORD=your-secret-key
-minio server http://server{1...8}/mnt/hdd{1...16}
+uitstor server http://server{1...8}/mnt/hdd{1...16}
 ```
 
 or
 
 ```sh
-mc admin config set myminio/ api requests_max=1600 requests_deadline=2m
-mc admin service restart myminio/
+mc admin config set myuitstor/ api requests_max=1600 requests_deadline=2m
+mc admin service restart myuitstor/
 ```

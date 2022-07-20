@@ -11,17 +11,17 @@ import (
 )
 
 func main() {
-	s3Client, err := minio.New("minio-server-address:9000", &minio.Options{
+	s3Client, err := uitstor.New("uitstor-server-address:9000", &uitstor.Options{
 		Creds: credentials.NewStaticV4("access-key", "secret-key", ""),
 	})
 	if err != nil {
 		log.Fatalln(err)
 	}
 
-	var opts minio.GetObjectOptions
+	var opts uitstor.GetObjectOptions
 
 	// Add extract header to request:
-	opts.Set("x-minio-extract", "true")
+	opts.Set("x-uitstor-extract", "true")
 
 	// Download API.md from the archive
 	rd, err := s3Client.GetObject(context.Background(), "your-bucket", "path/to/file.zip/data.csv", opts)

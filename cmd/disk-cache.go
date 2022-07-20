@@ -28,13 +28,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	objectlock "github.com/minio/minio/internal/bucket/object/lock"
-	"github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/config/cache"
-	"github.com/minio/minio/internal/disk"
-	"github.com/minio/minio/internal/hash"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	objectlock "github.com/uitstor/uitstor/internal/bucket/object/lock"
+	"github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/config/cache"
+	"github.com/uitstor/uitstor/internal/disk"
+	"github.com/uitstor/uitstor/internal/hash"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 	"github.com/minio/pkg/wildcard"
 )
 

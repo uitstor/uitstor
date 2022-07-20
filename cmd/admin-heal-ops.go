@@ -28,7 +28,7 @@ import (
 	"time"
 
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 // healStatusSummary - overall short summary of a healing sequence
@@ -764,7 +764,7 @@ func (h *healSequence) queueHealTask(source healSource, healType madmin.HealItem
 
 func (h *healSequence) healDiskMeta(objAPI ObjectLayer) error {
 	// Start healing the config prefix.
-	return h.healMinioSysMeta(objAPI, minioConfigPrefix)()
+	return h.healMinioSysMeta(objAPI, uitstorConfigPrefix)()
 }
 
 func (h *healSequence) healItems(objAPI ObjectLayer, bucketsOnly bool) error {
@@ -796,7 +796,7 @@ func (h *healSequence) healMinioSysMeta(objAPI ObjectLayer, metaPrefix string) f
 		// NOTE: Healing on meta is run regardless
 		// of any bucket being selected, this is to ensure that
 		// meta are always upto date and correct.
-		return objAPI.HealObjects(h.ctx, minioMetaBucket, metaPrefix, h.settings, func(bucket, object, versionID string) error {
+		return objAPI.HealObjects(h.ctx, uitstorMetaBucket, metaPrefix, h.settings, func(bucket, object, versionID string) error {
 			if h.isQuitting() {
 				return errHealStopSignalled
 			}

@@ -1,8 +1,8 @@
-# Bucket Versioning Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Versioning Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
 MinIO versioning is designed to keep multiple versions of an object in one bucket. For example, you could store `spark.csv` (version `ede336f2`) and `spark.csv` (version `fae684da`) in a single bucket. Versioning protects you from unintended overwrites, deletions, protect objects with retention policies.
 
-To control data retention and storage usage, use object versioning with [object lifecycle management](https://github.com/minio/minio/blob/master/docs/bucket/lifecycle/README.md).  If you have an object expiration lifecycle policy in your non-versioned bucket and you want to maintain the same permanent delete behavior when on versioning-enabled bucket, you must add a noncurrent expiration policy. The noncurrent expiration lifecycle policy will manage the deletes of the noncurrent object versions in the versioning-enabled bucket. (A version-enabled bucket maintains one current and zero or more noncurrent object versions.)
+To control data retention and storage usage, use object versioning with [object lifecycle management](https://github.com/uitstor/uitstor/blob/master/docs/bucket/lifecycle/README.md).  If you have an object expiration lifecycle policy in your non-versioned bucket and you want to maintain the same permanent delete behavior when on versioning-enabled bucket, you must add a noncurrent expiration policy. The noncurrent expiration lifecycle policy will manage the deletes of the noncurrent object versions in the versioning-enabled bucket. (A version-enabled bucket maintains one current and zero or more noncurrent object versions.)
 
 Versioning must be explicitly enabled on a bucket, versioning is not enabled by default. Object locking enabled buckets have versioning enabled automatically. Enabling and suspending versioning is done at the bucket level.
 
@@ -10,25 +10,25 @@ Only MinIO generates version IDs, and they can't be edited. Version IDs are simp
 
 When you PUT an object in a versioning-enabled bucket, the noncurrent version is not overwritten. The following figure shows that when a new version of `spark.csv` is PUT into a bucket that already contains an object with the same name, the original object (ID = `ede336f2`) remains in the bucket, MinIO generates a new version (ID = `fae684da`), and adds the newer version to the bucket.
 
-![put](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/versioning/versioning_PUT_versionEnabled.png)
+![put](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/bucket/versioning/versioning_PUT_versionEnabled.png)
 
 This protects against accidental overwrites or deletes of objects, allows previous versions to be retrieved.
 
 When you DELETE an object, all versions remain in the bucket and MinIO adds a delete marker, as shown below:
 
-![delete](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/versioning/versioning_DELETE_versionEnabled.png)
+![delete](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/bucket/versioning/versioning_DELETE_versionEnabled.png)
 
 Now the delete marker becomes the current version of the object. GET requests by default always retrieve the latest stored version. So performing a simple GET object request when the current version is a delete marker would return `404` `The specified key does not exist` as shown below:
 
-![get](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/versioning/versioning_GET_versionEnabled.png)
+![get](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/bucket/versioning/versioning_GET_versionEnabled.png)
 
 GET requests by specifying a version ID as shown below, you can retrieve the specific object version `fae684da`.
 
-![get_version_id](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/versioning/versioning_GET_versionEnabled_id.png)
+![get_version_id](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/bucket/versioning/versioning_GET_versionEnabled_id.png)
 
 To permanently delete an object you need to specify the version you want to delete, only the user with appropriate permissions can permanently delete a version.  As shown below DELETE request called with a specific version id permanently deletes an object from a bucket. Delete marker is not added for DELETE requests with version id.
 
-![delete_version_id](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/versioning/versioning_DELETE_versionEnabled_id.png)
+![delete_version_id](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/bucket/versioning/versioning_DELETE_versionEnabled_id.png)
 
 ## Concepts
 
@@ -105,9 +105,9 @@ To exclude objects under a list of prefix (glob) patterns from being versioned, 
 ### EnableVersioning() API
 
 ```
-import io.minio.EnableVersioningArgs;
-import io.minio.MinioClient;
-import io.minio.errors.MinioException;
+import io.uitstor.EnableVersioningArgs;
+import io.uitstor.MinioClient;
+import io.uitstor.errors.MinioException;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -118,21 +118,21 @@ public class EnableVersioning {
       throws IOException, NoSuchAlgorithmException, InvalidKeyException {
     try {
       /* play.min.io for test and development. */
-      MinioClient minioClient =
+      MinioClient uitstorClient =
           MinioClient.builder()
               .endpoint("https://play.min.io")
               .credentials("Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG")
               .build();
 
       /* Amazon S3: */
-      // MinioClient minioClient =
+      // MinioClient uitstorClient =
       //     MinioClient.builder()
       //         .endpoint("https://s3.amazonaws.com")
       //         .credentials("YOUR-ACCESSKEY", "YOUR-SECRETACCESSKEY")
       //         .build();
 
       // Enable versioning on 'my-bucketname'.
-      minioClient.enableVersioning(EnableVersioningArgs.builder().bucket("my-bucketname").build());
+      uitstorClient.enableVersioning(EnableVersioningArgs.builder().bucket("my-bucketname").build());
 
       System.out.println("Bucket versioning is enabled successfully");
 
@@ -152,27 +152,27 @@ public class IsVersioningEnabled {
       throws IOException, NoSuchAlgorithmException, InvalidKeyException {
     try {
       /* play.min.io for test and development. */
-      MinioClient minioClient =
+      MinioClient uitstorClient =
           MinioClient.builder()
               .endpoint("https://play.min.io")
               .credentials("Q3AM3UQ867SPQQA43P2F", "zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG")
               .build();
 
       /* Amazon S3: */
-      // MinioClient minioClient =
+      // MinioClient uitstorClient =
       //     MinioClient.builder()
       //         .endpoint("https://s3.amazonaws.com")
       //         .credentials("YOUR-ACCESSKEY", "YOUR-SECRETACCESSKEY")
       //         .build();
 
       // Create bucket 'my-bucketname' if it doesn`t exist.
-      if (!minioClient.bucketExists(BucketExistsArgs.builder().bucket("my-bucketname").build())) {
-        minioClient.makeBucket(MakeBucketArgs.builder().bucket("my-bucketname").build());
+      if (!uitstorClient.bucketExists(BucketExistsArgs.builder().bucket("my-bucketname").build())) {
+        uitstorClient.makeBucket(MakeBucketArgs.builder().bucket("my-bucketname").build());
         System.out.println("my-bucketname is created successfully");
       }
 
       boolean isVersioningEnabled =
-          minioClient.isVersioningEnabled(
+          uitstorClient.isVersioningEnabled(
               IsVersioningEnabledArgs.builder().bucket("my-bucketname").build());
       if (isVersioningEnabled) {
         System.out.println("Bucket versioning is enabled");
@@ -180,11 +180,11 @@ public class IsVersioningEnabled {
         System.out.println("Bucket versioning is disabled");
       }
       // Enable versioning on 'my-bucketname'.
-      minioClient.enableVersioning(EnableVersioningArgs.builder().bucket("my-bucketname").build());
+      uitstorClient.enableVersioning(EnableVersioningArgs.builder().bucket("my-bucketname").build());
       System.out.println("Bucket versioning is enabled successfully");
 
       isVersioningEnabled =
-          minioClient.isVersioningEnabled(
+          uitstorClient.isVersioningEnabled(
               IsVersioningEnabledArgs.builder().bucket("my-bucketname").build());
       if (isVersioningEnabled) {
         System.out.println("Bucket versioning is enabled");
@@ -201,7 +201,7 @@ public class IsVersioningEnabled {
 
 ## Explore Further
 
-- [Use `minio-java` SDK with MinIO Server](https://docs.minio.io/docs/java-client-quickstart-guide.html)
-- [Object Lock and Immutablity Guide](https://docs.minio.io/docs/minio-bucket-object-lock-guide.html)
-- [MinIO Admin Complete Guide](https://docs.min.io/docs/minio-admin-complete-guide.html)
+- [Use `uitstor-java` SDK with MinIO Server](https://docs.uitstor.io/docs/java-client-quickstart-guide.html)
+- [Object Lock and Immutablity Guide](https://docs.uitstor.io/docs/uitstor-bucket-object-lock-guide.html)
+- [MinIO Admin Complete Guide](https://docs.min.io/docs/uitstor-admin-complete-guide.html)
 - [The MinIO documentation website](https://docs.min.io)

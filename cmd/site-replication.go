@@ -33,20 +33,20 @@ import (
 	"time"
 
 	"github.com/minio/madmin-go"
-	minioClient "github.com/minio/minio-go/v7"
+	uitstorClient "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/replication"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/internal/auth"
-	sreplication "github.com/minio/minio/internal/bucket/replication"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/auth"
+	sreplication "github.com/uitstor/uitstor/internal/bucket/replication"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/bucket/policy"
 	bktpolicy "github.com/minio/pkg/bucket/policy"
 	iampolicy "github.com/minio/pkg/iam/policy"
 )
 
 const (
-	srStatePrefix = minioConfigPrefix + "/site-replication"
+	srStatePrefix = uitstorConfigPrefix + "/site-replication"
 	srStateFile   = "state.json"
 )
 
@@ -828,9 +828,9 @@ func (c *SiteReplicationSys) PeerBucketConfigureReplHandler(ctx context.Context,
 		// Create bucket replication rule to this peer.
 
 		// To add the bucket replication rule, we fetch the current
-		// server configuration, and convert it to minio-go's
+		// server configuration, and convert it to uitstor-go's
 		// replication configuration type (by converting to xml and
-		// parsing it back), use minio-go's add rule function, and
+		// parsing it back), use uitstor-go's add rule function, and
 		// finally convert it back to the server type (again via xml).
 		// This is needed as there is no add-rule function in the server
 		// yet.
@@ -2214,12 +2214,12 @@ func getAdminClient(endpoint, accessKey, secretKey string) (*madmin.AdminClient,
 	return client, nil
 }
 
-func getS3Client(pc madmin.PeerSite) (*minioClient.Client, error) {
+func getS3Client(pc madmin.PeerSite) (*uitstorClient.Client, error) {
 	ep, err := url.Parse(pc.Endpoint)
 	if err != nil {
 		return nil, err
 	}
-	return minioClient.New(ep.Host, &minioClient.Options{
+	return uitstorClient.New(ep.Host, &uitstorClient.Options{
 		Creds:     credentials.NewStaticV4(pc.AccessKey, pc.SecretKey, ""),
 		Secure:    ep.Scheme == "https",
 		Transport: globalRemoteTargetTransport,

@@ -30,19 +30,19 @@ import (
 	"github.com/Azure/azure-storage-blob-go/azblob"
 	"google.golang.org/api/googleapi"
 
-	minio "github.com/minio/minio-go/v7"
+	uitstor "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/bucket/replication"
-	"github.com/minio/minio/internal/config/dns"
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
+	"github.com/uitstor/uitstor/internal/config/dns"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/logger"
 
-	objectlock "github.com/minio/minio/internal/bucket/object/lock"
-	"github.com/minio/minio/internal/bucket/versioning"
-	"github.com/minio/minio/internal/event"
-	"github.com/minio/minio/internal/hash"
+	objectlock "github.com/uitstor/uitstor/internal/bucket/object/lock"
+	"github.com/uitstor/uitstor/internal/bucket/versioning"
+	"github.com/uitstor/uitstor/internal/event"
+	"github.com/uitstor/uitstor/internal/hash"
 	"github.com/minio/pkg/bucket/policy"
 )
 
@@ -253,7 +253,7 @@ const (
 	ErrInvalidStorageClass
 	ErrBackendDown
 	// Add new extended error codes here.
-	// Please open a https://github.com/minio/minio/issues before adding
+	// Please open a https://github.com/uitstor/uitstor/issues before adding
 	// new error codes here.
 
 	ErrMalformedJSON
@@ -2247,7 +2247,7 @@ func toAPIError(ctx context.Context, err error) APIError {
 				Description:    e.Error(),
 				HTTPStatusCode: http.StatusBadRequest,
 			}
-		case minio.ErrorResponse:
+		case uitstor.ErrorResponse:
 			apiErr = APIError{
 				Code:           e.Code,
 				Description:    e.Message,

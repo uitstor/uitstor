@@ -33,9 +33,9 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/mountinfo"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/mountinfo"
 	"github.com/minio/pkg/env"
 	xnet "github.com/minio/pkg/net"
 )
@@ -156,7 +156,7 @@ func NewEndpoint(arg string) (ep Endpoint, e error) {
 		// On windows having a preceding SlashSeparator will cause problems, if the
 		// command line already has C:/<export-folder/ in it. Final resulting
 		// path on windows might become C:/C:/ this will cause problems
-		// of starting minio server properly in distributed mode on windows.
+		// of starting uitstor server properly in distributed mode on windows.
 		// As a special case make sure to trim the separator.
 
 		// NOTE: It is also perfectly fine for windows users to have a path
@@ -176,7 +176,7 @@ func NewEndpoint(arg string) (ep Endpoint, e error) {
 	} else {
 		// Only check if the arg is an ip address and ask for scheme since its absent.
 		// localhost, example.com, any FQDN cannot be disambiguated from a regular file path such as
-		// /mnt/export1. So we go ahead and start the minio server in FS modes in these cases.
+		// /mnt/export1. So we go ahead and start the uitstor server in FS modes in these cases.
 		if isHostIP(arg) {
 			return ep, fmt.Errorf("invalid URL endpoint format: missing scheme http or https")
 		}

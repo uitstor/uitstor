@@ -72,7 +72,7 @@ func main() {
 		return
 	}
 
-	// The credentials package in minio-go provides an interface to call the
+	// The credentials package in uitstor-go provides an interface to call the
 	// LDAP STS API.
 
 	// Initialize LDAP credentials
@@ -103,7 +103,7 @@ func main() {
 		log.Fatalf("Error parsing sts endpoint: %v", err)
 	}
 
-	opts := &minio.Options{
+	opts := &uitstor.Options{
 		Creds:  li,
 		Secure: stsEndpointURL.Scheme == "https",
 	}
@@ -122,7 +122,7 @@ func main() {
 	}
 
 	// Use generated credentials to authenticate with MinIO server
-	minioClient, err := minio.New(stsEndpointURL.Host, opts)
+	uitstorClient, err := uitstor.New(stsEndpointURL.Host, opts)
 	if err != nil {
 		log.Fatalf("Error initializing client: ", err)
 	}
@@ -132,7 +132,7 @@ func main() {
 		bucketToList = ldapUsername
 	}
 	fmt.Printf("Calling list objects on bucket named `%s` with temp creds:\n===\n", bucketToList)
-	objCh := minioClient.ListObjects(context.Background(), bucketToList, minio.ListObjectsOptions{})
+	objCh := uitstorClient.ListObjects(context.Background(), bucketToList, uitstor.ListObjectsOptions{})
 	for obj := range objCh {
 		if obj.Err != nil {
 			log.Fatalf("Listing error: %v", obj.Err)

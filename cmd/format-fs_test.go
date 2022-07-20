@@ -27,10 +27,10 @@ import (
 // TestFSFormatFS - tests initFormatFS, formatMetaGetFormatBackendFS, formatFSGetVersion.
 func TestFSFormatFS(t *testing.T) {
 	// Prepare for testing
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
-	fsFormatPath := pathJoin(disk, minioMetaBucket, formatConfigFile)
+	fsFormatPath := pathJoin(disk, uitstorMetaBucket, formatConfigFile)
 
 	// Assign a new UUID.
 	uuid := mustGetUUID()

@@ -29,7 +29,7 @@ import (
 	"time"
 
 	jwtgo "github.com/golang-jwt/jwt/v4"
-	"github.com/minio/minio/internal/jwt"
+	"github.com/uitstor/uitstor/internal/jwt"
 )
 
 const (
@@ -73,8 +73,8 @@ func IsSecretKeyValid(secretKey string) bool {
 
 // Default access and secret keys.
 const (
-	DefaultAccessKey = "minioadmin"
-	DefaultSecretKey = "minioadmin"
+	DefaultAccessKey = "uitstoradmin"
+	DefaultSecretKey = "uitstoradmin"
 )
 
 // Default access credentials

@@ -25,7 +25,7 @@ import (
 	"path"
 	"testing"
 
-	"github.com/minio/minio/internal/lock"
+	"github.com/uitstor/uitstor/internal/lock"
 )
 
 func TestFSRenameFile(t *testing.T) {
@@ -529,7 +529,7 @@ func TestFSRemoveMeta(t *testing.T) {
 
 	defer rwPool.Close(filePath)
 
-	tmpDir, tmpErr := ioutil.TempDir(globalTestTmpDir, "minio-")
+	tmpDir, tmpErr := ioutil.TempDir(globalTestTmpDir, "uitstor-")
 	if tmpErr != nil {
 		t.Fatal(tmpErr)
 	}
@@ -548,7 +548,7 @@ func TestFSRemoveMeta(t *testing.T) {
 }
 
 func TestFSIsFile(t *testing.T) {
-	dirPath, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	dirPath, err := ioutil.TempDir(globalTestTmpDir, "uitstor-")
 	if err != nil {
 		t.Fatalf("Unable to create tmp directory %s", err)
 	}

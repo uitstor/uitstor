@@ -32,9 +32,9 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/hash"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/hash"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/console"
 	"github.com/minio/pkg/env"
 )
@@ -1149,12 +1149,12 @@ func (z *erasureServerPools) StartDecommission(ctx context.Context, idx int) (er
 		}
 	}
 
-	// Create .minio.sys/conifg, .minio.sys/buckets paths if missing,
+	// Create .uitstor.sys/conifg, .uitstor.sys/buckets paths if missing,
 	// this code is present to avoid any missing meta buckets on other
 	// pools.
 	for _, metaBucket := range []string{
-		pathJoin(minioMetaBucket, minioConfigPrefix),
-		pathJoin(minioMetaBucket, bucketMetaPrefix),
+		pathJoin(uitstorMetaBucket, uitstorConfigPrefix),
+		pathJoin(uitstorMetaBucket, bucketMetaPrefix),
 	} {
 		var bucketExists BucketExists
 		if err = z.MakeBucketWithLocation(ctx, metaBucket, BucketOptions{}); err != nil {
@@ -1167,11 +1167,11 @@ func (z *erasureServerPools) StartDecommission(ctx context.Context, idx int) (er
 	// Buckets data are dispersed in multiple zones/sets, make
 	// sure to decommission the necessary metadata.
 	decomBuckets = append(decomBuckets, decomBucketInfo{
-		Name:   minioMetaBucket,
-		Prefix: minioConfigPrefix,
+		Name:   uitstorMetaBucket,
+		Prefix: uitstorConfigPrefix,
 	})
 	decomBuckets = append(decomBuckets, decomBucketInfo{
-		Name:   minioMetaBucket,
+		Name:   uitstorMetaBucket,
 		Prefix: bucketMetaPrefix,
 	})
 

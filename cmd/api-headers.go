@@ -28,8 +28,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/internal/crypto"
-	xhttp "github.com/minio/minio/internal/http"
+	"github.com/uitstor/uitstor/internal/crypto"
+	xhttp "github.com/uitstor/uitstor/internal/http"
 )
 
 // Returns a hexadecimal representation of time at the
@@ -51,7 +51,7 @@ func setCommonHeaders(w http.ResponseWriter) {
 	w.Header().Set(xhttp.ServerInfo, "MinIO")
 
 	// Set `x-amz-bucket-region` only if region is set on the server
-	// by default minio uses an empty region.
+	// by default uitstor uses an empty region.
 	if region := globalSite.Region; region != "" {
 		w.Header().Set(xhttp.AmzBucketRegion, region)
 	}

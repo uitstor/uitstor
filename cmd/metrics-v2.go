@@ -29,8 +29,8 @@ import (
 
 	"github.com/minio/kes"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/prometheus/client_golang/prometheus"
 	dto "github.com/prometheus/client_model/go"
 	"github.com/prometheus/common/expfmt"
@@ -38,8 +38,8 @@ import (
 )
 
 var (
-	nodeCollector     *minioNodeCollector
-	clusterCollector  *minioClusterCollector
+	nodeCollector     *uitstorNodeCollector
+	clusterCollector  *uitstorClusterCollector
 	peerMetricsGroups []*MetricsGroup
 )
 
@@ -93,13 +93,13 @@ type MetricNamespace string
 type MetricSubsystem string
 
 const (
-	bucketMetricNamespace    MetricNamespace = "minio_bucket"
-	clusterMetricNamespace   MetricNamespace = "minio_cluster"
-	healMetricNamespace      MetricNamespace = "minio_heal"
-	interNodeMetricNamespace MetricNamespace = "minio_inter_node"
-	nodeMetricNamespace      MetricNamespace = "minio_node"
-	minioMetricNamespace     MetricNamespace = "minio"
-	s3MetricNamespace        MetricNamespace = "minio_s3"
+	bucketMetricNamespace    MetricNamespace = "uitstor_bucket"
+	clusterMetricNamespace   MetricNamespace = "uitstor_cluster"
+	healMetricNamespace      MetricNamespace = "uitstor_heal"
+	interNodeMetricNamespace MetricNamespace = "uitstor_inter_node"
+	nodeMetricNamespace      MetricNamespace = "uitstor_node"
+	uitstorMetricNamespace     MetricNamespace = "uitstor"
+	s3MetricNamespace        MetricNamespace = "uitstor_s3"
 )
 
 const (
@@ -409,7 +409,7 @@ func getNodeDiskTotalBytesMD() MetricDescription {
 
 func getUsageLastScanActivityMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioMetricNamespace,
+		Namespace: uitstorMetricNamespace,
 		Subsystem: usageSubsystem,
 		Name:      lastActivityTime,
 		Help:      "Time elapsed (in nano seconds) since last scan activity. This is set to 0 until first scan cycle",
@@ -699,7 +699,7 @@ func getS3RejectedInvalidRequestsTotalMD() MetricDescription {
 
 func getCacheHitsTotalMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: uitstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      hitsTotal,
 		Help:      "Total number of disk cache hits",
@@ -709,7 +709,7 @@ func getCacheHitsTotalMD() MetricDescription {
 
 func getCacheHitsMissedTotalMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: uitstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      missedTotal,
 		Help:      "Total number of disk cache misses",
@@ -719,8 +719,8 @@ func getCacheHitsMissedTotalMD() MetricDescription {
 
 func getCacheUsagePercentMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
-		Subsystem: minioNamespace,
+		Namespace: uitstorNamespace,
+		Subsystem: uitstorNamespace,
 		Name:      usagePercent,
 		Help:      "Total percentage cache usage",
 		Type:      gaugeMetric,
@@ -729,7 +729,7 @@ func getCacheUsagePercentMD() MetricDescription {
 
 func getCacheUsageInfoMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: uitstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      usageInfo,
 		Help:      "Total percentage cache usage, value of 1 indicates high and 0 low, label level is set as well",
@@ -739,7 +739,7 @@ func getCacheUsageInfoMD() MetricDescription {
 
 func getCacheUsedBytesMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: uitstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      usedBytes,
 		Help:      "Current cache usage in bytes",
@@ -749,7 +749,7 @@ func getCacheUsedBytesMD() MetricDescription {
 
 func getCacheTotalBytesMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: uitstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      totalBytes,
 		Help:      "Total size of cache disk in bytes",
@@ -759,7 +759,7 @@ func getCacheTotalBytesMD() MetricDescription {
 
 func getCacheSentBytesMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioNamespace,
+		Namespace: uitstorNamespace,
 		Subsystem: cacheSubsystem,
 		Name:      sentBytes,
 		Help:      "Total number of bytes served from cache",
@@ -829,7 +829,7 @@ func getNodeOfflineTotalMD() MetricDescription {
 
 func getMinIOVersionMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioMetricNamespace,
+		Namespace: uitstorMetricNamespace,
 		Subsystem: softwareSubsystem,
 		Name:      versionInfo,
 		Help:      "MinIO Release tag for the server",
@@ -839,7 +839,7 @@ func getMinIOVersionMD() MetricDescription {
 
 func getMinIOCommitMD() MetricDescription {
 	return MetricDescription{
-		Namespace: minioMetricNamespace,
+		Namespace: uitstorMetricNamespace,
 		Subsystem: softwareSubsystem,
 		Name:      commitInfo,
 		Help:      "Git commit hash for the MinIO release",
@@ -2041,25 +2041,25 @@ func getKMSMetrics() *MetricsGroup {
 	return mg
 }
 
-type minioClusterCollector struct {
+type uitstorClusterCollector struct {
 	metricsGroups []*MetricsGroup
 	desc          *prometheus.Desc
 }
 
-func newMinioClusterCollector(metricsGroups []*MetricsGroup) *minioClusterCollector {
-	return &minioClusterCollector{
+func newMinioClusterCollector(metricsGroups []*MetricsGroup) *uitstorClusterCollector {
+	return &uitstorClusterCollector{
 		metricsGroups: metricsGroups,
-		desc:          prometheus.NewDesc("minio_stats", "Statistics exposed by MinIO server per cluster", nil, nil),
+		desc:          prometheus.NewDesc("uitstor_stats", "Statistics exposed by MinIO server per cluster", nil, nil),
 	}
 }
 
 // Describe sends the super-set of all possible descriptors of metrics
-func (c *minioClusterCollector) Describe(ch chan<- *prometheus.Desc) {
+func (c *uitstorClusterCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.desc
 }
 
 // Collect is called by the Prometheus registry when collecting metrics.
-func (c *minioClusterCollector) Collect(out chan<- prometheus.Metric) {
+func (c *uitstorClusterCollector) Collect(out chan<- prometheus.Metric) {
 	var wg sync.WaitGroup
 	publish := func(in <-chan Metric) {
 		defer wg.Done()
@@ -2136,14 +2136,14 @@ func ReportMetrics(ctx context.Context, metricsGroups []*MetricsGroup) <-chan Me
 	return ch
 }
 
-// minioNodeCollector is the Custom Collector
-type minioNodeCollector struct {
+// uitstorNodeCollector is the Custom Collector
+type uitstorNodeCollector struct {
 	metricsGroups []*MetricsGroup
 	desc          *prometheus.Desc
 }
 
 // Describe sends the super-set of all possible descriptors of metrics
-func (c *minioNodeCollector) Describe(ch chan<- *prometheus.Desc) {
+func (c *uitstorNodeCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.desc
 }
 
@@ -2162,9 +2162,9 @@ func populateAndPublish(metricsGroups []*MetricsGroup, publish func(m Metric) bo
 }
 
 // Collect is called by the Prometheus registry when collecting metrics.
-func (c *minioNodeCollector) Collect(ch chan<- prometheus.Metric) {
+func (c *uitstorNodeCollector) Collect(ch chan<- prometheus.Metric) {
 	// Expose MinIO's version information
-	minioVersionInfo.WithLabelValues(Version, CommitID).Set(1.0)
+	uitstorVersionInfo.WithLabelValues(Version, CommitID).Set(1.0)
 
 	populateAndPublish(c.metricsGroups, func(metric Metric) bool {
 		labels, values := getOrderedLabelValueArrays(metric.VariableLabels)
@@ -2226,13 +2226,13 @@ func getOrderedLabelValueArrays(labelsWithValue map[string]string) (labels, valu
 }
 
 // newMinioCollectorNode describes the collector
-// and returns reference of minioCollector for version 2
+// and returns reference of uitstorCollector for version 2
 // It creates the Prometheus Description which is used
 // to define Metric and  help string
-func newMinioCollectorNode(metricsGroups []*MetricsGroup) *minioNodeCollector {
-	return &minioNodeCollector{
+func newMinioCollectorNode(metricsGroups []*MetricsGroup) *uitstorNodeCollector {
+	return &uitstorNodeCollector{
 		metricsGroups: metricsGroups,
-		desc:          prometheus.NewDesc("minio_stats", "Statistics exposed by MinIO server per node", nil, nil),
+		desc:          prometheus.NewDesc("uitstor_stats", "Statistics exposed by MinIO server per node", nil, nil),
 	}
 }
 
@@ -2283,7 +2283,7 @@ func metricsNodeHandler() http.Handler {
 
 	logger.CriticalIf(GlobalContext, registry.Register(nodeCollector))
 	if err := registry.Register(prometheus.NewProcessCollector(prometheus.ProcessCollectorOpts{
-		Namespace:    minioNamespace,
+		Namespace:    uitstorNamespace,
 		ReportErrors: true,
 	})); err != nil {
 		logger.CriticalIf(GlobalContext, err)

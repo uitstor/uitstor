@@ -29,9 +29,9 @@ import (
 	"sync"
 
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/hash"
-	"github.com/minio/minio/internal/kms"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/hash"
+	"github.com/uitstor/uitstor/internal/kms"
 )
 
 //go:generate msgp -file $GOFILE
@@ -49,11 +49,11 @@ const (
 	tierConfigV1      = 1
 	tierConfigVersion = 2
 
-	minioHotTier = "STANDARD"
+	uitstorHotTier = "STANDARD"
 )
 
 // tierConfigPath refers to remote tier config object name
-var tierConfigPath = path.Join(minioConfigPrefix, tierConfigFile)
+var tierConfigPath = path.Join(uitstorConfigPrefix, tierConfigFile)
 
 // TierConfigMgr holds the collection of remote tiers configured in this deployment.
 type TierConfigMgr struct {
@@ -283,11 +283,11 @@ func (config *TierConfigMgr) configReader() (*PutObjReader, *ObjectOptions, erro
 
 	// Note: Local variables with names ek, oek, etc are named inline with
 	// acronyms defined here -
-	// https://github.com/minio/minio/blob/master/docs/security/README.md#acronyms
+	// https://github.com/uitstor/uitstor/blob/master/docs/security/README.md#acronyms
 
 	// Encrypt json encoded tier configurations
 	metadata := make(map[string]string)
-	encBr, oek, err := newEncryptReader(context.Background(), hr, crypto.S3, "", nil, minioMetaBucket, tierConfigPath, metadata, kms.Context{})
+	encBr, oek, err := newEncryptReader(context.Background(), hr, crypto.S3, "", nil, uitstorMetaBucket, tierConfigPath, metadata, kms.Context{})
 	if err != nil {
 		return nil, nil, err
 	}
@@ -354,7 +354,7 @@ func (config *TierConfigMgr) Save(ctx context.Context, objAPI ObjectLayer) error
 		return err
 	}
 
-	_, err = objAPI.PutObject(ctx, minioMetaBucket, tierConfigPath, pr, *opts)
+	_, err = objAPI.PutObject(ctx, uitstorMetaBucket, tierConfigPath, pr, *opts)
 	return err
 }
 

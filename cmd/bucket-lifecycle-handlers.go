@@ -23,9 +23,9 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/bucket/policy"
 )
 

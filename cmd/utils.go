@@ -47,17 +47,17 @@ import (
 	"github.com/felixge/fgprof"
 	"github.com/gorilla/mux"
 	"github.com/minio/madmin-go"
-	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/config/api"
-	xtls "github.com/minio/minio/internal/config/identity/tls"
-	"github.com/minio/minio/internal/fips"
-	"github.com/minio/minio/internal/handlers"
-	xhttp "github.com/minio/minio/internal/http"
-	ioutilx "github.com/minio/minio/internal/ioutil"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/logger/message/audit"
-	"github.com/minio/minio/internal/rest"
+	uitstorgopolicy "github.com/minio/minio-go/v7/pkg/policy"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/config/api"
+	xtls "github.com/uitstor/uitstor/internal/config/identity/tls"
+	"github.com/uitstor/uitstor/internal/fips"
+	"github.com/uitstor/uitstor/internal/handlers"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	ioutilx "github.com/uitstor/uitstor/internal/ioutil"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger/message/audit"
+	"github.com/uitstor/uitstor/internal/rest"
 	"github.com/minio/pkg/certs"
 	"github.com/minio/pkg/env"
 	"golang.org/x/oauth2"
@@ -71,7 +71,7 @@ const (
 type BucketAccessPolicy struct {
 	Bucket string                     `json:"bucket"`
 	Prefix string                     `json:"prefix"`
-	Policy miniogopolicy.BucketPolicy `json:"policy"`
+	Policy uitstorgopolicy.BucketPolicy `json:"policy"`
 }
 
 // IsErrIgnored returns whether given error is ignored or not.
@@ -294,7 +294,7 @@ func setDefaultProfilerRates() {
 }
 
 // Starts a profiler returns nil if profiler is not enabled, caller needs to handle this.
-func startProfiler(profilerType string) (minioProfiler, error) {
+func startProfiler(profilerType string) (uitstorProfiler, error) {
 	var prof profilerWrapper
 	prof.ext = "pprof"
 	// Enable profiler and set the name of the file that pkg/pprof
@@ -426,8 +426,8 @@ func startProfiler(profilerType string) (minioProfiler, error) {
 	return prof, nil
 }
 
-// minioProfiler - minio profiler interface.
-type minioProfiler interface {
+// uitstorProfiler - uitstor profiler interface.
+type uitstorProfiler interface {
 	// Return recorded profiles, each profile associated with a distinct generic name.
 	Records() map[string][]byte
 	// Stop the profiler
@@ -438,7 +438,7 @@ type minioProfiler interface {
 
 // Global profiler to be used by service go-routine.
 var (
-	globalProfiler   map[string]minioProfiler
+	globalProfiler   map[string]uitstorProfiler
 	globalProfilerMu sync.Mutex
 )
 

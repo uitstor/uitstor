@@ -1,15 +1,15 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "minio.fullname" . -}}
+{{- $fullName := include "uitstor.fullname" . -}}
 {{- $servicePort := .Values.service.port -}}
 {{- $ingressPath := .Values.ingress.path -}}
-apiVersion: {{ template "minio.ingress.apiVersion" . }}
+apiVersion: {{ template "uitstor.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
   name: {{ $fullName }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ template "minio.name" . }}
-    chart: {{ template "minio.chart" . }}
+    app: {{ template "uitstor.name" . }}
+    chart: {{ template "uitstor.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 {{- with .Values.ingress.labels }}

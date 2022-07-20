@@ -28,12 +28,12 @@ import (
 	"sync"
 
 	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/config/storageclass"
-	xioutil "github.com/minio/minio/internal/ioutil"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	"github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/config/storageclass"
+	xioutil "github.com/uitstor/uitstor/internal/ioutil"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 )
 
 const (
@@ -73,7 +73,7 @@ type formatErasureVersionDetect struct {
 }
 
 // Represents the V1 backend disk structure version
-// under `.minio.sys` and actual data namespace.
+// under `.uitstor.sys` and actual data namespace.
 // formatErasureV1 - structure holds format config version '1'.
 type formatErasureV1 struct {
 	formatMetaV1
@@ -87,7 +87,7 @@ type formatErasureV1 struct {
 }
 
 // Represents the V2 backend disk structure version
-// under `.minio.sys` and actual data namespace.
+// under `.uitstor.sys` and actual data namespace.
 // formatErasureV2 - structure holds format config version '2'.
 // The V2 format to support "large bucket" support where a bucket
 // can span multiple erasure sets.
@@ -108,7 +108,7 @@ type formatErasureV2 struct {
 
 // formatErasureV3 struct is same as formatErasureV2 struct except that formatErasureV3.Erasure.Version is "3" indicating
 // the simplified multipart backend which is a flat hierarchy now.
-// In .minio.sys/multipart we have:
+// In .uitstor.sys/multipart we have:
 // sha256(bucket/object)/uploadID/[xl.meta, part.1, part.2 ....]
 type formatErasureV3 struct {
 	formatMetaV1
@@ -191,7 +191,7 @@ func formatGetBackendErasureVersion(b []byte) (string, error) {
 // this code calls migration in sequence, such as V1 is migrated to V2
 // first before it V2 migrates to V3.n
 func formatErasureMigrate(export string) ([]byte, fs.FileInfo, error) {
-	formatPath := pathJoin(export, minioMetaBucket, formatConfigFile)
+	formatPath := pathJoin(export, uitstorMetaBucket, formatConfigFile)
 	formatData, formatFi, err := xioutil.ReadFileWithFileInfo(formatPath)
 	if err != nil {
 		return nil, nil, err
@@ -273,11 +273,11 @@ func formatErasureMigrateV2ToV3(data []byte, export, version string) ([]byte, er
 		return nil, err
 	}
 
-	tmpOld := pathJoin(export, minioMetaTmpDeletedBucket, mustGetUUID())
-	if err := renameAll(pathJoin(export, minioMetaMultipartBucket),
+	tmpOld := pathJoin(export, uitstorMetaTmpDeletedBucket, mustGetUUID())
+	if err := renameAll(pathJoin(export, uitstorMetaMultipartBucket),
 		tmpOld); err != nil && err != errFileNotFound {
 		logger.LogIf(GlobalContext, fmt.Errorf("unable to rename (%s -> %s) %w, drive may be faulty please investigate",
-			pathJoin(export, minioMetaMultipartBucket),
+			pathJoin(export, uitstorMetaMultipartBucket),
 			tmpOld,
 			osErrToFileErr(err)))
 	}
@@ -367,18 +367,18 @@ func saveFormatErasure(disk StorageAPI, format *formatErasureV3, heal bool) erro
 	tmpFormat := mustGetUUID()
 
 	// Purge any existing temporary file, okay to ignore errors here.
-	defer disk.Delete(context.TODO(), minioMetaBucket, tmpFormat, DeleteOptions{
+	defer disk.Delete(context.TODO(), uitstorMetaBucket, tmpFormat, DeleteOptions{
 		Recursive: false,
 		Force:     false,
 	})
 
 	// write to unique file.
-	if err = disk.WriteAll(context.TODO(), minioMetaBucket, tmpFormat, formatBytes); err != nil {
+	if err = disk.WriteAll(context.TODO(), uitstorMetaBucket, tmpFormat, formatBytes); err != nil {
 		return err
 	}
 
 	// Rename file `uuid.json` --> `format.json`.
-	if err = disk.RenameFile(context.TODO(), minioMetaBucket, tmpFormat, minioMetaBucket, formatConfigFile); err != nil {
+	if err = disk.RenameFile(context.TODO(), uitstorMetaBucket, tmpFormat, uitstorMetaBucket, formatConfigFile); err != nil {
 		return err
 	}
 
@@ -393,7 +393,7 @@ func saveFormatErasure(disk StorageAPI, format *formatErasureV3, heal bool) erro
 
 // loadFormatErasure - loads format.json from disk.
 func loadFormatErasure(disk StorageAPI) (format *formatErasureV3, err error) {
-	buf, err := disk.ReadAll(context.TODO(), minioMetaBucket, formatConfigFile)
+	buf, err := disk.ReadAll(context.TODO(), uitstorMetaBucket, formatConfigFile)
 	if err != nil {
 		// 'file not found' and 'volume not found' as
 		// same. 'volume not found' usually means its a fresh disk.
@@ -825,10 +825,10 @@ func makeFormatErasureMetaVolumes(disk StorageAPI) error {
 		return errDiskNotFound
 	}
 	volumes := []string{
-		minioMetaTmpDeletedBucket, // creates .minio.sys/tmp as well as .minio.sys/tmp/.trash
-		minioMetaMultipartBucket,  // creates .minio.sys/multipart
-		dataUsageBucket,           // creates .minio.sys/buckets
-		minioConfigBucket,         // creates .minio.sys/config
+		uitstorMetaTmpDeletedBucket, // creates .uitstor.sys/tmp as well as .uitstor.sys/tmp/.trash
+		uitstorMetaMultipartBucket,  // creates .uitstor.sys/multipart
+		dataUsageBucket,           // creates .uitstor.sys/buckets
+		uitstorConfigBucket,         // creates .uitstor.sys/config
 	}
 	// Attempt to create MinIO internal buckets.
 	return disk.MakeVolBulk(context.TODO(), volumes...)

@@ -23,7 +23,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/minio/minio/internal/config"
+	"github.com/uitstor/uitstor/internal/config"
 )
 
 // Test if config v1 is purged
@@ -37,7 +37,7 @@ func TestServerConfigMigrateV1(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Init Test config failed")
 	}
-	rootPath, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	rootPath, err := ioutil.TempDir(globalTestTmpDir, "uitstor-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,7 +74,7 @@ func TestServerConfigMigrateV1(t *testing.T) {
 // Test if all migrate code returns nil when config file does not
 // exist
 func TestServerConfigMigrateInexistentConfig(t *testing.T) {
-	rootPath, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	rootPath, err := ioutil.TempDir(globalTestTmpDir, "uitstor-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -164,7 +164,7 @@ func TestServerConfigMigrateInexistentConfig(t *testing.T) {
 
 // Test if a config migration from v2 to v33 is successfully done
 func TestServerConfigMigrateV2toV33(t *testing.T) {
-	rootPath, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	rootPath, err := ioutil.TempDir(globalTestTmpDir, "uitstor-")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -178,7 +178,7 @@ func TestServerConfigMigrateV2toV33(t *testing.T) {
 	}
 	defer os.RemoveAll(fsDir)
 
-	configPath := rootPath + SlashSeparator + minioConfigFile
+	configPath := rootPath + SlashSeparator + uitstorConfigFile
 
 	// Create a corrupted config file
 	if err := ioutil.WriteFile(configPath, []byte("{ \"version\":\"2\","), 0o644); err != nil {
@@ -234,14 +234,14 @@ func TestServerConfigMigrateV2toV33(t *testing.T) {
 
 // Test if all migrate code returns error with corrupted config files
 func TestServerConfigMigrateFaultyConfig(t *testing.T) {
-	rootPath, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	rootPath, err := ioutil.TempDir(globalTestTmpDir, "uitstor-")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(rootPath)
 
 	globalConfigDir = &ConfigDir{path: rootPath}
-	configPath := rootPath + SlashSeparator + minioConfigFile
+	configPath := rootPath + SlashSeparator + uitstorConfigFile
 
 	// Create a corrupted config file
 	if err := ioutil.WriteFile(configPath, []byte("{ \"version\":\"2\", \"test\":"), 0o644); err != nil {
@@ -331,14 +331,14 @@ func TestServerConfigMigrateFaultyConfig(t *testing.T) {
 
 // Test if all migrate code returns error with corrupted config files
 func TestServerConfigMigrateCorruptedConfig(t *testing.T) {
-	rootPath, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	rootPath, err := ioutil.TempDir(globalTestTmpDir, "uitstor-")
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer os.RemoveAll(rootPath)
 
 	globalConfigDir = &ConfigDir{path: rootPath}
-	configPath := rootPath + SlashSeparator + minioConfigFile
+	configPath := rootPath + SlashSeparator + uitstorConfigFile
 
 	for i := 3; i <= 17; i++ {
 		// Create a corrupted config file

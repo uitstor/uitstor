@@ -198,7 +198,7 @@ func TestParseCredentialHeader(t *testing.T) {
 			expectedErrCode: ErrNone,
 		},
 		// Test Case - 10.
-		// Test case with right inputs -> AccessKey contains `/`. See minio/#6443
+		// Test case with right inputs -> AccessKey contains `/`. See uitstor/#6443
 		// "aws4_request" is the valid request version.
 		{
 			inputCredentialStr: generateCredentialStr(
@@ -217,7 +217,7 @@ func TestParseCredentialHeader(t *testing.T) {
 			expectedErrCode: ErrNone,
 		},
 		// Test Case - 11.
-		// Test case with right inputs -> AccessKey contains `=`. See minio/#7376
+		// Test case with right inputs -> AccessKey contains `=`. See uitstor/#7376
 		// "aws4_request" is the valid request version.
 		{
 			inputCredentialStr: generateCredentialStr(

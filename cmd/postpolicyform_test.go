@@ -25,7 +25,7 @@ import (
 	"strings"
 	"testing"
 
-	minio "github.com/minio/minio-go/v7"
+	uitstor "github.com/minio/minio-go/v7"
 )
 
 func TestParsePostPolicyForm(t *testing.T) {
@@ -80,7 +80,7 @@ func TestParsePostPolicyForm(t *testing.T) {
 
 // Test Post Policy parsing and checking conditions
 func TestPostPolicyForm(t *testing.T) {
-	pp := minio.NewPostPolicy()
+	pp := uitstor.NewPostPolicy()
 	pp.SetBucket("testbucket")
 	pp.SetContentType("image/jpeg")
 	pp.SetUserMetadata("uuid", "14365123651274")

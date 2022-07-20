@@ -31,7 +31,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 const (
@@ -93,7 +93,7 @@ func loadHealingTracker(ctx context.Context, disk StorageAPI) (*healingTracker, 
 	if err != nil {
 		return nil, err
 	}
-	b, err := disk.ReadAll(ctx, minioMetaBucket,
+	b, err := disk.ReadAll(ctx, uitstorMetaBucket,
 		pathJoin(bucketMetaPrefix, healingTrackerFilename))
 	if err != nil {
 		return nil, err
@@ -154,14 +154,14 @@ func (h *healingTracker) save(ctx context.Context) error {
 		return err
 	}
 	globalBackgroundHealState.updateHealStatus(h)
-	return h.disk.WriteAll(ctx, minioMetaBucket,
+	return h.disk.WriteAll(ctx, uitstorMetaBucket,
 		pathJoin(bucketMetaPrefix, healingTrackerFilename),
 		htrackerBytes)
 }
 
 // delete the tracker on disk.
 func (h *healingTracker) delete(ctx context.Context) error {
-	return h.disk.Delete(ctx, minioMetaBucket,
+	return h.disk.Delete(ctx, uitstorMetaBucket,
 		pathJoin(bucketMetaPrefix, healingTrackerFilename),
 		DeleteOptions{
 			Recursive: false,
@@ -310,7 +310,7 @@ func healFreshDisk(ctx context.Context, z *erasureServerPools, endpoint Endpoint
 	}
 
 	// Prevent parallel erasure set healing
-	locker := z.NewNSLock(minioMetaBucket, fmt.Sprintf("new-disk-healing/%s/%d/%d", endpoint, poolIdx, setIdx))
+	locker := z.NewNSLock(uitstorMetaBucket, fmt.Sprintf("new-disk-healing/%s/%d/%d", endpoint, poolIdx, setIdx))
 	lkctx, err := locker.GetLock(ctx, newDiskHealingTimeout)
 	if err != nil {
 		return err
@@ -323,14 +323,14 @@ func healFreshDisk(ctx context.Context, z *erasureServerPools, endpoint Endpoint
 	// Buckets data are dispersed in multiple zones/sets, make
 	// sure to heal all bucket metadata configuration.
 	buckets = append(buckets, BucketInfo{
-		Name: pathJoin(minioMetaBucket, minioConfigPrefix),
+		Name: pathJoin(uitstorMetaBucket, uitstorConfigPrefix),
 	}, BucketInfo{
-		Name: pathJoin(minioMetaBucket, bucketMetaPrefix),
+		Name: pathJoin(uitstorMetaBucket, bucketMetaPrefix),
 	})
 
 	// Heal latest buckets first.
 	sort.Slice(buckets, func(i, j int) bool {
-		a, b := strings.HasPrefix(buckets[i].Name, minioMetaBucket), strings.HasPrefix(buckets[j].Name, minioMetaBucket)
+		a, b := strings.HasPrefix(buckets[i].Name, uitstorMetaBucket), strings.HasPrefix(buckets[j].Name, uitstorMetaBucket)
 		if a != b {
 			return a
 		}

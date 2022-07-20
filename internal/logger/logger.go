@@ -33,8 +33,8 @@ import (
 	"github.com/minio/highwayhash"
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/set"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger/message/log"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger/message/log"
 )
 
 // HighwayHash key for logging in anonymous mode
@@ -181,7 +181,7 @@ func Init(goPath string, goRoot string) {
 	// Add "github.com/minio/minio" as the last to cover
 	// paths like "{GOROOT}/src/github.com/minio/minio"
 	// and "{GOPATH}/src/github.com/minio/minio"
-	trimStrings = append(trimStrings, filepath.Join("github.com", "minio", "minio")+string(filepath.Separator))
+	trimStrings = append(trimStrings, filepath.Join("github.com", "uitstor", "uitstor")+string(filepath.Separator))
 }
 
 func trimTrace(f string) string {

@@ -68,7 +68,7 @@ func main() {
 		return
 	}
 
-	// The credentials package in minio-go provides an interface to call the
+	// The credentials package in uitstor-go provides an interface to call the
 	// AssumeRoleWithCustomToken STS API.
 
 	var opts []cr.CustomTokenOpt
@@ -100,18 +100,18 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error parsing sts endpoint: %v", err)
 	}
-	copts := &minio.Options{
+	copts := &uitstor.Options{
 		Creds:  li,
 		Secure: stsEndpointURL.Scheme == "https",
 	}
-	minioClient, err := minio.New(stsEndpointURL.Host, copts)
+	uitstorClient, err := uitstor.New(stsEndpointURL.Host, copts)
 	if err != nil {
 		log.Fatalf("Error initializing client: ", err)
 	}
 
 	// Use minIO Client object normally like the regular client.
 	fmt.Printf("Calling list objects on bucket named `%s` with temp creds:\n===\n", bucketToList)
-	objCh := minioClient.ListObjects(context.Background(), bucketToList, minio.ListObjectsOptions{})
+	objCh := uitstorClient.ListObjects(context.Background(), bucketToList, uitstor.ListObjectsOptions{})
 	for obj := range objCh {
 		if obj.Err != nil {
 			log.Fatalf("Listing error: %v", obj.Err)

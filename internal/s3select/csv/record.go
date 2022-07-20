@@ -27,7 +27,7 @@ import (
 
 	"github.com/bcicen/jstream"
 	csv "github.com/minio/csvparser"
-	"github.com/minio/minio/internal/s3select/sql"
+	"github.com/uitstor/uitstor/internal/s3select/sql"
 )
 
 // Record - is a CSV record.

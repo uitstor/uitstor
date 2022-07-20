@@ -1,4 +1,4 @@
-# OPA Quickstart Guide [![Slack](https://slack.minio.io/slack?type=svg)](https://slack.minio.io)
+# OPA Quickstart Guide [![Slack](https://slack.uitstor.io/slack?type=svg)](https://slack.uitstor.io)
 
 OPA is a lightweight general-purpose policy engine that can be co-located with MinIO server, in this document we talk about how to use OPA HTTP API to authorize requests. It can be used with any type of credentials (STS based like OpenID or LDAP, regular IAM users or service accounts).
 
@@ -58,20 +58,20 @@ Set the `MINIO_POLICY_PLUGIN_URL` as the endpoint that MinIO should send authori
 ```sh
 export MINIO_POLICY_PLUGIN_URL=http://localhost:8181/v1/data/httpapi/authz/allow
 export MINIO_CI_CD=1
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
-minio server /mnt/data
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
+uitstor server /mnt/data
 ```
 
 ### 5. Test with a regular IAM user
 
-Ensure that `mc` is installed and the configured with the above server with the alias `myminio`.
+Ensure that `mc` is installed and the configured with the above server with the alias `myuitstor`.
 
 ```sh
 # 1. Create a bucket and a user, and upload a file. These operations will succeed.
-mc mb myminio/test
-mc admin user add myminio foo foobar123
-mc cp /etc/issue myminio/test/
+mc mb myuitstor/test
+mc admin user add myuitstor foo foobar123
+mc cp /etc/issue myuitstor/test/
 
 # 2. Now access the server as user `foo`. These operations will also succeed.
 export MC_HOST_foo=http://foo:foobar123@localhost:9000
@@ -79,5 +79,5 @@ mc ls foo/test
 mc cat foo/test/issue
 
 # 3. Attempt to upload an object as user `foo` - this will fail with a permissions error.
-mc cp /etc/issue myminio/test/issue2
+mc cp /etc/issue myuitstor/test/issue2
 ```

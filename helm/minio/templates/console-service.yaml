@@ -5,11 +5,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "minio.fullname" . }}-console
+  name: {{ template "uitstor.fullname" . }}-console
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ template "minio.name" . }}
-    chart: {{ template "minio.chart" . }}
+    app: {{ template "uitstor.name" . }}
+    chart: {{ template "uitstor.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 {{- if .Values.consoleService.annotations }}
@@ -35,7 +35,7 @@ spec:
 {{- if (and (eq .Values.consoleService.type "NodePort") ( .Values.consoleService.nodePort)) }}
       nodePort: {{ .Values.consoleService.nodePort }}
 {{- else }}
-      targetPort: {{ .Values.minioConsolePort }}
+      targetPort: {{ .Values.uitstorConsolePort }}
 {{- end}}
 {{- if .Values.consoleService.externalIPs }}
   externalIPs:
@@ -44,5 +44,5 @@ spec:
 {{- end }}
 {{- end }}
   selector:
-    app: {{ template "minio.name" . }}
+    app: {{ template "uitstor.name" . }}
     release: {{ .Release.Name }}

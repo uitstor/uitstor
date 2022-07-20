@@ -26,15 +26,15 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/internal/bucket/replication"
-	"github.com/minio/minio/internal/hash/sha256"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
+	"github.com/uitstor/uitstor/internal/hash/sha256"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 )
 
 // Object was stored with additional erasure codes due to degraded system at upload time
-const minIOErasureUpgraded = "x-minio-internal-erasure-upgraded"
+const minIOErasureUpgraded = "x-uitstor-internal-erasure-upgraded"
 
 const erasureAlgorithm = "rs-vandermonde"
 

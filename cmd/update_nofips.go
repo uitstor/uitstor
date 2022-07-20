@@ -21,4 +21,4 @@
 package cmd
 
 // Newer official download info URLs appear earlier below.
-var minioReleaseInfoURL = minioReleaseURL + "minio.sha256sum"
+var uitstorReleaseInfoURL = uitstorReleaseURL + "uitstor.sha256sum"

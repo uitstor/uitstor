@@ -31,11 +31,11 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/config/identity/openid"
-	"github.com/minio/minio/internal/hash/sha256"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/config/identity/openid"
+	"github.com/uitstor/uitstor/internal/hash/sha256"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 	iampolicy "github.com/minio/pkg/iam/policy"
 	"github.com/minio/pkg/wildcard"
 )
@@ -522,7 +522,7 @@ func (sts *stsAPIHandlers) AssumeRoleWithSSO(w http.ResponseWriter, r *http.Requ
 // Connect-compatible identity provider.
 //
 // Eg:-
-//    $ curl https://minio:9000/?Action=AssumeRoleWithWebIdentity&WebIdentityToken=<jwt>
+//    $ curl https://uitstor:9000/?Action=AssumeRoleWithWebIdentity&WebIdentityToken=<jwt>
 func (sts *stsAPIHandlers) AssumeRoleWithWebIdentity(w http.ResponseWriter, r *http.Request) {
 	sts.AssumeRoleWithSSO(w, r)
 }
@@ -531,7 +531,7 @@ func (sts *stsAPIHandlers) AssumeRoleWithWebIdentity(w http.ResponseWriter, r *h
 // OAuth2.0 client credential grants.
 //
 // Eg:-
-//    $ curl https://minio:9000/?Action=AssumeRoleWithClientGrants&Token=<jwt>
+//    $ curl https://uitstor:9000/?Action=AssumeRoleWithClientGrants&Token=<jwt>
 func (sts *stsAPIHandlers) AssumeRoleWithClientGrants(w http.ResponseWriter, r *http.Request) {
 	sts.AssumeRoleWithSSO(w, r)
 }
@@ -678,7 +678,7 @@ func (sts *stsAPIHandlers) AssumeRoleWithLDAPIdentity(w http.ResponseWriter, r *
 // It verifies the client-provided X.509 certificate, maps the certificate to an S3 policy
 // and returns temp. S3 credentials to the client.
 //
-// API endpoint: https://minio:9000?Action=AssumeRoleWithCertificate&Version=2011-06-15
+// API endpoint: https://uitstor:9000?Action=AssumeRoleWithCertificate&Version=2011-06-15
 func (sts *stsAPIHandlers) AssumeRoleWithCertificate(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AssumeRoleWithCertificate")
 
@@ -834,7 +834,7 @@ func (sts *stsAPIHandlers) AssumeRoleWithCertificate(w http.ResponseWriter, r *h
 // These tokens are opaque to MinIO and are verified by a configured (external)
 // Identity Management Plugin.
 //
-// API endpoint: https://minio:9000?Action=AssumeRoleWithCustomToken&Token=xxx
+// API endpoint: https://uitstor:9000?Action=AssumeRoleWithCustomToken&Token=xxx
 func (sts *stsAPIHandlers) AssumeRoleWithCustomToken(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AssumeRoleWithCustomToken")
 

@@ -35,13 +35,13 @@ import (
 	humanize "github.com/dustin/go-humanize"
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/internal/arn"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/color"
-	xldap "github.com/minio/minio/internal/config/identity/ldap"
-	"github.com/minio/minio/internal/config/identity/openid"
-	"github.com/minio/minio/internal/jwt"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/arn"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/color"
+	xldap "github.com/uitstor/uitstor/internal/config/identity/ldap"
+	"github.com/uitstor/uitstor/internal/config/identity/openid"
+	"github.com/uitstor/uitstor/internal/jwt"
+	"github.com/uitstor/uitstor/internal/logger"
 	iampolicy "github.com/minio/pkg/iam/policy"
 	etcd "go.etcd.io/etcd/client/v3"
 )
@@ -246,7 +246,7 @@ func (sys *IAMSys) Init(ctx context.Context, objAPI ObjectLayer, etcdClient *etc
 	// Migrate storage format if needed.
 	for {
 		// Hold the lock for migration only.
-		txnLk := objAPI.NewNSLock(minioMetaBucket, minioConfigPrefix+"/iam.lock")
+		txnLk := objAPI.NewNSLock(uitstorMetaBucket, uitstorConfigPrefix+"/iam.lock")
 
 		// let one of the server acquire the lock, if not let them timeout.
 		// which shall be retried again by this loop.

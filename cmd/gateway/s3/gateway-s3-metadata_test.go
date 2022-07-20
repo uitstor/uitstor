@@ -20,7 +20,7 @@ import (
 	"bytes"
 	"testing"
 
-	minio "github.com/minio/minio/cmd"
+	uitstor "github.com/uitstor/uitstor/cmd"
 )
 
 // Tests for GW metadata format validity.
@@ -63,7 +63,7 @@ func TestReadGWMetadata(t *testing.T) {
 
 	for i, tt := range tests {
 		buf := bytes.NewBufferString(tt.metaStr)
-		m, err := readGWMetadata(minio.GlobalContext, *buf)
+		m, err := readGWMetadata(uitstor.GlobalContext, *buf)
 		if err != nil && tt.pass {
 			t.Errorf("Test %d: Expected parse gw metadata to succeed, but failed, %s", i+1, err)
 		}

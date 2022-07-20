@@ -1,5 +1,5 @@
 FROM scratch
 
-COPY minio /minio
+COPY uitstor /uitstor
 
-CMD ["/minio"]
+CMD ["/uitstor"]

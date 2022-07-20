@@ -31,13 +31,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/klauspost/compress/zip"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/config/dns"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/config/dns"
+	"github.com/uitstor/uitstor/internal/logger"
 	iampolicy "github.com/minio/pkg/iam/policy"
 )
 
-// RemoveUser - DELETE /minio/admin/v3/remove-user?accessKey=<access_key>
+// RemoveUser - DELETE /uitstor/admin/v3/remove-user?accessKey=<access_key>
 func (a adminAPIHandlers) RemoveUser(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "RemoveUser")
 
@@ -79,7 +79,7 @@ func (a adminAPIHandlers) RemoveUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// ListBucketUsers - GET /minio/admin/v3/list-users?bucket={bucket}
+// ListBucketUsers - GET /uitstor/admin/v3/list-users?bucket={bucket}
 func (a adminAPIHandlers) ListBucketUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListBucketUsers")
 
@@ -115,7 +115,7 @@ func (a adminAPIHandlers) ListBucketUsers(w http.ResponseWriter, r *http.Request
 	writeSuccessResponseJSON(w, econfigData)
 }
 
-// ListUsers - GET /minio/admin/v3/list-users
+// ListUsers - GET /uitstor/admin/v3/list-users
 func (a adminAPIHandlers) ListUsers(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListUsers")
 
@@ -161,7 +161,7 @@ func (a adminAPIHandlers) ListUsers(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponseJSON(w, econfigData)
 }
 
-// GetUserInfo - GET /minio/admin/v3/user-info
+// GetUserInfo - GET /uitstor/admin/v3/user-info
 func (a adminAPIHandlers) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "GetUserInfo")
 
@@ -218,7 +218,7 @@ func (a adminAPIHandlers) GetUserInfo(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponseJSON(w, data)
 }
 
-// UpdateGroupMembers - PUT /minio/admin/v3/update-group-members
+// UpdateGroupMembers - PUT /uitstor/admin/v3/update-group-members
 func (a adminAPIHandlers) UpdateGroupMembers(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "UpdateGroupMembers")
 
@@ -273,7 +273,7 @@ func (a adminAPIHandlers) UpdateGroupMembers(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// GetGroup - /minio/admin/v3/group?group=mygroup1
+// GetGroup - /uitstor/admin/v3/group?group=mygroup1
 func (a adminAPIHandlers) GetGroup(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "GetGroup")
 
@@ -302,7 +302,7 @@ func (a adminAPIHandlers) GetGroup(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponseJSON(w, body)
 }
 
-// ListGroups - GET /minio/admin/v3/groups
+// ListGroups - GET /uitstor/admin/v3/groups
 func (a adminAPIHandlers) ListGroups(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListGroups")
 
@@ -328,7 +328,7 @@ func (a adminAPIHandlers) ListGroups(w http.ResponseWriter, r *http.Request) {
 	writeSuccessResponseJSON(w, body)
 }
 
-// SetGroupStatus - PUT /minio/admin/v3/set-group-status?group=mygroup1&status=enabled
+// SetGroupStatus - PUT /uitstor/admin/v3/set-group-status?group=mygroup1&status=enabled
 func (a adminAPIHandlers) SetGroupStatus(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SetGroupStatus")
 
@@ -376,7 +376,7 @@ func (a adminAPIHandlers) SetGroupStatus(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-// SetUserStatus - PUT /minio/admin/v3/set-user-status?accessKey=<access_key>&status=[enabled|disabled]
+// SetUserStatus - PUT /uitstor/admin/v3/set-user-status?accessKey=<access_key>&status=[enabled|disabled]
 func (a adminAPIHandlers) SetUserStatus(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SetUserStatus")
 
@@ -419,7 +419,7 @@ func (a adminAPIHandlers) SetUserStatus(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
-// AddUser - PUT /minio/admin/v3/add-user?accessKey=<access_key>
+// AddUser - PUT /uitstor/admin/v3/add-user?accessKey=<access_key>
 func (a adminAPIHandlers) AddUser(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AddUser")
 
@@ -529,7 +529,7 @@ func (a adminAPIHandlers) AddUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// AddServiceAccount - PUT /minio/admin/v3/add-service-account
+// AddServiceAccount - PUT /uitstor/admin/v3/add-service-account
 func (a adminAPIHandlers) AddServiceAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AddServiceAccount")
 
@@ -736,7 +736,7 @@ func (a adminAPIHandlers) AddServiceAccount(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-// UpdateServiceAccount - POST /minio/admin/v3/update-service-account
+// UpdateServiceAccount - POST /uitstor/admin/v3/update-service-account
 func (a adminAPIHandlers) UpdateServiceAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "UpdateServiceAccount")
 
@@ -840,7 +840,7 @@ func (a adminAPIHandlers) UpdateServiceAccount(w http.ResponseWriter, r *http.Re
 	writeSuccessNoContent(w)
 }
 
-// InfoServiceAccount - GET /minio/admin/v3/info-service-account
+// InfoServiceAccount - GET /uitstor/admin/v3/info-service-account
 func (a adminAPIHandlers) InfoServiceAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "InfoServiceAccount")
 
@@ -930,7 +930,7 @@ func (a adminAPIHandlers) InfoServiceAccount(w http.ResponseWriter, r *http.Requ
 	writeSuccessResponseJSON(w, encryptedData)
 }
 
-// ListServiceAccounts - GET /minio/admin/v3/list-service-accounts
+// ListServiceAccounts - GET /uitstor/admin/v3/list-service-accounts
 func (a adminAPIHandlers) ListServiceAccounts(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListServiceAccounts")
 
@@ -1004,7 +1004,7 @@ func (a adminAPIHandlers) ListServiceAccounts(w http.ResponseWriter, r *http.Req
 	writeSuccessResponseJSON(w, encryptedData)
 }
 
-// DeleteServiceAccount - DELETE /minio/admin/v3/delete-service-account
+// DeleteServiceAccount - DELETE /uitstor/admin/v3/delete-service-account
 func (a adminAPIHandlers) DeleteServiceAccount(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "DeleteServiceAccount")
 
@@ -1263,12 +1263,12 @@ func (a adminAPIHandlers) AccountInfoHandler(w http.ResponseWriter, r *http.Requ
 	writeSuccessResponseJSON(w, usageInfoJSON)
 }
 
-// InfoCannedPolicy - GET /minio/admin/v3/info-canned-policy?name={policyName}
+// InfoCannedPolicy - GET /uitstor/admin/v3/info-canned-policy?name={policyName}
 //
 // Newer API response with policy timestamps is returned with query parameter
 // `v=2` like:
 //
-// GET /minio/admin/v3/info-canned-policy?name={policyName}&v=2
+// GET /uitstor/admin/v3/info-canned-policy?name={policyName}&v=2
 //
 // The newer API will eventually become the default (and only) one. The older
 // response is to return only the policy JSON. The newer response returns
@@ -1321,7 +1321,7 @@ func (a adminAPIHandlers) InfoCannedPolicy(w http.ResponseWriter, r *http.Reques
 	w.Write(buf)
 }
 
-// ListBucketPolicies - GET /minio/admin/v3/list-canned-policies?bucket={bucket}
+// ListBucketPolicies - GET /uitstor/admin/v3/list-canned-policies?bucket={bucket}
 func (a adminAPIHandlers) ListBucketPolicies(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListBucketPolicies")
 
@@ -1354,7 +1354,7 @@ func (a adminAPIHandlers) ListBucketPolicies(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// ListCannedPolicies - GET /minio/admin/v3/list-canned-policies
+// ListCannedPolicies - GET /uitstor/admin/v3/list-canned-policies
 func (a adminAPIHandlers) ListCannedPolicies(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ListCannedPolicies")
 
@@ -1386,7 +1386,7 @@ func (a adminAPIHandlers) ListCannedPolicies(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// RemoveCannedPolicy - DELETE /minio/admin/v3/remove-canned-policy?name=<policy_name>
+// RemoveCannedPolicy - DELETE /uitstor/admin/v3/remove-canned-policy?name=<policy_name>
 func (a adminAPIHandlers) RemoveCannedPolicy(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "RemoveCannedPolicy")
 
@@ -1406,7 +1406,7 @@ func (a adminAPIHandlers) RemoveCannedPolicy(w http.ResponseWriter, r *http.Requ
 	}
 
 	// Call cluster-replication policy creation hook to replicate policy deletion to
-	// other minio clusters.
+	// other uitstor clusters.
 	if err := globalSiteReplicationSys.IAMChangeHook(ctx, madmin.SRIAMItem{
 		Type:      madmin.SRIAMItemPolicy,
 		Name:      policyName,
@@ -1417,7 +1417,7 @@ func (a adminAPIHandlers) RemoveCannedPolicy(w http.ResponseWriter, r *http.Requ
 	}
 }
 
-// AddCannedPolicy - PUT /minio/admin/v3/add-canned-policy?name=<policy_name>
+// AddCannedPolicy - PUT /uitstor/admin/v3/add-canned-policy?name=<policy_name>
 func (a adminAPIHandlers) AddCannedPolicy(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "AddCannedPolicy")
 
@@ -1474,7 +1474,7 @@ func (a adminAPIHandlers) AddCannedPolicy(w http.ResponseWriter, r *http.Request
 	}
 
 	// Call cluster-replication policy creation hook to replicate policy to
-	// other minio clusters.
+	// other uitstor clusters.
 	if err := globalSiteReplicationSys.IAMChangeHook(ctx, madmin.SRIAMItem{
 		Type:      madmin.SRIAMItemPolicy,
 		Name:      policyName,
@@ -1486,7 +1486,7 @@ func (a adminAPIHandlers) AddCannedPolicy(w http.ResponseWriter, r *http.Request
 	}
 }
 
-// SetPolicyForUserOrGroup - PUT /minio/admin/v3/set-policy?policy=xxx&user-or-group=?[&is-group]
+// SetPolicyForUserOrGroup - PUT /uitstor/admin/v3/set-policy?policy=xxx&user-or-group=?[&is-group]
 func (a adminAPIHandlers) SetPolicyForUserOrGroup(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SetPolicyForUserOrGroup")
 

@@ -27,13 +27,13 @@ import (
 	"strings"
 
 	"github.com/minio/cli"
-	"github.com/minio/minio/internal/color"
+	"github.com/uitstor/uitstor/internal/color"
 	"github.com/minio/pkg/console"
 	"github.com/minio/pkg/trie"
 	"github.com/minio/pkg/words"
 )
 
-// GlobalFlags - global flags for minio.
+// GlobalFlags - global flags for uitstor.
 var GlobalFlags = []cli.Flag{
 	// Deprecated flag, so its hidden now - existing deployments will keep working.
 	cli.StringFlag{
@@ -73,8 +73,8 @@ var GlobalFlags = []cli.Flag{
 	},
 }
 
-// Help template for minio.
-var minioHelpTemplate = `NAME:
+// Help template for uitstor.
+var uitstorHelpTemplate = `NAME:
   {{.Name}} - {{.Usage}}
 
 DESCRIPTION:
@@ -94,10 +94,10 @@ VERSION:
 `
 
 func newApp(name string) *cli.App {
-	// Collection of minio commands currently supported are.
+	// Collection of uitstor commands currently supported are.
 	commands := []cli.Command{}
 
-	// Collection of minio commands currently supported in a trie tree.
+	// Collection of uitstor commands currently supported in a trie tree.
 	commandsTree := trie.NewTrie()
 
 	// registerCommand registers a cli command.
@@ -145,11 +145,11 @@ func newApp(name string) *cli.App {
 	app.Usage = "High Performance Object Storage"
 	app.Description = `Build high performance data infrastructure for machine learning, analytics and application data workloads with MinIO`
 	app.Flags = GlobalFlags
-	app.HideHelpCommand = true // Hide `help, h` command, we already have `minio --help`.
+	app.HideHelpCommand = true // Hide `help, h` command, we already have `uitstor --help`.
 	app.Commands = commands
-	app.CustomAppHelpTemplate = minioHelpTemplate
+	app.CustomAppHelpTemplate = uitstorHelpTemplate
 	app.CommandNotFound = func(ctx *cli.Context, command string) {
-		console.Printf("‘%s’ is not a minio sub-command. See ‘minio --help’.\n", command)
+		console.Printf("‘%s’ is not a uitstor sub-command. See ‘uitstor --help’.\n", command)
 		closestCommands := findClosestCommands(command)
 		if len(closestCommands) > 0 {
 			console.Println()
@@ -184,9 +184,9 @@ func printMinIOVersion(c *cli.Context) {
 	io.Copy(c.App.Writer, versionBanner(c))
 }
 
-// Main main for minio server.
+// Main main for uitstor server.
 func Main(args []string) {
-	// Set the minio app name.
+	// Set the uitstor app name.
 	appName := filepath.Base(args[0])
 
 	// Run the app - exit on error.

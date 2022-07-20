@@ -28,10 +28,10 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/kms"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/kms"
+	"github.com/uitstor/uitstor/internal/logger"
 	"go.etcd.io/etcd/api/v3/mvccpb"
 	etcd "go.etcd.io/etcd/client/v3"
 )
@@ -105,7 +105,7 @@ func (ies *IAMEtcdStore) saveIAMConfig(ctx context.Context, item interface{}, it
 	}
 	if GlobalKMS != nil {
 		data, err = config.EncryptBytes(GlobalKMS, data, kms.Context{
-			minioMetaBucket: path.Join(minioMetaBucket, itemPath),
+			uitstorMetaBucket: path.Join(uitstorMetaBucket, itemPath),
 		})
 		if err != nil {
 			return err
@@ -118,13 +118,13 @@ func decryptData(data []byte, itemPath string) ([]byte, error) {
 	var err error
 	if !utf8.Valid(data) && GlobalKMS != nil {
 		data, err = config.DecryptBytes(GlobalKMS, data, kms.Context{
-			minioMetaBucket: path.Join(minioMetaBucket, itemPath),
+			uitstorMetaBucket: path.Join(uitstorMetaBucket, itemPath),
 		})
 		if err != nil {
 			// This fallback is needed because of a bug, in kms.Context{}
 			// construction during migration.
 			data, err = config.DecryptBytes(GlobalKMS, data, kms.Context{
-				minioMetaBucket: itemPath,
+				uitstorMetaBucket: itemPath,
 			})
 			if err != nil {
 				return nil, err

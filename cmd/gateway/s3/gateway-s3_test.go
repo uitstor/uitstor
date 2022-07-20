@@ -20,14 +20,14 @@ import (
 	"fmt"
 	"testing"
 
-	miniogo "github.com/minio/minio-go/v7"
-	"github.com/minio/minio/internal/hash"
+	uitstorgo "github.com/minio/minio-go/v7"
+	"github.com/uitstor/uitstor/internal/hash"
 
-	minio "github.com/minio/minio/cmd"
+	uitstor "github.com/uitstor/uitstor/cmd"
 )
 
-func errResponse(code string) miniogo.ErrorResponse {
-	return miniogo.ErrorResponse{
+func errResponse(code string) uitstorgo.ErrorResponse {
+	return uitstorgo.ErrorResponse{
 		Code: code,
 	}
 }
@@ -40,45 +40,45 @@ func TestS3ToObjectError(t *testing.T) {
 	}{
 		{
 			inputErr:    errResponse("BucketAlreadyOwnedByYou"),
-			expectedErr: minio.BucketAlreadyOwnedByYou{},
+			expectedErr: uitstor.BucketAlreadyOwnedByYou{},
 		},
 		{
 			inputErr:    errResponse("BucketNotEmpty"),
-			expectedErr: minio.BucketNotEmpty{},
+			expectedErr: uitstor.BucketNotEmpty{},
 		},
 		{
 			inputErr:    errResponse("InvalidBucketName"),
-			expectedErr: minio.BucketNameInvalid{},
+			expectedErr: uitstor.BucketNameInvalid{},
 		},
 		{
 			inputErr:    errResponse("InvalidPart"),
-			expectedErr: minio.InvalidPart{},
+			expectedErr: uitstor.InvalidPart{},
 		},
 		{
 			inputErr:    errResponse("NoSuchBucketPolicy"),
-			expectedErr: minio.BucketPolicyNotFound{},
+			expectedErr: uitstor.BucketPolicyNotFound{},
 		},
 		{
 			inputErr:    errResponse("NoSuchBucket"),
-			expectedErr: minio.BucketNotFound{},
+			expectedErr: uitstor.BucketNotFound{},
 		},
-		// with empty Object in miniogo.ErrorRepsonse, NoSuchKey
+		// with empty Object in uitstorgo.ErrorRepsonse, NoSuchKey
 		// is interpreted as BucketNotFound
 		{
 			inputErr:    errResponse("NoSuchKey"),
-			expectedErr: minio.BucketNotFound{},
+			expectedErr: uitstor.BucketNotFound{},
 		},
 		{
 			inputErr:    errResponse("NoSuchUpload"),
-			expectedErr: minio.InvalidUploadID{},
+			expectedErr: uitstor.InvalidUploadID{},
 		},
 		{
 			inputErr:    errResponse("XMinioInvalidObjectName"),
-			expectedErr: minio.ObjectNameInvalid{},
+			expectedErr: uitstor.ObjectNameInvalid{},
 		},
 		{
 			inputErr:    errResponse("AccessDenied"),
-			expectedErr: minio.PrefixAccessDenied{},
+			expectedErr: uitstor.PrefixAccessDenied{},
 		},
 		{
 			inputErr:    errResponse("XAmzContentSHA256Mismatch"),
@@ -86,7 +86,7 @@ func TestS3ToObjectError(t *testing.T) {
 		},
 		{
 			inputErr:    errResponse("EntityTooSmall"),
-			expectedErr: minio.PartTooSmall{},
+			expectedErr: uitstor.PartTooSmall{},
 		},
 		{
 			inputErr:    nil,
@@ -94,10 +94,10 @@ func TestS3ToObjectError(t *testing.T) {
 		},
 		// Special test case for NoSuchKey with object name
 		{
-			inputErr: miniogo.ErrorResponse{
+			inputErr: uitstorgo.ErrorResponse{
 				Code: "NoSuchKey",
 			},
-			expectedErr: minio.ObjectNotFound{
+			expectedErr: uitstor.ObjectNotFound{
 				Bucket: "bucket",
 				Object: "object",
 			},
@@ -108,7 +108,7 @@ func TestS3ToObjectError(t *testing.T) {
 		// N B error values that aren't of expected types
 		// should be left untouched.
 		// Special test case for error that is not of type
-		// miniogo.ErrorResponse
+		// uitstorgo.ErrorResponse
 		{
 			inputErr:    fmt.Errorf("not a ErrorResponse"),
 			expectedErr: fmt.Errorf("not a ErrorResponse"),
@@ -116,7 +116,7 @@ func TestS3ToObjectError(t *testing.T) {
 	}
 
 	for i, tc := range testCases {
-		actualErr := minio.ErrorRespToObjectError(tc.inputErr, tc.bucket, tc.object)
+		actualErr := uitstor.ErrorRespToObjectError(tc.inputErr, tc.bucket, tc.object)
 		if actualErr != nil && tc.expectedErr != nil && actualErr.Error() != tc.expectedErr.Error() {
 			t.Errorf("Test case %d: Expected error %v but received error %v", i+1, tc.expectedErr, actualErr)
 		}

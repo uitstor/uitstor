@@ -25,7 +25,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 type scanStatus uint8
@@ -160,5 +160,5 @@ func (m *metacache) delete(ctx context.Context) {
 		logger.LogIf(ctx, errors.New("metacache.delete: expected objAPI to be 'renameAllStorager'"))
 		return
 	}
-	ez.renameAll(ctx, minioMetaBucket, metacachePrefixForID(m.bucket, m.id))
+	ez.renameAll(ctx, uitstorMetaBucket, metacachePrefixForID(m.bucket, m.id))
 }

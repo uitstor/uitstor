@@ -81,15 +81,15 @@ curl \
 ### Configure MinIO
 
 ```
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
-minio server /mnt/export
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
+uitstor server /mnt/export
 ```
 
 Here are all the available options to configure OpenID connect
 
 ```
-mc admin config set myminio/ identity_openid
+mc admin config set myuitstor/ identity_openid
 
 KEY:
 identity_openid  enable OpenID SSO support
@@ -106,7 +106,7 @@ comment       (sentence)  optionally add a comment to this setting
 and ENV based options
 
 ```
-mc admin config set myminio/ identity_openid --env
+mc admin config set myuitstor/ identity_openid --env
 
 KEY:
 identity_openid  enable OpenID SSO support
@@ -123,23 +123,23 @@ MINIO_IDENTITY_OPENID_COMMENT       (sentence)  optionally add a comment to this
 Set `identity_openid` config with `config_url`, `client_id` and restart MinIO
 
 ```
-~ mc admin config set myminio identity_openid config_url="http://localhost:8080/auth/realms/{your-realm-name}/.well-known/openid-configuration" client_id="account"
+~ mc admin config set myuitstor identity_openid config_url="http://localhost:8080/auth/realms/{your-realm-name}/.well-known/openid-configuration" client_id="account"
 ```
 
-> NOTE: You can configure the `scopes` parameter to restrict the OpenID scopes requested by minio to the IdP, for example, `"openid,policy_role_attribute"`, being `policy_role_attribute` a client_scope / client_mapper that maps a role attribute called policy to a `policy` claim returned by Keycloak
+> NOTE: You can configure the `scopes` parameter to restrict the OpenID scopes requested by uitstor to the IdP, for example, `"openid,policy_role_attribute"`, being `policy_role_attribute` a client_scope / client_mapper that maps a role attribute called policy to a `policy` claim returned by Keycloak
 
 Once successfully set restart the MinIO instance.
 
 ```
-mc admin service restart myminio
+mc admin service restart myuitstor
 ```
 
 ### Using WebIdentiy API
 
-Client ID can be found by clicking any of the clients listed [here](http://localhost:8080/auth/admin/master/console/#/realms/minio/clients). If you have followed the above steps docs, the default Client ID will be `account`.
+Client ID can be found by clicking any of the clients listed [here](http://localhost:8080/auth/admin/master/console/#/realms/uitstor/clients). If you have followed the above steps docs, the default Client ID will be `account`.
 
 ```
-$ go run docs/sts/web-identity.go -cid account -csec 072e7f00-4289-469c-9ab2-bbe843c7f5a8  -config-ep "http://localhost:8080/auth/realms/minio/.well-known/openid-configuration" -port 8888
+$ go run docs/sts/web-identity.go -cid account -csec 072e7f00-4289-469c-9ab2-bbe843c7f5a8  -config-ep "http://localhost:8080/auth/realms/uitstor/.well-known/openid-configuration" -port 8888
 2018/12/26 17:49:36 listening on http://localhost:8888/
 ```
 
@@ -172,5 +172,5 @@ These credentials can now be used to perform MinIO API operations.
 
 ## Explore Further
 
-- [MinIO STS Quickstart Guide](https://docs.min.io/docs/minio-sts-quickstart-guide)
+- [MinIO STS Quickstart Guide](https://docs.min.io/docs/uitstor-sts-quickstart-guide)
 - [The MinIO documentation website](https://docs.min.io)

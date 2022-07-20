@@ -11,7 +11,7 @@ Decommissiong is a mechanism in MinIO to drain older pools (usually with old har
 ## How to decommission a pool
 
 ```
-λ mc admin decommission start alias/ http://minio{1...2}/data{1...4}
+λ mc admin decommission start alias/ http://uitstor{1...2}/data{1...4}
 ```
 
 ## Status decommissioning a pool
@@ -22,15 +22,15 @@ Decommissiong is a mechanism in MinIO to drain older pools (usually with old har
 λ mc admin decommission status alias/
 ┌─────┬─────────────────────────────────┬──────────────────────────────────┬────────┐
 │ ID  │ Pools                           │ Capacity                         │ Status │
-│ 1st │ http://minio{1...2}/data{1...4} │ 439 GiB (used) / 561 GiB (total) │ Active │
-│ 2nd │ http://minio{3...4}/data{1...4} │ 329 GiB (used) / 421 GiB (total) │ Active │
+│ 1st │ http://uitstor{1...2}/data{1...4} │ 439 GiB (used) / 561 GiB (total) │ Active │
+│ 2nd │ http://uitstor{3...4}/data{1...4} │ 329 GiB (used) / 421 GiB (total) │ Active │
 └─────┴─────────────────────────────────┴──────────────────────────────────┴────────┘
 ```
 
 ### Decommissioning status
 
 ```
-λ mc admin decommission status alias/ http://minio{1...2}/data{1...4}
+λ mc admin decommission status alias/ http://uitstor{1...2}/data{1...4}
 Decommissioning rate at 36 MiB/sec [4 TiB/50 TiB]
 Started: 1 minute ago
 ```
@@ -38,14 +38,14 @@ Started: 1 minute ago
 Once it is **Complete**
 
 ```
-λ mc admin decommission status alias/ http://minio{1...2}/data{1...4}
-Decommission of pool http://minio{1...2}/data{1...4} is complete, you may now remove it from server command line
+λ mc admin decommission status alias/ http://uitstor{1...2}/data{1...4}
+Decommission of pool http://uitstor{1...2}/data{1...4} is complete, you may now remove it from server command line
 ```
 
 ### A pool not under decommissioning will throw an error
 
 ```
-λ mc admin decommission status alias/ http://minio{1...2}/data{1...4}
+λ mc admin decommission status alias/ http://uitstor{1...2}/data{1...4}
 ERROR: This pool is not scheduled for decommissioning currently.
 ```
 
@@ -59,17 +59,17 @@ Stop an on-going decommission in progress, mainly used in situations when the lo
 λ mc admin decommission cancel alias/
 ┌─────┬─────────────────────────────────┬──────────────────────────────────┬──────────┐
 │ ID  │ Pools                           │ Capacity                         │ Status   │
-│ 1st │ http://minio{1...2}/data{1...4} │ 439 GiB (used) / 561 GiB (total) │ Draining │
+│ 1st │ http://uitstor{1...2}/data{1...4} │ 439 GiB (used) / 561 GiB (total) │ Draining │
 └─────┴─────────────────────────────────┴──────────────────────────────────┴──────────┘
 ```
 
 > NOTE: Canceled decommission will not make the pool active again, since we might have  potentially partial namespace on the other pools, to avoid this scenario be absolutely sure to make decommissioning a planned well thought activity. This is not to be run on a daily basis.
 
 ```
-λ mc admin decommission cancel alias/ http://minio{1...2}/data{1...4}
+λ mc admin decommission cancel alias/ http://uitstor{1...2}/data{1...4}
 ┌─────┬─────────────────────────────────┬──────────────────────────────────┬────────────────────┐
 │ ID  │ Pools                           │ Capacity                         │ Status             │
-│ 1st │ http://minio{1...2}/data{1...4} │ 439 GiB (used) / 561 GiB (total) │ Draining(Canceled) │
+│ 1st │ http://uitstor{1...2}/data{1...4} │ 439 GiB (used) / 561 GiB (total) │ Draining(Canceled) │
 └─────┴─────────────────────────────────┴──────────────────────────────────┴────────────────────┘
 ```
 
@@ -79,15 +79,15 @@ If the decommission process fails for any reason, the status indicates failed.
 λ mc admin decommission status alias/
 ┌─────┬─────────────────────────────────┬──────────────────────────────────┬──────────────────┐
 │ ID  │ Pools                           │ Capacity                         │ Status           │
-│ 1st │ http://minio{1...2}/data{1...4} │ 439 GiB (used) / 561 GiB (total) │ Draining(Failed) │
-│ 2nd │ http://minio{3...4}/data{1...4} │ 329 GiB (used) / 421 GiB (total) │ Active           │
+│ 1st │ http://uitstor{1...2}/data{1...4} │ 439 GiB (used) / 561 GiB (total) │ Draining(Failed) │
+│ 2nd │ http://uitstor{3...4}/data{1...4} │ 329 GiB (used) / 421 GiB (total) │ Active           │
 └─────┴─────────────────────────────────┴──────────────────────────────────┴──────────────────┘
 ```
 
 ## Restart a canceled or failed decommission
 
 ```
-λ mc admin decommission start alias/ http://minio{1...2}/data{1...4}
+λ mc admin decommission start alias/ http://uitstor{1...2}/data{1...4}
 ```
 
 ## When decommission is 'Complete'
@@ -98,12 +98,12 @@ Once decommission is complete, it will be indicated with *Complete* status.  *Co
 λ mc admin decommission status alias/
 ┌─────┬─────────────────────────────────┬──────────────────────────────────┬──────────┐
 │ ID  │ Pools                           │ Capacity                         │ Status   │
-│ 1st │ http://minio{1...2}/data{1...4} │ 439 GiB (used) / 561 GiB (total) │ Complete │
-│ 2nd │ http://minio{3...4}/data{1...4} │ 329 GiB (used) / 421 GiB (total) │ Active   │
+│ 1st │ http://uitstor{1...2}/data{1...4} │ 439 GiB (used) / 561 GiB (total) │ Complete │
+│ 2nd │ http://uitstor{3...4}/data{1...4} │ 329 GiB (used) / 421 GiB (total) │ Active   │
 └─────┴─────────────────────────────────┴──────────────────────────────────┴──────────┘
 ```
 
-- On baremetal setups, if you have `MINIO_VOLUMES="http://minio{1...2}/data{1...4} http://minio{3...4}/data{1...4}"`, you can remove the first argument `http://minio{1...2}/data{1...4}` to update your `MINIO_VOLUMES` setting, then restart all the servers in the setup in parallel using `systemctl restart minio`.
+- On baremetal setups, if you have `MINIO_VOLUMES="http://uitstor{1...2}/data{1...4} http://uitstor{3...4}/data{1...4}"`, you can remove the first argument `http://uitstor{1...2}/data{1...4}` to update your `MINIO_VOLUMES` setting, then restart all the servers in the setup in parallel using `systemctl restart uitstor`.
 
 - On Kubernetes setups, the statefulset specification needs to be modified by changing the command line input for the MinIO container. Once the relevant changes are done, proceed to execute `kubectl apply -f statefulset.yaml`.
 

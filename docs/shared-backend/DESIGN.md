@@ -23,13 +23,13 @@ Example 1: Start MinIO instance on a shared backend mounted and available at `/p
 On linux server1
 
 ```shell
-minio gateway nas /path/to/nfs-volume
+uitstor gateway nas /path/to/nfs-volume
 ```
 
 On linux server2
 
 ```shell
-minio gateway nas /path/to/nfs-volume
+uitstor gateway nas /path/to/nfs-volume
 ```
 
 ### Windows 2012 Server
@@ -39,13 +39,13 @@ Example 1: Start MinIO instance on a shared backend mounted and available at `\\
 On windows server1
 
 ```cmd
-minio.exe gateway nas \\remote-server\cifs\data
+uitstor.exe gateway nas \\remote-server\cifs\data
 ```
 
 On windows server2
 
 ```cmd
-minio.exe gateway nas \\remote-server\cifs\data
+uitstor.exe gateway nas \\remote-server\cifs\data
 ```
 
 Alternatively if `\\remote-server\cifs` is mounted as `D:\` drive.
@@ -53,13 +53,13 @@ Alternatively if `\\remote-server\cifs` is mounted as `D:\` drive.
 On windows server1
 
 ```cmd
-minio.exe gateway nas D:\data
+uitstor.exe gateway nas D:\data
 ```
 
 On windows server2
 
 ```cmd
-minio.exe gateway nas D:\data
+uitstor.exe gateway nas D:\data
 ```
 
 ## Architecture
@@ -83,7 +83,7 @@ An example here shows how the contention is handled with GetObject().
 GetObject() holds a read lock on `fs.json`.
 
 ```go
- fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fsMetaJSONFile)
+ fsMetaPath := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix, bucket, object, fsMetaJSONFile)
  rlk, err := fs.rwPool.Open(fsMetaPath)
  if err != nil {
   return toObjectErr(err, bucket, object)
@@ -100,7 +100,7 @@ GetObject() holds a read lock on `fs.json`.
 A concurrent PutObject is requested on the same object, PutObject() attempts a write lock on `fs.json`.
 
 ```go
- fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fsMetaJSONFile)
+ fsMetaPath := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix, bucket, object, fsMetaJSONFile)
  wlk, err := fs.rwPool.Create(fsMetaPath)
  if err != nil {
   return ObjectInfo{}, toObjectErr(err, bucket, object)
@@ -121,18 +121,18 @@ This restriction is needed so that corrupted data is not returned to the client 
 
 Consider for example 3 servers sharing the same backend
 
-On minio1
+On uitstor1
 
 * DeleteObject(object1) --> lock acquired on `fs.json` while object1 is being deleted.
 
-On minio2
+On uitstor2
 
 * PutObject(object1) --> lock waiting until DeleteObject finishes.
 
-On minio3
+On uitstor3
 
-* PutObject(object1) --> (concurrent request during PutObject minio2 checking if `fs.json` exists)
+* PutObject(object1) --> (concurrent request during PutObject uitstor2 checking if `fs.json` exists)
 
-Once lock is acquired the minio2 validates if the file really exists to avoid obtaining lock on an fd which is already deleted. But this situation calls for a race with a third server which is also attempting to write the same file before the minio2 can validate if the file exists. It might be potentially possible `fs.json` is created so the lock acquired by minio2 might be invalid and can lead to a potential inconsistency.
+Once lock is acquired the uitstor2 validates if the file really exists to avoid obtaining lock on an fd which is already deleted. But this situation calls for a race with a third server which is also attempting to write the same file before the uitstor2 can validate if the file exists. It might be potentially possible `fs.json` is created so the lock acquired by uitstor2 might be invalid and can lead to a potential inconsistency.
 
 This is a known problem and cannot be solved by POSIX fcntl locks. These are considered to be the limits of shared filesystem.

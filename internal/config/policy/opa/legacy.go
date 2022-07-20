@@ -18,7 +18,7 @@
 package opa
 
 import (
-	"github.com/minio/minio/internal/config"
+	"github.com/uitstor/uitstor/internal/config"
 )
 
 // Legacy OPA envs

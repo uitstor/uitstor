@@ -37,13 +37,13 @@ import (
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/config"
-	xhttp "github.com/minio/minio/internal/http"
-	xioutil "github.com/minio/minio/internal/ioutil"
-	"github.com/minio/minio/internal/lock"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/mountinfo"
+	"github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/config"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	xioutil "github.com/uitstor/uitstor/internal/ioutil"
+	"github.com/uitstor/uitstor/internal/lock"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/mountinfo"
 	"github.com/minio/pkg/bucket/policy"
 	"github.com/minio/pkg/mimedb"
 )
@@ -92,15 +92,15 @@ type fsAppendFile struct {
 func initMetaVolumeFS(fsPath, fsUUID string) error {
 	// This happens for the first time, but keep this here since this
 	// is the only place where it can be made less expensive
-	// optimizing all other calls. Create minio meta volume,
+	// optimizing all other calls. Create uitstor meta volume,
 	// if it doesn't exist yet.
-	metaBucketPath := pathJoin(fsPath, minioMetaBucket)
+	metaBucketPath := pathJoin(fsPath, uitstorMetaBucket)
 
 	if err := os.MkdirAll(metaBucketPath, 0o777); err != nil {
 		return err
 	}
 
-	metaTmpPath := pathJoin(fsPath, minioMetaTmpBucket, fsUUID)
+	metaTmpPath := pathJoin(fsPath, uitstorMetaTmpBucket, fsUUID)
 	if err := os.MkdirAll(metaTmpPath, 0o777); err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func initMetaVolumeFS(fsPath, fsUUID string) error {
 		return err
 	}
 
-	metaMultipartPath := pathJoin(fsPath, minioMetaMultipartBucket)
+	metaMultipartPath := pathJoin(fsPath, uitstorMetaMultipartBucket)
 	return os.MkdirAll(metaMultipartPath, 0o777)
 }
 
@@ -141,12 +141,12 @@ func NewFSObjectLayer(fsPath string) (ObjectLayer, error) {
 		return nil, config.ErrUnableToWriteInBackend(err).Hint(hint)
 	}
 
-	fsFormatPath := pathJoin(fsPath, minioMetaBucket, formatConfigFile)
+	fsFormatPath := pathJoin(fsPath, uitstorMetaBucket, formatConfigFile)
 	if _, err = fsStat(ctx, fsFormatPath); err != nil && os.IsNotExist(err) {
 		return nil, errFreshDisk
 	}
 
-	// Assign a new UUID for FS minio mode. Each server instance
+	// Assign a new UUID for FS uitstor mode. Each server instance
 	// gets its own UUID for temporary file transaction.
 	fsUUID := mustGetUUID()
 
@@ -204,7 +204,7 @@ func (fs *FSObjects) Shutdown(ctx context.Context) error {
 	fs.fsFormatRlk.Close()
 
 	// Cleanup and delete tmp uuid.
-	return fsRemoveAll(ctx, pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID))
+	return fsRemoveAll(ctx, pathJoin(fs.fsPath, uitstorMetaTmpBucket, fs.fsUUID))
 }
 
 // BackendInfo - returns backend information
@@ -379,7 +379,7 @@ func (fs *FSObjects) scanBucket(ctx context.Context, bucket string, cache dataUs
 				done(len(fsMetaBytes))
 			}
 		}()
-		fsMetaBytes, err := xioutil.ReadFile(pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile))
+		fsMetaBytes, err := xioutil.ReadFile(pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile))
 		if err != nil && !osIsNotExist(err) {
 			if intDataUpdateTracker.debug {
 				logger.Info(color.Green("scanBucket:")+" object return unexpected error: %v/%v: %w", item.bucket, item.objectPath(), err)
@@ -608,7 +608,7 @@ func (fs *FSObjects) DeleteBucket(ctx context.Context, bucket string, opts Delet
 			return toObjectErr(err, bucket)
 		}
 	} else {
-		tmpBucketPath := pathJoin(fs.fsPath, minioMetaTmpBucket, bucket+"."+mustGetUUID())
+		tmpBucketPath := pathJoin(fs.fsPath, uitstorMetaTmpBucket, bucket+"."+mustGetUUID())
 		if err = Rename(bucketDir, tmpBucketPath); err != nil {
 			return toObjectErr(err, bucket)
 		}
@@ -619,8 +619,8 @@ func (fs *FSObjects) DeleteBucket(ctx context.Context, bucket string, opts Delet
 	}
 
 	// Cleanup all the bucket metadata.
-	minioMetadataBucketDir := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket)
-	if err = fsRemoveAll(ctx, minioMetadataBucketDir); err != nil {
+	uitstorMetadataBucketDir := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix, bucket)
+	if err = fsRemoveAll(ctx, uitstorMetadataBucketDir); err != nil {
 		return toObjectErr(err, bucket)
 	}
 
@@ -662,7 +662,7 @@ func (fs *FSObjects) CopyObject(ctx context.Context, srcBucket, srcObject, dstBu
 	}
 
 	if cpSrcDstSame && srcInfo.metadataOnly {
-		fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, srcBucket, srcObject, fs.metaJSONFile)
+		fsMetaPath := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix, srcBucket, srcObject, fs.metaJSONFile)
 		wlk, err := fs.rwPool.Write(fsMetaPath)
 		if err != nil {
 			wlk, err = fs.rwPool.Create(fsMetaPath)
@@ -771,8 +771,8 @@ func (fs *FSObjects) GetObjectNInfo(ctx context.Context, bucket, object string, 
 	}
 	// Take a rwPool lock for NFS gateway type deployment
 	rwPoolUnlocker := func() {}
-	if bucket != minioMetaBucket && lockType != noLock {
-		fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+	if bucket != uitstorMetaBucket && lockType != noLock {
+		fsMetaPath := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
 		_, err = fs.rwPool.Open(fsMetaPath)
 		if err != nil && err != errFileNotFound {
 			logger.LogIf(ctx, err)
@@ -863,7 +863,7 @@ func (fs *FSObjects) getObjectInfoNoFSLock(ctx context.Context, bucket, object s
 		return fsMeta.ToObjectInfo(bucket, object, fi), nil
 	}
 
-	fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+	fsMetaPath := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
 	// Read `fs.json` to perhaps contend with
 	// parallel Put() operations.
 
@@ -918,7 +918,7 @@ func (fs *FSObjects) getObjectInfo(ctx context.Context, bucket, object string) (
 		return fsMeta.ToObjectInfo(bucket, object, fi), nil
 	}
 
-	fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+	fsMetaPath := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
 	// Read `fs.json` to perhaps contend with
 	// parallel Put() operations.
 
@@ -997,7 +997,7 @@ func (fs *FSObjects) GetObjectInfo(ctx context.Context, bucket, object string, o
 			return oi, toObjectErr(err, bucket, object)
 		}
 
-		fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+		fsMetaPath := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
 		err = fs.createFsJSON(object, fsMetaPath)
 		lk.Unlock(lkctx.Cancel)
 		if err != nil {
@@ -1076,8 +1076,8 @@ func (fs *FSObjects) putObject(ctx context.Context, bucket string, object string
 	}
 
 	var wlk *lock.LockedFile
-	if bucket != minioMetaBucket {
-		bucketMetaDir := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix)
+	if bucket != uitstorMetaBucket {
+		bucketMetaDir := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix)
 		fsMetaPath := pathJoin(bucketMetaDir, bucket, object, fs.metaJSONFile)
 		wlk, err = fs.rwPool.Write(fsMetaPath)
 		var freshFile bool
@@ -1098,7 +1098,7 @@ func (fs *FSObjects) putObject(ctx context.Context, bucket string, object string
 			// We should preserve the `fs.json` of any
 			// existing object
 			if retErr != nil && freshFile {
-				tmpDir := pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID)
+				tmpDir := pathJoin(fs.fsPath, uitstorMetaTmpBucket, fs.fsUUID)
 				fsRemoveMeta(ctx, bucketMetaDir, fsMetaPath, tmpDir)
 			}
 		}()
@@ -1109,7 +1109,7 @@ func (fs *FSObjects) putObject(ctx context.Context, bucket string, object string
 	// so that cleaning it up will be easy if the server goes down.
 	tempObj := mustGetUUID()
 
-	fsTmpObjPath := pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID, tempObj)
+	fsTmpObjPath := pathJoin(fs.fsPath, uitstorMetaTmpBucket, fs.fsUUID, tempObj)
 	bytesWritten, err := fsCreateFile(ctx, fsTmpObjPath, data, data.Size())
 
 	// Delete the temporary object in the case of a
@@ -1134,7 +1134,7 @@ func (fs *FSObjects) putObject(ctx context.Context, bucket string, object string
 		return ObjectInfo{}, toObjectErr(err, bucket, object)
 	}
 
-	if bucket != minioMetaBucket {
+	if bucket != uitstorMetaBucket {
 		// Write FS metadata after a successful namespace operation.
 		if _, err = fsMeta.WriteTo(wlk); err != nil {
 			return ObjectInfo{}, toObjectErr(err, bucket, object)
@@ -1208,9 +1208,9 @@ func (fs *FSObjects) DeleteObject(ctx context.Context, bucket, object string, op
 
 	var rwlk *lock.LockedFile
 
-	minioMetaBucketDir := pathJoin(fs.fsPath, minioMetaBucket)
-	fsMetaPath := pathJoin(minioMetaBucketDir, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
-	if bucket != minioMetaBucket {
+	uitstorMetaBucketDir := pathJoin(fs.fsPath, uitstorMetaBucket)
+	fsMetaPath := pathJoin(uitstorMetaBucketDir, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+	if bucket != uitstorMetaBucket {
 		rwlk, err = fs.rwPool.Write(fsMetaPath)
 		if err != nil && err != errFileNotFound {
 			logger.LogIf(ctx, err)
@@ -1231,9 +1231,9 @@ func (fs *FSObjects) DeleteObject(ctx context.Context, bucket, object string, op
 		rwlk.Close()
 	}
 
-	if bucket != minioMetaBucket {
+	if bucket != uitstorMetaBucket {
 		// Delete the metadata object.
-		err = fsDeleteFile(ctx, minioMetaBucketDir, fsMetaPath)
+		err = fsDeleteFile(ctx, uitstorMetaBucketDir, fsMetaPath)
 		if err != nil && err != errFileNotFound {
 			return objInfo, toObjectErr(err, bucket, object)
 		}
@@ -1336,7 +1336,7 @@ func (fs *FSObjects) PutObjectTags(ctx context.Context, bucket, object string, t
 		}
 	}
 
-	fsMetaPath := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
+	fsMetaPath := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix, bucket, object, fs.metaJSONFile)
 	fsMeta := fsMetaV1{}
 	wlk, err := fs.rwPool.Write(fsMetaPath)
 	if err != nil {

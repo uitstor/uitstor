@@ -23,7 +23,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 	iampolicy "github.com/minio/pkg/iam/policy"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/common/expfmt"
@@ -38,9 +38,9 @@ var (
 		},
 		[]string{"api"},
 	)
-	minioVersionInfo = prometheus.NewGaugeVec(
+	uitstorVersionInfo = prometheus.NewGaugeVec(
 		prometheus.GaugeOpts{
-			Namespace: "minio",
+			Namespace: "uitstor",
 			Name:      "version_info",
 			Help:      "Version of current MinIO server instance",
 		},
@@ -59,7 +59,7 @@ const (
 	cacheNamespace       = "cache"
 	s3Namespace          = "s3"
 	bucketNamespace      = "bucket"
-	minioNamespace       = "minio"
+	uitstorNamespace       = "uitstor"
 	diskNamespace        = "disk"
 	interNodeNamespace   = "internode"
 )
@@ -67,33 +67,33 @@ const (
 func init() {
 	prometheus.MustRegister(httpRequestsDuration)
 	prometheus.MustRegister(newMinioCollector())
-	prometheus.MustRegister(minioVersionInfo)
+	prometheus.MustRegister(uitstorVersionInfo)
 }
 
 // newMinioCollector describes the collector
-// and returns reference of minioCollector
+// and returns reference of uitstorCollector
 // It creates the Prometheus Description which is used
 // to define metric and  help string
-func newMinioCollector() *minioCollector {
-	return &minioCollector{
-		desc: prometheus.NewDesc("minio_stats", "Statistics exposed by MinIO server", nil, nil),
+func newMinioCollector() *uitstorCollector {
+	return &uitstorCollector{
+		desc: prometheus.NewDesc("uitstor_stats", "Statistics exposed by MinIO server", nil, nil),
 	}
 }
 
-// minioCollector is the Custom Collector
-type minioCollector struct {
+// uitstorCollector is the Custom Collector
+type uitstorCollector struct {
 	desc *prometheus.Desc
 }
 
 // Describe sends the super-set of all possible descriptors of metrics
-func (c *minioCollector) Describe(ch chan<- *prometheus.Desc) {
+func (c *uitstorCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- c.desc
 }
 
 // Collect is called by the Prometheus registry when collecting metrics.
-func (c *minioCollector) Collect(ch chan<- prometheus.Metric) {
+func (c *uitstorCollector) Collect(ch chan<- prometheus.Metric) {
 	// Expose MinIO's version information
-	minioVersionInfo.WithLabelValues(Version, CommitID).Set(1.0)
+	uitstorVersionInfo.WithLabelValues(Version, CommitID).Set(1.0)
 
 	storageMetricsPrometheus(ch)
 	nodeHealthMetricsPrometheus(ch)
@@ -113,7 +113,7 @@ func nodeHealthMetricsPrometheus(ch chan<- prometheus.Metric) {
 	nodesUp, nodesDown := globalNotificationSys.GetPeerOnlineCount()
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "nodes", "online"),
+			prometheus.BuildFQName(uitstorNamespace, "nodes", "online"),
 			"Total number of MinIO nodes online",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -121,7 +121,7 @@ func nodeHealthMetricsPrometheus(ch chan<- prometheus.Metric) {
 	)
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "nodes", "offline"),
+			prometheus.BuildFQName(uitstorNamespace, "nodes", "offline"),
 			"Total number of MinIO nodes offline",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -552,7 +552,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// Report total capacity
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "capacity_raw", "total"),
+			prometheus.BuildFQName(uitstorNamespace, "capacity_raw", "total"),
 			"Total capacity online in the cluster",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -562,7 +562,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// Report total capacity free
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "capacity_raw_free", "total"),
+			prometheus.BuildFQName(uitstorNamespace, "capacity_raw_free", "total"),
 			"Total free capacity online in the cluster",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -573,7 +573,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// Report total usable capacity
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "capacity_usable", "total"),
+			prometheus.BuildFQName(uitstorNamespace, "capacity_usable", "total"),
 			"Total usable capacity online in the cluster",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -582,7 +582,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// Report total usable capacity free
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "capacity_usable_free", "total"),
+			prometheus.BuildFQName(uitstorNamespace, "capacity_usable_free", "total"),
 			"Total free usable capacity online in the cluster",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -592,7 +592,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// MinIO Offline Disks per node
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "disks", "offline"),
+			prometheus.BuildFQName(uitstorNamespace, "disks", "offline"),
 			"Total number of offline disks in current MinIO server instance",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -602,7 +602,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 	// MinIO Total Disks per node
 	ch <- prometheus.MustNewConstMetric(
 		prometheus.NewDesc(
-			prometheus.BuildFQName(minioNamespace, "disks", "total"),
+			prometheus.BuildFQName(uitstorNamespace, "disks", "total"),
 			"Total number of disks for current MinIO server instance",
 			nil, nil),
 		prometheus.GaugeValue,
@@ -648,7 +648,7 @@ func storageMetricsPrometheus(ch chan<- prometheus.Metric) {
 func metricsHandler() http.Handler {
 	registry := prometheus.NewRegistry()
 
-	logger.CriticalIf(GlobalContext, registry.Register(minioVersionInfo))
+	logger.CriticalIf(GlobalContext, registry.Register(uitstorVersionInfo))
 
 	logger.CriticalIf(GlobalContext, registry.Register(newMinioCollector()))
 

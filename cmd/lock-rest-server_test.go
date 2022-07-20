@@ -27,12 +27,12 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/minio/minio/internal/dsync"
+	"github.com/uitstor/uitstor/internal/dsync"
 )
 
 func BenchmarkLockArgs(b *testing.B) {
 	args := dsync.LockArgs{
-		Owner:     "minio",
+		Owner:     "uitstor",
 		UID:       "uid",
 		Source:    "lockArgs.go",
 		Quorum:    3,
@@ -56,7 +56,7 @@ func BenchmarkLockArgs(b *testing.B) {
 
 func BenchmarkLockArgsOld(b *testing.B) {
 	values := url.Values{}
-	values.Set("owner", "minio")
+	values.Set("owner", "uitstor")
 	values.Set("uid", "uid")
 	values.Set("source", "lockArgs.go")
 	values.Set("quorum", "3")

@@ -23,8 +23,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	xhttp "github.com/minio/minio/internal/http"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	xhttp "github.com/uitstor/uitstor/internal/http"
 )
 
 // TestParseRestoreObjStatus tests parseRestoreObjStatus

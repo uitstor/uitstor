@@ -27,8 +27,8 @@ import (
 	"testing"
 
 	"github.com/klauspost/compress/s2"
-	"github.com/minio/minio/internal/config/compress"
-	"github.com/minio/minio/internal/crypto"
+	"github.com/uitstor/uitstor/internal/config/compress"
+	"github.com/uitstor/uitstor/internal/crypto"
 	"github.com/minio/pkg/trie"
 )
 
@@ -185,17 +185,17 @@ func TestIsMinioMetaBucketName(t *testing.T) {
 	}{
 		// MinIO meta bucket.
 		{
-			bucket: minioMetaBucket,
+			bucket: uitstorMetaBucket,
 			result: true,
 		},
 		// MinIO meta bucket.
 		{
-			bucket: minioMetaMultipartBucket,
+			bucket: uitstorMetaMultipartBucket,
 			result: true,
 		},
 		// MinIO meta bucket.
 		{
-			bucket: minioMetaTmpBucket,
+			bucket: uitstorMetaTmpBucket,
 			result: true,
 		},
 		// Normal bucket

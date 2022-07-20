@@ -2,10 +2,10 @@
 apiVersion: security.openshift.io/v1
 kind: SecurityContextConstraints
 metadata:
-  name: {{ template "minio.fullname" . }}
+  name: {{ template "uitstor.fullname" . }}
   labels:
-    app: {{ template "minio.name" . }}
-    chart: {{ template "minio.chart" . }}
+    app: {{ template "uitstor.name" . }}
+    chart: {{ template "uitstor.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 allowHostDirVolumePlugin: false

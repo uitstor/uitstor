@@ -32,11 +32,11 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/bucket/object/lock"
-	"github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/hash"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/bucket/object/lock"
+	"github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/hash"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/console"
 )
 
@@ -390,7 +390,7 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 				if !disk.IsOnline() {
 					continue
 				}
-				_, err := disk.ReadVersion(ctx, minioMetaBucket,
+				_, err := disk.ReadVersion(ctx, uitstorMetaBucket,
 					o.objectPath(0), "", false)
 				if err != nil {
 					time.Sleep(retryDelay)
@@ -403,9 +403,9 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 
 		// Load first part metadata...
 		// Read metadata associated with the object from all disks.
-		fi, metaArr, onlineDisks, err := er.getObjectFileInfo(ctx, minioMetaBucket, o.objectPath(0), ObjectOptions{}, true)
+		fi, metaArr, onlineDisks, err := er.getObjectFileInfo(ctx, uitstorMetaBucket, o.objectPath(0), ObjectOptions{}, true)
 		if err != nil {
-			switch toObjectErr(err, minioMetaBucket, o.objectPath(0)).(type) {
+			switch toObjectErr(err, uitstorMetaBucket, o.objectPath(0)).(type) {
 			case ObjectNotFound:
 				retries++
 				time.Sleep(retryDelay)
@@ -462,7 +462,7 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 						if !disk.IsOnline() {
 							continue
 						}
-						_, err := disk.ReadVersion(ctx, minioMetaBucket,
+						_, err := disk.ReadVersion(ctx, uitstorMetaBucket,
 							o.objectPath(partN), "", false)
 						if err != nil {
 							time.Sleep(retryDelay)
@@ -474,7 +474,7 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 				}
 
 				// Load partN metadata...
-				fi, metaArr, onlineDisks, err = er.getObjectFileInfo(ctx, minioMetaBucket, o.objectPath(partN), ObjectOptions{}, true)
+				fi, metaArr, onlineDisks, err = er.getObjectFileInfo(ctx, uitstorMetaBucket, o.objectPath(partN), ObjectOptions{}, true)
 				if err != nil {
 					time.Sleep(retryDelay)
 					retries++
@@ -492,7 +492,7 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 
 			pr, pw := io.Pipe()
 			go func() {
-				werr := er.getObjectWithFileInfo(ctx, minioMetaBucket, o.objectPath(partN), 0,
+				werr := er.getObjectWithFileInfo(ctx, uitstorMetaBucket, o.objectPath(partN), 0,
 					fi.Size, pw, fi, metaArr, onlineDisks)
 				pw.CloseWithError(werr)
 			}()
@@ -510,7 +510,7 @@ func (er *erasureObjects) streamMetadataParts(ctx context.Context, o listPathOpt
 				return entries, nil
 			}
 			if err != nil && err.Error() != io.EOF.Error() {
-				switch toObjectErr(err, minioMetaBucket, o.objectPath(partN)).(type) {
+				switch toObjectErr(err, uitstorMetaBucket, o.objectPath(partN)).(type) {
 				case ObjectNotFound:
 					retries++
 					time.Sleep(retryDelay)
@@ -565,7 +565,7 @@ func (es *erasureSingle) streamMetadataParts(ctx context.Context, o listPathOpti
 		// All operations are performed without locks, so we must be careful and allow for failures.
 		// Read metadata associated with the object from a disk.
 		if retries > 0 {
-			_, err := es.disk.ReadVersion(ctx, minioMetaBucket,
+			_, err := es.disk.ReadVersion(ctx, uitstorMetaBucket,
 				o.objectPath(0), "", false)
 			if err != nil {
 				time.Sleep(retryDelay)
@@ -576,9 +576,9 @@ func (es *erasureSingle) streamMetadataParts(ctx context.Context, o listPathOpti
 
 		// Load first part metadata...
 		// Read metadata associated with the object from all disks.
-		fi, metaArr, onlineDisks, err := es.getObjectFileInfo(ctx, minioMetaBucket, o.objectPath(0), ObjectOptions{}, true)
+		fi, metaArr, onlineDisks, err := es.getObjectFileInfo(ctx, uitstorMetaBucket, o.objectPath(0), ObjectOptions{}, true)
 		if err != nil {
-			switch toObjectErr(err, minioMetaBucket, o.objectPath(0)).(type) {
+			switch toObjectErr(err, uitstorMetaBucket, o.objectPath(0)).(type) {
 			case ObjectNotFound:
 				retries++
 				time.Sleep(retryDelay)
@@ -628,7 +628,7 @@ func (es *erasureSingle) streamMetadataParts(ctx context.Context, o listPathOpti
 
 				if retries > 0 {
 					// Load from one disk only
-					_, err := es.disk.ReadVersion(ctx, minioMetaBucket,
+					_, err := es.disk.ReadVersion(ctx, uitstorMetaBucket,
 						o.objectPath(partN), "", false)
 					if err != nil {
 						time.Sleep(retryDelay)
@@ -638,7 +638,7 @@ func (es *erasureSingle) streamMetadataParts(ctx context.Context, o listPathOpti
 				}
 
 				// Load partN metadata...
-				fi, metaArr, onlineDisks, err = es.getObjectFileInfo(ctx, minioMetaBucket, o.objectPath(partN), ObjectOptions{}, true)
+				fi, metaArr, onlineDisks, err = es.getObjectFileInfo(ctx, uitstorMetaBucket, o.objectPath(partN), ObjectOptions{}, true)
 				if err != nil {
 					time.Sleep(retryDelay)
 					retries++
@@ -656,7 +656,7 @@ func (es *erasureSingle) streamMetadataParts(ctx context.Context, o listPathOpti
 
 			pr, pw := io.Pipe()
 			go func() {
-				werr := es.getObjectWithFileInfo(ctx, minioMetaBucket, o.objectPath(partN), 0,
+				werr := es.getObjectWithFileInfo(ctx, uitstorMetaBucket, o.objectPath(partN), 0,
 					fi.Size, pw, fi, metaArr, onlineDisks)
 				pw.CloseWithError(werr)
 			}()
@@ -674,7 +674,7 @@ func (es *erasureSingle) streamMetadataParts(ctx context.Context, o listPathOpti
 				return entries, nil
 			}
 			if err != nil && err.Error() != io.EOF.Error() {
-				switch toObjectErr(err, minioMetaBucket, o.objectPath(partN)).(type) {
+				switch toObjectErr(err, uitstorMetaBucket, o.objectPath(partN)).(type) {
 				case ObjectNotFound:
 					retries++
 					time.Sleep(retryDelay)
@@ -951,7 +951,7 @@ func (es *erasureSingle) saveMetaCacheStream(ctx context.Context, mc *metaCacheR
 			for k, v := range meta {
 				fi.Metadata[k] = v
 			}
-			err := es.updateObjectMeta(ctx, minioMetaBucket, o.objectPath(0), fi, es.disk)
+			err := es.updateObjectMeta(ctx, uitstorMetaBucket, o.objectPath(0), fi, es.disk)
 			if err == nil {
 				break
 			}
@@ -1078,7 +1078,7 @@ func (er *erasureObjects) saveMetaCacheStream(ctx context.Context, mc *metaCache
 			for k, v := range meta {
 				fi.Metadata[k] = v
 			}
-			err := er.updateObjectMeta(ctx, minioMetaBucket, o.objectPath(0), fi, er.getDisks())
+			err := er.updateObjectMeta(ctx, uitstorMetaBucket, o.objectPath(0), fi, er.getDisks())
 			if err == nil {
 				break
 			}

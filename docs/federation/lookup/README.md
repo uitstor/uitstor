@@ -6,7 +6,7 @@ This document explains how to configure MinIO with `Bucket lookup from DNS` styl
 
 ### 1. Prerequisites
 
-Install MinIO - [MinIO Quickstart Guide](https://docs.min.io/docs/minio-quickstart-guide).
+Install MinIO - [MinIO Quickstart Guide](https://docs.min.io/docs/uitstor-quickstart-guide).
 
 ### 2. Run MinIO in federated mode
 
@@ -17,7 +17,7 @@ Bucket lookup from DNS federation requires two dependencies
 
 ## Architecture
 
-![bucket-lookup](https://github.com/minio/minio/blob/master/docs/federation/lookup/bucket-lookup.png?raw=true)
+![bucket-lookup](https://github.com/uitstor/uitstor/blob/master/docs/federation/lookup/bucket-lookup.png?raw=true)
 
 ### Environment variables
 
@@ -52,7 +52,7 @@ hosts passed to the MinIO server startup and use them for DNS entries.
 export MINIO_ETCD_ENDPOINTS="http://remote-etcd1:2379,http://remote-etcd2:4001"
 export MINIO_DOMAIN=domain.com
 export MINIO_PUBLIC_IPS=44.35.2.1,44.35.2.2,44.35.2.3,44.35.2.4
-minio server http://rack{1...4}.host{1...4}.domain.com/mnt/export{1...32}
+uitstor server http://rack{1...4}.host{1...4}.domain.com/mnt/export{1...32}
 ```
 
 > cluster2
@@ -61,7 +61,7 @@ minio server http://rack{1...4}.host{1...4}.domain.com/mnt/export{1...32}
 export MINIO_ETCD_ENDPOINTS="http://remote-etcd1:2379,http://remote-etcd2:4001"
 export MINIO_DOMAIN=domain.com
 export MINIO_PUBLIC_IPS=44.35.1.1,44.35.1.2,44.35.1.3,44.35.1.4
-minio server http://rack{5...8}.host{5...8}.domain.com/mnt/export{1...32}
+uitstor server http://rack{5...8}.host{5...8}.domain.com/mnt/export{1...32}
 ```
 
 In this configuration you can see `MINIO_ETCD_ENDPOINTS` points to the etcd backend which manages MinIO's
@@ -76,12 +76,12 @@ it is randomized which cluster might provision the bucket.
 
 ### 3. Test your setup
 
-To test this setup, access the MinIO server via browser or [`mc`](https://docs.min.io/docs/minio-client-quickstart-guide). You’ll see the uploaded files are accessible from the all the MinIO endpoints.
+To test this setup, access the MinIO server via browser or [`mc`](https://docs.min.io/docs/uitstor-client-quickstart-guide). You’ll see the uploaded files are accessible from the all the MinIO endpoints.
 
 ## Explore Further
 
-- [Use `mc` with MinIO Server](https://docs.min.io/docs/minio-client-quickstart-guide)
-- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-minio)
-- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-minio)
-- [Use `minio-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
+- [Use `mc` with MinIO Server](https://docs.min.io/docs/uitstor-client-quickstart-guide)
+- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-uitstor)
+- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-uitstor)
+- [Use `uitstor-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
 - [The MinIO documentation website](https://docs.min.io)

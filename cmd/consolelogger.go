@@ -23,11 +23,11 @@ import (
 	"sync"
 
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/logger/message/log"
-	"github.com/minio/minio/internal/logger/target/console"
-	"github.com/minio/minio/internal/logger/target/types"
-	"github.com/minio/minio/internal/pubsub"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger/message/log"
+	"github.com/uitstor/uitstor/internal/logger/target/console"
+	"github.com/uitstor/uitstor/internal/logger/target/types"
+	"github.com/uitstor/uitstor/internal/pubsub"
 	xnet "github.com/minio/pkg/net"
 )
 

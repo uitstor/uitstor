@@ -12,7 +12,7 @@ You can use the Select API to query objects with following features:
 
 Type inference and automatic conversion of values is performed based on the context when the value is un-typed (such as when reading CSV data). If present, the CAST function overrides automatic conversion.
 
-The [mc sql](https://docs.min.io/docs/minio-client-complete-guide.html#sql) command can be used for executing queries using the command line.
+The [mc sql](https://docs.min.io/docs/uitstor-client-complete-guide.html#sql) command can be used for executing queries using the command line.
 
 (*) Parquet is disabled on the MinIO server by default. See below how to enable it.
 
@@ -27,7 +27,7 @@ To enable Parquet set the environment variable `MINIO_API_SELECT_PARQUET=on`.
 
 ### 1. Prerequisites
 
-- Install MinIO Server from [here](https://docs.min.io/docs/minio-quickstart-guide).
+- Install MinIO Server from [here](https://docs.min.io/docs/uitstor-quickstart-guide).
 - Familiarity with AWS S3 API.
 - Familiarity with Python and installing dependencies.
 
@@ -47,8 +47,8 @@ import boto3
 
 s3 = boto3.client('s3',
                   endpoint_url='http://localhost:9000',
-                  aws_access_key_id='minio',
-                  aws_secret_access_key='minio123',
+                  aws_access_key_id='uitstor',
+                  aws_secret_access_key='uitstor123',
                   region_name='us-east-1')
 
 r = s3.select_object_content(
@@ -83,9 +83,9 @@ Upload a sample dataset to MinIO using the following commands.
 
 ```sh
 curl "https://population.un.org/wpp/Download/Files/1_Indicators%20(Standard)/CSV_FILES/WPP2019_TotalPopulationBySex.csv" > TotalPopulation.csv
-mc mb myminio/mycsvbucket
+mc mb myuitstor/mycsvbucket
 gzip TotalPopulation.csv
-mc cp TotalPopulation.csv.gz myminio/mycsvbucket/sampledata/
+mc cp TotalPopulation.csv.gz myuitstor/mycsvbucket/sampledata/
 ```
 
 Now let us proceed to run our select example to query for `Location` which matches `United States`.
@@ -113,11 +113,11 @@ For a more detailed SELECT SQL reference, please see [here](https://docs.aws.ama
 
 ## 5. Explore Further
 
-- [Use `mc` with MinIO Server](https://docs.min.io/docs/minio-client-quickstart-guide)
-- [Use `mc sql` with MinIO Server](https://docs.min.io/docs/minio-client-complete-guide.html#sql)
-- [Use `minio-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
-- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-minio)
-- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-minio)
+- [Use `mc` with MinIO Server](https://docs.min.io/docs/uitstor-client-quickstart-guide)
+- [Use `mc sql` with MinIO Server](https://docs.min.io/docs/uitstor-client-complete-guide.html#sql)
+- [Use `uitstor-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
+- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-uitstor)
+- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-uitstor)
 - [The MinIO documentation website](https://docs.min.io)
 
 ## 6. Implementation Status

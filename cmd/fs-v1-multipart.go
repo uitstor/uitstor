@@ -31,8 +31,8 @@ import (
 	"time"
 
 	jsoniter "github.com/json-iterator/go"
-	xioutil "github.com/minio/minio/internal/ioutil"
-	"github.com/minio/minio/internal/logger"
+	xioutil "github.com/uitstor/uitstor/internal/ioutil"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/trie"
 )
 
@@ -41,14 +41,14 @@ const (
 	bgAppendsCleanupInterval = 10 * time.Minute
 )
 
-// Returns EXPORT/.minio.sys/multipart/SHA256/UPLOADID
+// Returns EXPORT/.uitstor.sys/multipart/SHA256/UPLOADID
 func (fs *FSObjects) getUploadIDDir(bucket, object, uploadID string) string {
-	return pathJoin(fs.fsPath, minioMetaMultipartBucket, getSHA256Hash([]byte(pathJoin(bucket, object))), uploadID)
+	return pathJoin(fs.fsPath, uitstorMetaMultipartBucket, getSHA256Hash([]byte(pathJoin(bucket, object))), uploadID)
 }
 
-// Returns EXPORT/.minio.sys/multipart/SHA256
+// Returns EXPORT/.uitstor.sys/multipart/SHA256
 func (fs *FSObjects) getMultipartSHADir(bucket, object string) string {
-	return pathJoin(fs.fsPath, minioMetaMultipartBucket, getSHA256Hash([]byte(pathJoin(bucket, object))))
+	return pathJoin(fs.fsPath, uitstorMetaMultipartBucket, getSHA256Hash([]byte(pathJoin(bucket, object))))
 }
 
 // Returns partNumber.etag
@@ -80,7 +80,7 @@ func (fs *FSObjects) backgroundAppend(ctx context.Context, bucket, object, uploa
 	file := fs.appendFileMap[uploadID]
 	if file == nil {
 		file = &fsAppendFile{
-			filePath: pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID, bgAppendsDirName, fmt.Sprintf("%s.%s", uploadID, mustGetUUID())),
+			filePath: pathJoin(fs.fsPath, uitstorMetaTmpBucket, fs.fsUUID, bgAppendsDirName, fmt.Sprintf("%s.%s", uploadID, mustGetUUID())),
 		}
 		fs.appendFileMap[uploadID] = file
 	}
@@ -255,8 +255,8 @@ func (fs *FSObjects) NewMultipartUpload(ctx context.Context, bucket, object stri
 }
 
 // CopyObjectPart - similar to PutObjectPart but reads data from an existing
-// object. Internally incoming data is written to '.minio.sys/tmp' location
-// and safely renamed to '.minio.sys/multipart' for reach parts.
+// object. Internally incoming data is written to '.uitstor.sys/tmp' location
+// and safely renamed to '.uitstor.sys/multipart' for reach parts.
 func (fs *FSObjects) CopyObjectPart(ctx context.Context, srcBucket, srcObject, dstBucket, dstObject, uploadID string, partID int,
 	startOffset int64, length int64, srcInfo ObjectInfo, srcOpts, dstOpts ObjectOptions) (pi PartInfo, e error,
 ) {
@@ -282,8 +282,8 @@ func (fs *FSObjects) CopyObjectPart(ctx context.Context, srcBucket, srcObject, d
 
 // PutObjectPart - reads incoming data until EOF for the part file on
 // an ongoing multipart transaction. Internally incoming data is
-// written to '.minio.sys/tmp' location and safely renamed to
-// '.minio.sys/multipart' for reach parts.
+// written to '.uitstor.sys/tmp' location and safely renamed to
+// '.uitstor.sys/multipart' for reach parts.
 func (fs *FSObjects) PutObjectPart(ctx context.Context, bucket, object, uploadID string, partID int, r *PutObjReader, opts ObjectOptions) (pi PartInfo, e error) {
 	if opts.VersionID != "" && opts.VersionID != nullVersionID {
 		return pi, VersionNotFound{
@@ -319,7 +319,7 @@ func (fs *FSObjects) PutObjectPart(ctx context.Context, bucket, object, uploadID
 		return pi, toObjectErr(err, bucket, object)
 	}
 
-	tmpPartPath := pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID, uploadID+"."+mustGetUUID()+"."+strconv.Itoa(partID))
+	tmpPartPath := pathJoin(fs.fsPath, uitstorMetaTmpBucket, fs.fsUUID, uploadID+"."+mustGetUUID()+"."+strconv.Itoa(partID))
 	bytesWritten, err := fsCreateFile(ctx, tmpPartPath, data, data.Size())
 
 	// Delete temporary part in case of failure. If
@@ -328,7 +328,7 @@ func (fs *FSObjects) PutObjectPart(ctx context.Context, bucket, object, uploadID
 	defer fsRemoveFile(ctx, tmpPartPath)
 
 	if err != nil {
-		return pi, toObjectErr(err, minioMetaTmpBucket, tmpPartPath)
+		return pi, toObjectErr(err, uitstorMetaTmpBucket, tmpPartPath)
 	}
 
 	// Should return IncompleteBody{} error when reader has fewer
@@ -350,14 +350,14 @@ func (fs *FSObjects) PutObjectPart(ctx context.Context, bucket, object, uploadID
 		if err == errFileNotFound || err == errFileAccessDenied {
 			return pi, InvalidUploadID{Bucket: bucket, Object: object, UploadID: uploadID}
 		}
-		return pi, toObjectErr(err, minioMetaMultipartBucket, partPath)
+		return pi, toObjectErr(err, uitstorMetaMultipartBucket, partPath)
 	}
 
 	go fs.backgroundAppend(ctx, bucket, object, uploadID)
 
 	fi, err := fsStatFile(ctx, partPath)
 	if err != nil {
-		return pi, toObjectErr(err, minioMetaMultipartBucket, partPath)
+		return pi, toObjectErr(err, uitstorMetaMultipartBucket, partPath)
 	}
 	return PartInfo{
 		PartNumber:   partID,
@@ -649,7 +649,7 @@ func (fs *FSObjects) CompleteMultipartUpload(ctx context.Context, bucket string,
 	}
 
 	appendFallback := true // In case background-append did not append the required parts.
-	appendFilePath := pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID, "bg-appends", fmt.Sprintf("%s.%s", uploadID, mustGetUUID()))
+	appendFilePath := pathJoin(fs.fsPath, uitstorMetaTmpBucket, fs.fsUUID, "bg-appends", fmt.Sprintf("%s.%s", uploadID, mustGetUUID()))
 
 	// Most of the times appendFile would already be fully appended by now. We call fs.backgroundAppend()
 	// to take care of the following corner case:
@@ -713,7 +713,7 @@ func (fs *FSObjects) CompleteMultipartUpload(ctx context.Context, bucket string,
 	ctx = lkctx.Context()
 	defer destLock.Unlock(lkctx.Cancel)
 
-	bucketMetaDir := pathJoin(fs.fsPath, minioMetaBucket, bucketMetaPrefix)
+	bucketMetaDir := pathJoin(fs.fsPath, uitstorMetaBucket, bucketMetaPrefix)
 	fsMetaPath := pathJoin(bucketMetaDir, bucket, object, fs.metaJSONFile)
 	metaFile, err := fs.rwPool.Write(fsMetaPath)
 	var freshFile bool
@@ -737,7 +737,7 @@ func (fs *FSObjects) CompleteMultipartUpload(ctx context.Context, bucket string,
 		// We should preserve the `fs.json` of any
 		// existing object
 		if e != nil && freshFile {
-			tmpDir := pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID)
+			tmpDir := pathJoin(fs.fsPath, uitstorMetaTmpBucket, fs.fsUUID)
 			fsRemoveMeta(ctx, bucketMetaDir, fsMetaPath, tmpDir)
 		}
 	}()
@@ -778,7 +778,7 @@ func (fs *FSObjects) CompleteMultipartUpload(ctx context.Context, bucket string,
 
 	// Purge multipart folders
 	{
-		fsTmpObjPath := pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID, mustGetUUID())
+		fsTmpObjPath := pathJoin(fs.fsPath, uitstorMetaTmpBucket, fs.fsUUID, mustGetUUID())
 		defer fsRemoveAll(ctx, fsTmpObjPath) // remove multipart temporary files in background.
 
 		Rename(uploadIDDir, fsTmpObjPath)
@@ -837,7 +837,7 @@ func (fs *FSObjects) AbortMultipartUpload(ctx context.Context, bucket, object, u
 
 	// Purge multipart folders
 	{
-		fsTmpObjPath := pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID, mustGetUUID())
+		fsTmpObjPath := pathJoin(fs.fsPath, uitstorMetaTmpBucket, fs.fsUUID, mustGetUUID())
 		defer fsRemoveAll(ctx, fsTmpObjPath) // remove multipart temporary files in background.
 
 		Rename(uploadIDDir, fsTmpObjPath)
@@ -854,19 +854,19 @@ func (fs *FSObjects) AbortMultipartUpload(ctx context.Context, bucket, object, u
 func (fs *FSObjects) getAllUploadIDs(ctx context.Context) (result map[string]string) {
 	result = make(map[string]string)
 
-	entries, err := readDir(pathJoin(fs.fsPath, minioMetaMultipartBucket))
+	entries, err := readDir(pathJoin(fs.fsPath, uitstorMetaMultipartBucket))
 	if err != nil {
 		return
 	}
 	for _, entry := range entries {
-		uploadIDs, err := readDir(pathJoin(fs.fsPath, minioMetaMultipartBucket, entry))
+		uploadIDs, err := readDir(pathJoin(fs.fsPath, uitstorMetaMultipartBucket, entry))
 		if err != nil {
 			continue
 		}
 		// Remove the trailing slash separator
 		for i := range uploadIDs {
 			uploadID := strings.TrimSuffix(uploadIDs[i], SlashSeparator)
-			result[uploadID] = pathJoin(fs.fsPath, minioMetaMultipartBucket, entry, uploadID)
+			result[uploadID] = pathJoin(fs.fsPath, uitstorMetaMultipartBucket, entry, uploadID)
 		}
 	}
 	return
@@ -900,7 +900,7 @@ func (fs *FSObjects) cleanupStaleUploads(ctx context.Context) {
 			fs.appendFileMapMu.Unlock()
 
 			// Remove background appends file from the disk
-			bgAppendsDir := pathJoin(fs.fsPath, minioMetaTmpBucket, fs.fsUUID, bgAppendsDirName)
+			bgAppendsDir := pathJoin(fs.fsPath, uitstorMetaTmpBucket, fs.fsUUID, bgAppendsDirName)
 			entries, err := readDir(bgAppendsDir)
 			if err != nil {
 				break

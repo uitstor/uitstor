@@ -139,34 +139,34 @@ const (
 	AmzRequestID = "x-amz-request-id"
 
 	// Deployment id.
-	MinioDeploymentID = "x-minio-deployment-id"
+	MinioDeploymentID = "x-uitstor-deployment-id"
 
 	// Server-Status
-	MinIOServerStatus = "x-minio-server-status"
+	MinIOServerStatus = "x-uitstor-server-status"
 
 	// Delete special flag to force delete a bucket or a prefix
-	MinIOForceDelete = "x-minio-force-delete"
+	MinIOForceDelete = "x-uitstor-force-delete"
 
 	// Create special flag to force create a bucket
-	MinIOForceCreate = "x-minio-force-create"
+	MinIOForceCreate = "x-uitstor-force-create"
 
 	// Header indicates if the mtime should be preserved by client
-	MinIOSourceMTime = "x-minio-source-mtime"
+	MinIOSourceMTime = "x-uitstor-source-mtime"
 
 	// Header indicates if the etag should be preserved by client
-	MinIOSourceETag = "x-minio-source-etag"
+	MinIOSourceETag = "x-uitstor-source-etag"
 
 	// Writes expected write quorum
-	MinIOWriteQuorum = "x-minio-write-quorum"
+	MinIOWriteQuorum = "x-uitstor-write-quorum"
 
 	// Reports number of drives currently healing
-	MinIOHealingDrives = "x-minio-healing-drives"
+	MinIOHealingDrives = "x-uitstor-healing-drives"
 
 	// Header indicates if the delete marker should be preserved by client
-	MinIOSourceDeleteMarker = "x-minio-source-deletemarker"
+	MinIOSourceDeleteMarker = "x-uitstor-source-deletemarker"
 
 	// Header indicates if the delete marker version needs to be purged.
-	MinIOSourceDeleteMarkerDelete = "x-minio-source-deletemarker-delete"
+	MinIOSourceDeleteMarkerDelete = "x-uitstor-source-deletemarker-delete"
 
 	// Header indicates permanent delete replication status.
 	MinIODeleteReplicationStatus = "X-Minio-Replication-Delete-Status"
@@ -201,5 +201,5 @@ const (
 // http headers sent to webhook targets
 const (
 	// Reports the version of MinIO server
-	MinIOVersion = "x-minio-version"
+	MinIOVersion = "x-uitstor-version"
 )

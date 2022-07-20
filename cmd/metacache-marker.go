@@ -23,7 +23,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 // markerTagVersion is the marker version.
@@ -33,7 +33,7 @@ const markerTagVersion = "v2"
 // parseMarker will parse a marker possibly encoded with encodeMarker
 func (o *listPathOptions) parseMarker() {
 	s := o.Marker
-	if !strings.Contains(s, "[minio_cache:"+markerTagVersion) {
+	if !strings.Contains(s, "[uitstor_cache:"+markerTagVersion) {
 		return
 	}
 	start := strings.LastIndex(s, "[")
@@ -47,7 +47,7 @@ func (o *listPathOptions) parseMarker() {
 			continue
 		}
 		switch kv[0] {
-		case "minio_cache":
+		case "uitstor_cache":
 			if kv[1] != markerTagVersion {
 				break
 			}
@@ -83,10 +83,10 @@ func (o *listPathOptions) parseMarker() {
 func (o listPathOptions) encodeMarker(marker string) string {
 	if o.ID == "" {
 		// Mark as returning listing...
-		return fmt.Sprintf("%s[minio_cache:%s,return:]", marker, markerTagVersion)
+		return fmt.Sprintf("%s[uitstor_cache:%s,return:]", marker, markerTagVersion)
 	}
 	if strings.ContainsAny(o.ID, "[:,") {
 		logger.LogIf(context.Background(), fmt.Errorf("encodeMarker: uuid %s contained invalid characters", o.ID))
 	}
-	return fmt.Sprintf("%s[minio_cache:%s,id:%s,p:%d,s:%d]", marker, markerTagVersion, o.ID, o.pool, o.set)
+	return fmt.Sprintf("%s[uitstor_cache:%s,id:%s,p:%d,s:%d]", marker, markerTagVersion, o.ID, o.pool, o.set)
 }

@@ -25,8 +25,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/klauspost/compress/gzhttp"
 	"github.com/minio/console/restapi"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/wildcard"
 	"github.com/rs/cors"
 )
@@ -203,18 +203,18 @@ func registerAPIRouter(router *mux.Router) {
 				if err != nil {
 					host = r.Host
 				}
-				// Make sure to skip matching minio.<domain>` this is
+				// Make sure to skip matching uitstor.<domain>` this is
 				// specifically meant for operator/k8s deployment
 				// The reason we need to skip this is for a special
 				// usecase where we need to make sure that
-				// minio.<namespace>.svc.<cluster_domain> is ignored
+				// uitstor.<namespace>.svc.<cluster_domain> is ignored
 				// by the bucketDNS style to ensure that path style
 				// is available and honored at this domain.
 				//
 				// All other `<bucket>.<namespace>.svc.<cluster_domain>`
 				// makes sure that buckets are routed through this matcher
 				// to match for `<bucket>`
-				return host != minioReservedBucket+"."+domainName
+				return host != uitstorReservedBucket+"."+domainName
 			}).Host("{bucket:.+}."+domainName).Subrouter())
 		} else {
 			routers = append(routers, apiRouter.Host("{bucket:.+}."+domainName).Subrouter())

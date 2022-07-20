@@ -1,11 +1,11 @@
-# Bucket Lifecycle Configuration Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Lifecycle Configuration Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
 Enable object lifecycle configuration on buckets to setup automatic deletion of objects after a specified number of days or a specified date.
 
 ## 1. Prerequisites
 
-- Install MinIO - [MinIO Quickstart Guide](https://docs.min.io/docs/minio-quickstart-guide).
-- Install `mc` - [mc Quickstart Guide](https://docs.minio.io/docs/minio-client-quickstart-guide.html)
+- Install MinIO - [MinIO Quickstart Guide](https://docs.min.io/docs/uitstor-quickstart-guide).
+- Install `mc` - [mc Quickstart Guide](https://docs.uitstor.io/docs/uitstor-client-quickstart-guide.html)
 
 ## 2. Enable bucket lifecycle configuration
 
@@ -59,7 +59,7 @@ TempUploads |  temp/   |    ✓       |  ✓     |   7 day(s)   |     ✗       
 
 ## 3. Activate ILM versioning features
 
-This will only work with a versioned bucket, take a look at [Bucket Versioning Guide](https://docs.min.io/docs/minio-bucket-versioning-guide.html) for more understanding.
+This will only work with a versioned bucket, take a look at [Bucket Versioning Guide](https://docs.min.io/docs/uitstor-bucket-versioning-guide.html) for more understanding.
 
 ### 3.1 Automatic removal of non current objects versions
 
@@ -167,7 +167,7 @@ To transition objects in a bucket to a destination bucket on a different cluster
 Using above tier, set up a lifecycle rule with transition:
 
 ```
- mc ilm add --expiry-days 365 --transition-days 45 --storage-class "AZURETIER" myminio/srcbucket
+ mc ilm add --expiry-days 365 --transition-days 45 --storage-class "AZURETIER" myuitstor/srcbucket
 ```
 
 Note: In the case of S3, it is possible to create a tier from MinIO running in EC2 to S3 using AWS role attached to EC2 as credentials instead of accesskey/secretkey:

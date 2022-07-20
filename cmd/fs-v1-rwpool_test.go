@@ -22,7 +22,7 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/minio/minio/internal/lock"
+	"github.com/uitstor/uitstor/internal/lock"
 )
 
 // Tests long path calls.

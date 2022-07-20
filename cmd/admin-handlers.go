@@ -45,13 +45,13 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/klauspost/compress/zip"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/dsync"
-	"github.com/minio/minio/internal/handlers"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/kms"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/logger/message/log"
-	"github.com/minio/minio/internal/pubsub"
+	"github.com/uitstor/uitstor/internal/dsync"
+	"github.com/uitstor/uitstor/internal/handlers"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/kms"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger/message/log"
+	"github.com/uitstor/uitstor/internal/pubsub"
 	iampolicy "github.com/minio/pkg/iam/policy"
 	xnet "github.com/minio/pkg/net"
 	"github.com/secure-io/sio-go"
@@ -77,13 +77,13 @@ func updateServer(u *url.URL, sha256Sum []byte, lrTime time.Time, releaseInfo st
 	}
 
 	us.CurrentVersion = Version
-	us.UpdatedVersion = lrTime.Format(minioReleaseTagTimeLayout)
+	us.UpdatedVersion = lrTime.Format(uitstorReleaseTagTimeLayout)
 	return us, nil
 }
 
-// ServerUpdateHandler - POST /minio/admin/v3/update?updateURL={updateURL}
+// ServerUpdateHandler - POST /uitstor/admin/v3/update?updateURL={updateURL}
 // ----------
-// updates all minio servers and restarts them gracefully.
+// updates all uitstor servers and restarts them gracefully.
 func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "ServerUpdate")
 
@@ -104,9 +104,9 @@ func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Req
 	updateURL := vars["updateURL"]
 	mode := getMinioMode()
 	if updateURL == "" {
-		updateURL = minioReleaseInfoURL
+		updateURL = uitstorReleaseInfoURL
 		if runtime.GOOS == globalWindowsOSName {
-			updateURL = minioReleaseWindowsInfoURL
+			updateURL = uitstorReleaseWindowsInfoURL
 		}
 	}
 
@@ -193,7 +193,7 @@ func (a adminAPIHandlers) ServerUpdateHandler(w http.ResponseWriter, r *http.Req
 	globalServiceSignalCh <- serviceRestart
 }
 
-// ServiceHandler - POST /minio/admin/v3/service?action={action}
+// ServiceHandler - POST /uitstor/admin/v3/service?action={action}
 // ----------
 // Supports following actions:
 // - restart (restarts all the MinIO instances in a setup)
@@ -303,7 +303,7 @@ type ServerHTTPStats struct {
 	TotalS3RejectedInvalid uint64             `json:"totalS3RejectedInvalid"`
 }
 
-// StorageInfoHandler - GET /minio/admin/v3/storageinfo
+// StorageInfoHandler - GET /uitstor/admin/v3/storageinfo
 // ----------
 // Get server information
 func (a adminAPIHandlers) StorageInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -345,7 +345,7 @@ func (a adminAPIHandlers) StorageInfoHandler(w http.ResponseWriter, r *http.Requ
 	writeSuccessResponseJSON(w, jsonBytes)
 }
 
-// MetricsHandler - GET /minio/admin/v3/metrics
+// MetricsHandler - GET /uitstor/admin/v3/metrics
 // ----------
 // Get realtime server metrics
 func (a adminAPIHandlers) MetricsHandler(w http.ResponseWriter, r *http.Request) {
@@ -431,7 +431,7 @@ func (a adminAPIHandlers) MetricsHandler(w http.ResponseWriter, r *http.Request)
 	}
 }
 
-// DataUsageInfoHandler - GET /minio/admin/v3/datausage
+// DataUsageInfoHandler - GET /uitstor/admin/v3/datausage
 // ----------
 // Get server/cluster data usage info
 func (a adminAPIHandlers) DataUsageInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -600,7 +600,7 @@ type StartProfilingResult struct {
 	Error    string `json:"error"`
 }
 
-// StartProfilingHandler - POST /minio/admin/v3/profiling/start?profilerType={profilerType}
+// StartProfilingHandler - POST /uitstor/admin/v3/profiling/start?profilerType={profilerType}
 // ----------
 // Enable server profiling
 func (a adminAPIHandlers) StartProfilingHandler(w http.ResponseWriter, r *http.Request) {
@@ -632,7 +632,7 @@ func (a adminAPIHandlers) StartProfilingHandler(w http.ResponseWriter, r *http.R
 	defer globalProfilerMu.Unlock()
 
 	if globalProfiler == nil {
-		globalProfiler = make(map[string]minioProfiler, 10)
+		globalProfiler = make(map[string]uitstorProfiler, 10)
 	}
 
 	// Stop profiler of all types if already running
@@ -687,7 +687,7 @@ func (a adminAPIHandlers) StartProfilingHandler(w http.ResponseWriter, r *http.R
 	writeSuccessResponseJSON(w, startProfilingResultInBytes)
 }
 
-// ProfileHandler - POST /minio/admin/v3/profile/?profilerType={profilerType}
+// ProfileHandler - POST /uitstor/admin/v3/profile/?profilerType={profilerType}
 // ----------
 // Enable server profiling
 func (a adminAPIHandlers) ProfileHandler(w http.ResponseWriter, r *http.Request) {
@@ -723,7 +723,7 @@ func (a adminAPIHandlers) ProfileHandler(w http.ResponseWriter, r *http.Request)
 	globalProfilerMu.Lock()
 
 	if globalProfiler == nil {
-		globalProfiler = make(map[string]minioProfiler, 10)
+		globalProfiler = make(map[string]uitstorProfiler, 10)
 	}
 
 	// Stop profiler of all types if already running
@@ -782,7 +782,7 @@ func (f dummyFileInfo) ModTime() time.Time { return f.modTime }
 func (f dummyFileInfo) IsDir() bool        { return f.isDir }
 func (f dummyFileInfo) Sys() interface{}   { return f.sys }
 
-// DownloadProfilingHandler - POST /minio/admin/v3/profiling/download
+// DownloadProfilingHandler - POST /uitstor/admin/v3/profiling/download
 // ----------
 // Download profiling information of all nodes in a zip format - deprecated API
 func (a adminAPIHandlers) DownloadProfilingHandler(w http.ResponseWriter, r *http.Request) {
@@ -873,7 +873,7 @@ func extractHealInitParams(vars map[string]string, qParms url.Values, r io.Reade
 	return
 }
 
-// HealHandler - POST /minio/admin/v3/heal/
+// HealHandler - POST /uitstor/admin/v3/heal/
 // -----------
 // Start heal processing and return heal status items.
 //
@@ -1121,7 +1121,7 @@ func (a adminAPIHandlers) NetperfHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	nsLock := objectAPI.NewNSLock(minioMetaBucket, "netperf")
+	nsLock := objectAPI.NewNSLock(uitstorMetaBucket, "netperf")
 	lkctx, err := nsLock.GetLock(ctx, globalOperationTimeout)
 	if err != nil {
 		writeErrorResponseJSON(ctx, w, errorCodes.ToAPIErr(toAPIErrorCode(ctx, err)), r.URL)
@@ -1418,7 +1418,7 @@ func shouldTrace(trcInfo madmin.TraceInfo, opts madmin.ServiceTraceOpts) (should
 	}
 
 	// Check internal path
-	isInternal := isHTTP && HasPrefix(trcInfo.HTTP.ReqInfo.Path, minioReservedBucketPath+SlashSeparator)
+	isInternal := isHTTP && HasPrefix(trcInfo.HTTP.ReqInfo.Path, uitstorReservedBucketPath+SlashSeparator)
 	if isInternal && !opts.Internal {
 		return false
 	}
@@ -1446,7 +1446,7 @@ func extractTraceOptions(r *http.Request) (opts madmin.ServiceTraceOpts, err err
 	return
 }
 
-// TraceHandler - POST /minio/admin/v3/trace
+// TraceHandler - POST /uitstor/admin/v3/trace
 // ----------
 // The handler sends http trace to the connected HTTP client.
 func (a adminAPIHandlers) TraceHandler(w http.ResponseWriter, r *http.Request) {
@@ -1600,7 +1600,7 @@ func (a adminAPIHandlers) ConsoleLogHandler(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-// KMSCreateKeyHandler - POST /minio/admin/v3/kms/key/create?key-id=<master-key-id>
+// KMSCreateKeyHandler - POST /uitstor/admin/v3/kms/key/create?key-id=<master-key-id>
 func (a adminAPIHandlers) KMSCreateKeyHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "KMSCreateKey")
 	defer logger.AuditLog(ctx, w, r, mustGetClaimsFromToken(r))
@@ -1622,7 +1622,7 @@ func (a adminAPIHandlers) KMSCreateKeyHandler(w http.ResponseWriter, r *http.Req
 	writeSuccessResponseHeadersOnly(w)
 }
 
-// KMSKeyStatusHandler - GET /minio/admin/v3/kms/status
+// KMSKeyStatusHandler - GET /uitstor/admin/v3/kms/status
 func (a adminAPIHandlers) KMSStatusHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "KMSStatus")
 	defer logger.AuditLog(ctx, w, r, mustGetClaimsFromToken(r))
@@ -1660,7 +1660,7 @@ func (a adminAPIHandlers) KMSStatusHandler(w http.ResponseWriter, r *http.Reques
 	writeSuccessResponseJSON(w, resp)
 }
 
-// KMSKeyStatusHandler - GET /minio/admin/v3/kms/key/status?key-id=<master-key-id>
+// KMSKeyStatusHandler - GET /uitstor/admin/v3/kms/key/status?key-id=<master-key-id>
 func (a adminAPIHandlers) KMSKeyStatusHandler(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "KMSKeyStatus")
 
@@ -1870,7 +1870,7 @@ func getKubernetesInfo(dctx context.Context) madmin.KubernetesInfo {
 	return ki
 }
 
-// HealthInfoHandler - GET /minio/admin/v3/healthinfo
+// HealthInfoHandler - GET /uitstor/admin/v3/healthinfo
 // ----------
 // Get server health info
 func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -1925,7 +1925,7 @@ func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Reque
 		}
 	}
 
-	nsLock := objectAPI.NewNSLock(minioMetaBucket, "health-check-in-progress")
+	nsLock := objectAPI.NewNSLock(uitstorMetaBucket, "health-check-in-progress")
 	lkctx, err := nsLock.GetLock(ctx, newDynamicTimeout(deadline, deadline))
 	if err != nil { // returns a locked lock
 		errResp(err)
@@ -2091,10 +2091,10 @@ func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Reque
 		}
 
 		// Server start command regex groups:
-		// 1 - minio server
-		// 2 - flags e.g. `--address :9000 --certs-dir /etc/minio/certs`
+		// 1 - uitstor server
+		// 2 - flags e.g. `--address :9000 --certs-dir /etc/uitstor/certs`
 		// 3 - pool args e.g. `https://node{01...16}.domain/data/disk{001...204} https://node{17...32}.domain/data/disk{001...204}`
-		re := regexp.MustCompile(`^(.*minio\s+server\s+)(--[^\s]+\s+[^\s]+\s+)*(.*)`)
+		re := regexp.MustCompile(`^(.*uitstor\s+server\s+)(--[^\s]+\s+[^\s]+\s+)*(.*)`)
 
 		// stays unchanged in the anonymized version
 		cmdLineWithoutPools := re.ReplaceAllString(cmdLine, `$1$2`)
@@ -2162,7 +2162,7 @@ func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Reque
 	}
 
 	getAndWriteMinioConfig := func() {
-		if query.Get("minioconfig") == "true" {
+		if query.Get("uitstorconfig") == "true" {
 			config, err := readServerConfig(ctx, objectAPI)
 			if err != nil {
 				healthInfo.Minio.Config = madmin.MinioConfig{
@@ -2296,7 +2296,7 @@ func (a adminAPIHandlers) HealthInfoHandler(w http.ResponseWriter, r *http.Reque
 		getAndWriteSysServices()
 		getAndWriteSysConfig()
 
-		if query.Get("minioinfo") == "true" {
+		if query.Get("uitstorinfo") == "true" {
 			infoMessage := getServerInfo(ctx, r)
 			servers := []madmin.ServerInfo{}
 			for _, server := range infoMessage.Servers {
@@ -2389,7 +2389,7 @@ func getTLSInfo() madmin.TLSInfo {
 	return tlsInfo
 }
 
-// BandwidthMonitorHandler - GET /minio/admin/v3/bandwidth
+// BandwidthMonitorHandler - GET /uitstor/admin/v3/bandwidth
 // ----------
 // Get bandwidth consumption information
 func (a adminAPIHandlers) BandwidthMonitorHandler(w http.ResponseWriter, r *http.Request) {
@@ -2449,7 +2449,7 @@ func (a adminAPIHandlers) BandwidthMonitorHandler(w http.ResponseWriter, r *http
 	}
 }
 
-// ServerInfoHandler - GET /minio/admin/v3/info
+// ServerInfoHandler - GET /uitstor/admin/v3/info
 // ----------
 // Get server information
 func (a adminAPIHandlers) ServerInfoHandler(w http.ResponseWriter, r *http.Request) {
@@ -2641,7 +2641,7 @@ type getRawDataer interface {
 	GetRawData(ctx context.Context, volume, file string, fn func(r io.Reader, host string, disk string, filename string, info StatInfo) error) error
 }
 
-// InspectDataHandler - GET /minio/admin/v3/inspect-data
+// InspectDataHandler - GET /uitstor/admin/v3/inspect-data
 // ----------
 // Download file from all nodes in a zip format
 func (a adminAPIHandlers) InspectDataHandler(w http.ResponseWriter, r *http.Request) {
@@ -2758,8 +2758,8 @@ func (a adminAPIHandlers) InspectDataHandler(w http.ResponseWriter, r *http.Requ
 	}
 
 	// save the format.json as part of inspect by default
-	if volume != minioMetaBucket && file != formatConfigFile {
-		err = o.GetRawData(ctx, minioMetaBucket, formatConfigFile, rawDataFn)
+	if volume != uitstorMetaBucket && file != formatConfigFile {
+		err = o.GetRawData(ctx, uitstorMetaBucket, formatConfigFile, rawDataFn)
 	}
 	if !errors.Is(err, errFileNotFound) {
 		logger.LogIf(ctx, err)

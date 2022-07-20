@@ -38,15 +38,15 @@ import (
 	"time"
 
 	"github.com/djherbis/atime"
-	"github.com/minio/minio/internal/config/cache"
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/disk"
-	"github.com/minio/minio/internal/fips"
-	"github.com/minio/minio/internal/hash"
-	xhttp "github.com/minio/minio/internal/http"
-	xioutil "github.com/minio/minio/internal/ioutil"
-	"github.com/minio/minio/internal/kms"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/config/cache"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/disk"
+	"github.com/uitstor/uitstor/internal/fips"
+	"github.com/uitstor/uitstor/internal/hash"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	xioutil "github.com/uitstor/uitstor/internal/ioutil"
+	"github.com/uitstor/uitstor/internal/kms"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/sio"
 )
 
@@ -369,7 +369,7 @@ func (c *diskCache) purge(ctx context.Context) {
 	}
 
 	filterFn := func(name string, typ os.FileMode) error {
-		if name == minioMetaBucket {
+		if name == uitstorMetaBucket {
 			// Proceed to next file.
 			return nil
 		}
@@ -729,7 +729,7 @@ func getCacheSHADir(dir, bucket, object string) string {
 
 // returns temporary writeback cache location.
 func getCacheWriteBackSHADir(dir, bucket, object string) string {
-	return pathJoin(dir, minioMetaBucket, "writeback", getSHA256Hash([]byte(pathJoin(bucket, object))))
+	return pathJoin(dir, uitstorMetaBucket, "writeback", getSHA256Hash([]byte(pathJoin(bucket, object))))
 }
 
 // Cache data to disk with bitrot checksum added for each block of 1MB
@@ -1231,7 +1231,7 @@ func (c *diskCache) Exists(ctx context.Context, bucket, object string) bool {
 func (c *diskCache) scanCacheWritebackFailures(ctx context.Context) {
 	defer close(c.retryWritebackCh)
 	filterFn := func(name string, typ os.FileMode) error {
-		if name == minioMetaBucket {
+		if name == uitstorMetaBucket {
 			// Proceed to next file.
 			return nil
 		}
@@ -1261,7 +1261,7 @@ func (c *diskCache) scanCacheWritebackFailures(ctx context.Context) {
 }
 
 // NewMultipartUpload caches multipart uploads when writethrough is MINIO_CACHE_COMMIT mode
-// multiparts are saved in .minio.sys/multipart/cachePath/uploadID dir until finalized. Then the individual parts
+// multiparts are saved in .uitstor.sys/multipart/cachePath/uploadID dir until finalized. Then the individual parts
 // are moved from the upload dir to cachePath/ directory.
 func (c *diskCache) NewMultipartUpload(ctx context.Context, bucket, object, uID string, opts ObjectOptions) (uploadID string, err error) {
 	uploadID = uID
@@ -1472,7 +1472,7 @@ func (c *diskCache) uploadIDExists(bucket, object, uploadID string) (err error) 
 }
 
 // CompleteMultipartUpload completes multipart upload on cache. The parts and cache.json are moved from the temporary location in
-// .minio.sys/multipart/cacheSHA/.. to cacheSHA path after part verification succeeds.
+// .uitstor.sys/multipart/cacheSHA/.. to cacheSHA path after part verification succeeds.
 func (c *diskCache) CompleteMultipartUpload(ctx context.Context, bucket, object, uploadID string, uploadedParts []CompletePart, roi ObjectInfo, opts ObjectOptions) (oi ObjectInfo, err error) {
 	cachePath := getCacheSHADir(c.dir, bucket, object)
 	cLock := c.NewNSLockFn(cachePath)
@@ -1618,7 +1618,7 @@ func cacheObjectToPartOffset(objInfo ObjectInfo, offset int64) (partIndex int, p
 
 // get path of on-going multipart caching
 func getMultipartCacheSHADir(dir, bucket, object string) string {
-	return pathJoin(dir, minioMetaBucket, cacheMultipartDir, getSHA256Hash([]byte(pathJoin(bucket, object))))
+	return pathJoin(dir, uitstorMetaBucket, cacheMultipartDir, getSHA256Hash([]byte(pathJoin(bucket, object))))
 }
 
 // clean up stale cache multipart uploads according to cleanup interval.
@@ -1631,9 +1631,9 @@ func (c *diskCache) cleanupStaleUploads(ctx context.Context) {
 			return
 		case <-timer.C:
 			now := time.Now()
-			readDirFn(pathJoin(c.dir, minioMetaBucket, cacheMultipartDir), func(shaDir string, typ os.FileMode) error {
-				return readDirFn(pathJoin(c.dir, minioMetaBucket, cacheMultipartDir, shaDir), func(uploadIDDir string, typ os.FileMode) error {
-					uploadIDPath := pathJoin(c.dir, minioMetaBucket, cacheMultipartDir, shaDir, uploadIDDir)
+			readDirFn(pathJoin(c.dir, uitstorMetaBucket, cacheMultipartDir), func(shaDir string, typ os.FileMode) error {
+				return readDirFn(pathJoin(c.dir, uitstorMetaBucket, cacheMultipartDir, shaDir), func(uploadIDDir string, typ os.FileMode) error {
+					uploadIDPath := pathJoin(c.dir, uitstorMetaBucket, cacheMultipartDir, shaDir, uploadIDDir)
 					fi, err := os.Stat(uploadIDPath)
 					if err != nil {
 						return nil
@@ -1646,8 +1646,8 @@ func (c *diskCache) cleanupStaleUploads(ctx context.Context) {
 			})
 			// clean up of writeback folder where cache.json no longer exists in the main c.dir/<sha256(bucket,object> path
 			// and if past upload expiry window.
-			readDirFn(pathJoin(c.dir, minioMetaBucket, cacheWritebackDir), func(shaDir string, typ os.FileMode) error {
-				wbdir := pathJoin(c.dir, minioMetaBucket, cacheWritebackDir, shaDir)
+			readDirFn(pathJoin(c.dir, uitstorMetaBucket, cacheWritebackDir), func(shaDir string, typ os.FileMode) error {
+				wbdir := pathJoin(c.dir, uitstorMetaBucket, cacheWritebackDir, shaDir)
 				cachedir := pathJoin(c.dir, shaDir)
 				if _, err := os.Stat(cachedir); os.IsNotExist(err) {
 					fi, err := os.Stat(wbdir)

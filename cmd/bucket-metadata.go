@@ -31,16 +31,16 @@ import (
 
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	bucketsse "github.com/minio/minio/internal/bucket/encryption"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	objectlock "github.com/minio/minio/internal/bucket/object/lock"
-	"github.com/minio/minio/internal/bucket/replication"
-	"github.com/minio/minio/internal/bucket/versioning"
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/event"
-	"github.com/minio/minio/internal/fips"
-	"github.com/minio/minio/internal/kms"
-	"github.com/minio/minio/internal/logger"
+	bucketsse "github.com/uitstor/uitstor/internal/bucket/encryption"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	objectlock "github.com/uitstor/uitstor/internal/bucket/object/lock"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
+	"github.com/uitstor/uitstor/internal/bucket/versioning"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/event"
+	"github.com/uitstor/uitstor/internal/fips"
+	"github.com/uitstor/uitstor/internal/kms"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/bucket/policy"
 	"github.com/minio/sio"
 )
@@ -297,7 +297,7 @@ func (b *BucketMetadata) convertLegacyConfigs(ctx context.Context, objectAPI Obj
 			switch err.(type) {
 			case ObjectExistsAsDirectory:
 				// in FS mode it possible that we have actual
-				// files in this folder with `.minio.sys/buckets/bucket/configFile`
+				// files in this folder with `.uitstor.sys/buckets/bucket/configFile`
 				continue
 			}
 			if errors.Is(err, errConfigNotFound) {

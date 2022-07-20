@@ -31,10 +31,10 @@ import (
 	"strings"
 
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/handlers"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/handlers"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 	xnet "github.com/minio/pkg/net"
 )
 
@@ -106,7 +106,7 @@ func isDirectiveReplace(value string) bool {
 // must be extracted from the header.
 var userMetadataKeyPrefixes = []string{
 	"x-amz-meta-",
-	"x-minio-meta-",
+	"x-uitstor-meta-",
 }
 
 // extractMetadata extracts metadata from HTTP header and HTTP queryString.
@@ -376,7 +376,7 @@ func getResource(path string, host string, domains []string) (string, error) {
 	}
 
 	for _, domain := range domains {
-		if xhost.Name == minioReservedBucket+"."+domain {
+		if xhost.Name == uitstorReservedBucket+"."+domain {
 			continue
 		}
 		if !strings.HasSuffix(xhost.Name, "."+domain) {
@@ -388,7 +388,7 @@ func getResource(path string, host string, domains []string) (string, error) {
 	return path, nil
 }
 
-var regexVersion = regexp.MustCompile(`^/minio.*/(v\d+)/.*`)
+var regexVersion = regexp.MustCompile(`^/uitstor.*/(v\d+)/.*`)
 
 func extractAPIVersion(r *http.Request) string {
 	if matches := regexVersion.FindStringSubmatch(r.URL.Path); len(matches) > 1 {
@@ -406,7 +406,7 @@ func errorResponseHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodOptions {
 		return
 	}
-	desc := "Do not upgrade one server at a time - please follow the recommended guidelines mentioned here https://github.com/minio/minio#upgrading-minio for your environment"
+	desc := "Do not upgrade one server at a time - please follow the recommended guidelines mentioned here https://github.com/minio/minio#upgrading-uitstor for your environment"
 	switch {
 	case strings.HasPrefix(r.URL.Path, peerRESTPrefix):
 		writeErrorResponseString(r.Context(), w, APIError{

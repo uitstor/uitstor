@@ -4,17 +4,17 @@
 
 ## Prerequisites
 
-- Prometheus and MinIO configured as explained in [document here](https://github.com/minio/minio/blob/master/docs/metrics/prometheus/README.md).
+- Prometheus and MinIO configured as explained in [document here](https://github.com/uitstor/uitstor/blob/master/docs/metrics/prometheus/README.md).
 - Grafana installed as explained [here](https://grafana.com/grafana/download).
 
 ## MinIO Grafana Dashboard
 
 Visualize MinIO metrics with our official Grafana dashboard available on the [Grafana dashboard portal](https://grafana.com/grafana/dashboards/13502).
 
-Refer to the dashboard [json file here](https://raw.githubusercontent.com/minio/minio/master/docs/metrics/prometheus/grafana/minio-dashboard.json).
+Refer to the dashboard [json file here](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/metrics/prometheus/grafana/uitstor-dashboard.json).
 
-![Grafana](https://raw.githubusercontent.com/minio/minio/master/docs/metrics/prometheus/grafana/grafana-minio.png)
+![Grafana](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/metrics/prometheus/grafana/grafana-uitstor.png)
 
-Replication metrics can also be viewed in the Grafana dashboard using [json file here](https://raw.githubusercontent.com/minio/minio/master/docs/metrics/prometheus/grafana/minio-replication.json).
+Replication metrics can also be viewed in the Grafana dashboard using [json file here](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/metrics/prometheus/grafana/uitstor-replication.json).
 
-![Grafana](https://raw.githubusercontent.com/minio/minio/master/docs/metrics/prometheus/grafana/grafana-replication.png)
+![Grafana](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/metrics/prometheus/grafana/grafana-replication.png)

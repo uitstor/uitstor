@@ -34,12 +34,12 @@ import (
 	"github.com/cespare/xxhash/v2"
 	"github.com/klauspost/compress/zip"
 	"github.com/minio/madmin-go"
-	bucketBandwidth "github.com/minio/minio/internal/bucket/bandwidth"
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/event"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	bucketBandwidth "github.com/uitstor/uitstor/internal/bucket/bandwidth"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/event"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 	"github.com/minio/pkg/bucket/policy"
 	xnet "github.com/minio/pkg/net"
 )
@@ -962,7 +962,7 @@ func (sys *NotificationSys) GetMetrics(ctx context.Context, t madmin.MetricType,
 }
 
 // GetSysConfig - Get information about system config
-// (only the config that are of concern to minio)
+// (only the config that are of concern to uitstor)
 func (sys *NotificationSys) GetSysConfig(ctx context.Context) []madmin.SysConfig {
 	reply := make([]madmin.SysConfig, len(sys.peerClients))
 
@@ -988,7 +988,7 @@ func (sys *NotificationSys) GetSysConfig(ctx context.Context) []madmin.SysConfig
 }
 
 // GetSysServices - Get information about system services
-// (only the services that are of concern to minio)
+// (only the services that are of concern to uitstor)
 func (sys *NotificationSys) GetSysServices(ctx context.Context) []madmin.SysServices {
 	reply := make([]madmin.SysServices, len(sys.peerClients))
 
@@ -1242,7 +1242,7 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 
 	respElements := map[string]string{
 		"x-amz-request-id": args.RespElements["requestId"],
-		"x-minio-origin-endpoint": func() string {
+		"x-uitstor-origin-endpoint": func() string {
 			if globalMinioEndpoint != "" {
 				return globalMinioEndpoint
 			}
@@ -1251,7 +1251,7 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 	}
 	// Add deployment as part of
 	if globalDeploymentID != "" {
-		respElements["x-minio-deployment-id"] = globalDeploymentID
+		respElements["x-uitstor-deployment-id"] = globalDeploymentID
 	}
 	if args.RespElements["content-length"] != "" {
 		respElements["content-length"] = args.RespElements["content-length"]
@@ -1262,7 +1262,7 @@ func (args eventArgs) ToEvent(escape bool) event.Event {
 	}
 	newEvent := event.Event{
 		EventVersion:      "2.0",
-		EventSource:       "minio:s3",
+		EventSource:       "uitstor:s3",
 		AwsRegion:         args.ReqParams["region"],
 		EventTime:         eventTime.Format(event.AMZTimeFormat),
 		EventName:         args.EventName,
@@ -1613,7 +1613,7 @@ func (sys *NotificationSys) DriveSpeedTest(ctx context.Context, opts madmin.Driv
 	return ch
 }
 
-// ReloadSiteReplicationConfig - tells all peer minio nodes to reload the
+// ReloadSiteReplicationConfig - tells all peer uitstor nodes to reload the
 // site-replication configuration.
 func (sys *NotificationSys) ReloadSiteReplicationConfig(ctx context.Context) []error {
 	errs := make([]error, len(sys.allPeerClients))

@@ -2,7 +2,7 @@
 {{/*
 Expand the name of the chart.
 */}}
-{{- define "minio.name" -}}
+{{- define "uitstor.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
@@ -11,7 +11,7 @@ Create a default fully qualified app name.
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 If release name contains chart name it will be used as a full name.
 */}}
-{{- define "minio.fullname" -}}
+{{- define "uitstor.fullname" -}}
 {{- if .Values.fullnameOverride -}}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
 {{- else -}}
@@ -27,14 +27,14 @@ If release name contains chart name it will be used as a full name.
 {{/*
 Create chart name and version as used by the chart label.
 */}}
-{{- define "minio.chart" -}}
+{{- define "uitstor.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Return the appropriate apiVersion for networkpolicy.
 */}}
-{{- define "minio.networkPolicy.apiVersion" -}}
+{{- define "uitstor.networkPolicy.apiVersion" -}}
 {{- if semverCompare ">=1.4-0, <1.7-0" .Capabilities.KubeVersion.Version -}}
 {{- print "extensions/v1beta1" -}}
 {{- else if semverCompare ">=1.7-0, <1.16-0" .Capabilities.KubeVersion.Version -}}
@@ -47,7 +47,7 @@ Return the appropriate apiVersion for networkpolicy.
 {{/*
 Return the appropriate apiVersion for deployment.
 */}}
-{{- define "minio.deployment.apiVersion" -}}
+{{- define "uitstor.deployment.apiVersion" -}}
 {{- if semverCompare "<1.9-0" .Capabilities.KubeVersion.Version -}}
 {{- print "apps/v1beta2" -}}
 {{- else -}}
@@ -58,7 +58,7 @@ Return the appropriate apiVersion for deployment.
 {{/*
 Return the appropriate apiVersion for statefulset.
 */}}
-{{- define "minio.statefulset.apiVersion" -}}
+{{- define "uitstor.statefulset.apiVersion" -}}
 {{- if semverCompare "<1.16-0" .Capabilities.KubeVersion.Version -}}
 {{- print "apps/v1beta2" -}}
 {{- else -}}
@@ -69,7 +69,7 @@ Return the appropriate apiVersion for statefulset.
 {{/*
 Return the appropriate apiVersion for ingress.
 */}}
-{{- define "minio.ingress.apiVersion" -}}
+{{- define "uitstor.ingress.apiVersion" -}}
 {{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 {{- print "extensions/v1beta1" -}}
 {{- else if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -82,7 +82,7 @@ Return the appropriate apiVersion for ingress.
 {{/*
 Return the appropriate apiVersion for console ingress.
 */}}
-{{- define "minio.consoleIngress.apiVersion" -}}
+{{- define "uitstor.consoleIngress.apiVersion" -}}
 {{- if semverCompare "<1.14-0" .Capabilities.KubeVersion.GitVersion -}}
 {{- print "extensions/v1beta1" -}}
 {{- else if semverCompare "<1.19-0" .Capabilities.KubeVersion.GitVersion -}}
@@ -95,25 +95,25 @@ Return the appropriate apiVersion for console ingress.
 {{/*
 Determine secret name.
 */}}
-{{- define "minio.secretName" -}}
+{{- define "uitstor.secretName" -}}
 {{- if .Values.existingSecret -}}
 {{- .Values.existingSecret }}
 {{- else -}}
-{{- include "minio.fullname" . -}}
+{{- include "uitstor.fullname" . -}}
 {{- end -}}
 {{- end -}}
 
 {{/*
 Determine name for scc role and rolebinding
 */}}
-{{- define "minio.sccRoleName" -}}
-{{- printf "%s-%s" "scc" (include "minio.fullname" .) | trunc 63 | trimSuffix "-" -}}
+{{- define "uitstor.sccRoleName" -}}
+{{- printf "%s-%s" "scc" (include "uitstor.fullname" .) | trunc 63 | trimSuffix "-" -}}
 {{- end -}}
 
 {{/*
 Properly format optional additional arguments to MinIO binary
 */}}
-{{- define "minio.extraArgs" -}}
+{{- define "uitstor.extraArgs" -}}
 {{- range .Values.extraArgs -}}
 {{ " " }}{{ . }}
 {{- end -}}
@@ -122,7 +122,7 @@ Properly format optional additional arguments to MinIO binary
 {{/*
 Return the proper Docker Image Registry Secret Names
 */}}
-{{- define "minio.imagePullSecrets" -}}
+{{- define "uitstor.imagePullSecrets" -}}
 {{/*
 Helm 2.11 supports the assignment of a value to a variable defined in a different scope,
 but Helm 2.9 and 2.10 does not support it, so we need to implement this if-else logic.
@@ -147,7 +147,7 @@ imagePullSecrets:
 {{/*
 Formats volumeMount for MinIO TLS keys and trusted certs
 */}}
-{{- define "minio.tlsKeysVolumeMount" -}}
+{{- define "uitstor.tlsKeysVolumeMount" -}}
 {{- if .Values.tls.enabled }}
 - name: cert-secret-volume
   mountPath: {{ .Values.certsPath }}
@@ -162,7 +162,7 @@ Formats volumeMount for MinIO TLS keys and trusted certs
 {{/*
 Formats volume for MinIO TLS keys and trusted certs
 */}}
-{{- define "minio.tlsKeysVolume" -}}
+{{- define "uitstor.tlsKeysVolume" -}}
 {{- if .Values.tls.enabled }}
 - name: cert-secret-volume
   secret:
@@ -191,7 +191,7 @@ Formats volume for MinIO TLS keys and trusted certs
 Returns the available value for certain key in an existing secret (if it exists),
 otherwise it generates a random value.
 */}}
-{{- define "minio.getValueFromSecret" }}
+{{- define "uitstor.getValueFromSecret" }}
   {{- $len := (default 16 .Length) | int -}}
   {{- $obj := (lookup "v1" "Secret" .Namespace .Name).data -}}
   {{- if $obj }}
@@ -201,18 +201,18 @@ otherwise it generates a random value.
   {{- end -}}
 {{- end }}
 
-{{- define "minio.root.username" -}}
+{{- define "uitstor.root.username" -}}
   {{- if .Values.rootUser }}
     {{- .Values.rootUser | toString }}
   {{- else }}
-    {{- include "minio.getValueFromSecret" (dict "Namespace" .Release.Namespace "Name" (include "minio.fullname" .) "Length" 20 "Key" "rootUser") }}
+    {{- include "uitstor.getValueFromSecret" (dict "Namespace" .Release.Namespace "Name" (include "uitstor.fullname" .) "Length" 20 "Key" "rootUser") }}
   {{- end }}
 {{- end -}}
 
-{{- define "minio.root.password" -}}
+{{- define "uitstor.root.password" -}}
   {{- if .Values.rootPassword }}
     {{- .Values.rootPassword | toString }}
   {{- else }}
-    {{- include "minio.getValueFromSecret" (dict "Namespace" .Release.Namespace "Name" (include "minio.fullname" .) "Length" 40 "Key" "rootPassword") }}
+    {{- include "uitstor.getValueFromSecret" (dict "Namespace" .Release.Namespace "Name" (include "uitstor.fullname" .) "Length" 40 "Key" "rootPassword") }}
   {{- end }}
 {{- end -}}

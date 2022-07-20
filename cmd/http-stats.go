@@ -23,7 +23,7 @@ import (
 	"sync"
 	"sync/atomic"
 
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/prometheus/client_golang/prometheus"
 )
 
@@ -297,7 +297,7 @@ func (st *HTTPStats) toServerHTTPStats() ServerHTTPStats {
 // Update statistics from http request and response data
 func (st *HTTPStats) updateStats(api string, r *http.Request, w *logger.ResponseWriter) {
 	// Ignore non S3 requests
-	if strings.HasSuffix(r.URL.Path, minioReservedBucketPathWithSlash) {
+	if strings.HasSuffix(r.URL.Path, uitstorReservedBucketPathWithSlash) {
 		return
 	}
 

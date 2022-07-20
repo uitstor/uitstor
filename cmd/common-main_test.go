@@ -67,7 +67,7 @@ func Test_readFromSecret(t *testing.T) {
 	}
 }
 
-func Test_minioEnvironFromFile(t *testing.T) {
+func Test_uitstorEnvironFromFile(t *testing.T) {
 	testCases := []struct {
 		content      string
 		expectedErr  bool
@@ -75,81 +75,81 @@ func Test_minioEnvironFromFile(t *testing.T) {
 	}{
 		{
 			`
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123`,
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123`,
 			false,
 			[]envKV{
 				{
 					Key:   "MINIO_ROOT_USER",
-					Value: "minio",
+					Value: "uitstor",
 				},
 				{
 					Key:   "MINIO_ROOT_PASSWORD",
-					Value: "minio123",
+					Value: "uitstor123",
 				},
 			},
 		},
 		// Value with double quotes
 		{
-			`export MINIO_ROOT_USER="minio"`,
+			`export MINIO_ROOT_USER="uitstor"`,
 			false,
 			[]envKV{
 				{
 					Key:   "MINIO_ROOT_USER",
-					Value: "minio",
+					Value: "uitstor",
 				},
 			},
 		},
 		// Value with single quotes
 		{
-			`export MINIO_ROOT_USER='minio'`,
+			`export MINIO_ROOT_USER='uitstor'`,
 			false,
 			[]envKV{
 				{
 					Key:   "MINIO_ROOT_USER",
-					Value: "minio",
+					Value: "uitstor",
 				},
 			},
 		},
 		{
 			`
-MINIO_ROOT_USER=minio
-MINIO_ROOT_PASSWORD=minio123`,
+MINIO_ROOT_USER=uitstor
+MINIO_ROOT_PASSWORD=uitstor123`,
 			false,
 			[]envKV{
 				{
 					Key:   "MINIO_ROOT_USER",
-					Value: "minio",
+					Value: "uitstor",
 				},
 				{
 					Key:   "MINIO_ROOT_PASSWORD",
-					Value: "minio123",
+					Value: "uitstor123",
 				},
 			},
 		},
 		{
 			`
-export MINIO_ROOT_USERminio
-export MINIO_ROOT_PASSWORD=minio123`,
+export MINIO_ROOT_USERuitstor
+export MINIO_ROOT_PASSWORD=uitstor123`,
 			true,
 			nil,
 		},
 		{
 			`
 # simple comment
-# MINIO_ROOT_USER=minioadmin
-# MINIO_ROOT_PASSWORD=minioadmin
-MINIO_ROOT_USER=minio
-MINIO_ROOT_PASSWORD=minio123`,
+# MINIO_ROOT_USER=uitstoradmin
+# MINIO_ROOT_PASSWORD=uitstoradmin
+MINIO_ROOT_USER=uitstor
+MINIO_ROOT_PASSWORD=uitstor123`,
 			false,
 			[]envKV{
 				{
 					Key:   "MINIO_ROOT_USER",
-					Value: "minio",
+					Value: "uitstor",
 				},
 				{
 					Key:   "MINIO_ROOT_PASSWORD",
-					Value: "minio123",
+					Value: "uitstor123",
 				},
 			},
 		},
@@ -165,7 +165,7 @@ MINIO_ROOT_PASSWORD=minio123`,
 			tmpfile.Sync()
 			tmpfile.Close()
 
-			ekvs, err := minioEnvironFromFile(tmpfile.Name())
+			ekvs, err := uitstorEnvironFromFile(tmpfile.Name())
 			if err != nil && !testCase.expectedErr {
 				t.Error(err)
 			}

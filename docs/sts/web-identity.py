@@ -13,8 +13,8 @@ from flask import Flask, request
 
 boto3.set_stream_logger('boto3.resources', logging.DEBUG)
 
-authorize_url = "http://localhost:8080/auth/realms/minio/protocol/openid-connect/auth"
-token_url = "http://localhost:8080/auth/realms/minio/protocol/openid-connect/token"
+authorize_url = "http://localhost:8080/auth/realms/uitstor/protocol/openid-connect/auth"
+token_url = "http://localhost:8080/auth/realms/uitstor/protocol/openid-connect/token"
 
 # callback url specified when the application was defined
 callback_uri = "http://localhost:8000/oauth2/callback"

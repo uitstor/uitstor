@@ -72,7 +72,7 @@
         "includeVars": true,
         "keepTime": true,
         "tags": [
-          "minio"
+          "uitstor"
         ],
         "type": "dashboards"
       }
@@ -137,7 +137,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "time() - max(minio_node_process_starttime_seconds{job=\"$scrape_jobs\"})",
+            "expr": "time() - max(uitstor_node_process_starttime_seconds{job=\"$scrape_jobs\"})",
             "format": "time_series",
             "instant": true,
             "interval": "",
@@ -212,7 +212,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum by (instance) (minio_s3_traffic_received_bytes{job=\"$scrape_jobs\"})",
+            "expr": "sum by (instance) (uitstor_s3_traffic_received_bytes{job=\"$scrape_jobs\"})",
             "format": "table",
             "hide": false,
             "instant": false,
@@ -285,7 +285,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "topk(1, sum(minio_cluster_capacity_usable_free_bytes{job=\"$scrape_jobs\"}) by (instance))",
+            "expr": "topk(1, sum(uitstor_cluster_capacity_usable_free_bytes{job=\"$scrape_jobs\"}) by (instance))",
             "format": "time_series",
             "instant": false,
             "interval": "1m",
@@ -343,7 +343,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum(minio_bucket_usage_total_bytes{job=\"$scrape_jobs\"}) by (instance)",
+            "expr": "sum(uitstor_bucket_usage_total_bytes{job=\"$scrape_jobs\"}) by (instance)",
             "interval": "",
             "legendFormat": "Used Capacity",
             "refId": "A"
@@ -438,7 +438,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "max by (range) (minio_bucket_objects_size_distribution{job=\"$scrape_jobs\"})",
+            "expr": "max by (range) (uitstor_bucket_objects_size_distribution{job=\"$scrape_jobs\"})",
             "format": "time_series",
             "instant": false,
             "interval": "",
@@ -516,7 +516,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum (minio_node_file_descriptor_open_total{job=\"$scrape_jobs\"})",
+            "expr": "sum (uitstor_node_file_descriptor_open_total{job=\"$scrape_jobs\"})",
             "format": "table",
             "hide": false,
             "instant": false,
@@ -592,7 +592,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum by (instance) (minio_s3_traffic_sent_bytes{job=\"$scrape_jobs\"})",
+            "expr": "sum by (instance) (uitstor_s3_traffic_sent_bytes{job=\"$scrape_jobs\"})",
             "format": "table",
             "hide": false,
             "instant": false,
@@ -672,7 +672,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum without (server,instance) (minio_node_go_routine_total{job=\"$scrape_jobs\"})",
+            "expr": "sum without (server,instance) (uitstor_node_go_routine_total{job=\"$scrape_jobs\"})",
             "format": "table",
             "hide": false,
             "instant": false,
@@ -752,7 +752,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "minio_cluster_nodes_online_total{job=\"$scrape_jobs\"}",
+            "expr": "uitstor_cluster_nodes_online_total{job=\"$scrape_jobs\"}",
             "format": "table",
             "hide": false,
             "instant": true,
@@ -832,7 +832,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "minio_cluster_disk_online_total{job=\"$scrape_jobs\"}",
+            "expr": "uitstor_cluster_disk_online_total{job=\"$scrape_jobs\"}",
             "format": "table",
             "hide": false,
             "instant": true,
@@ -915,7 +915,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "count(count by (bucket) (minio_bucket_usage_total_bytes{job=\"$scrape_jobs\"}))",
+            "expr": "count(count by (bucket) (uitstor_bucket_usage_total_bytes{job=\"$scrape_jobs\"}))",
             "format": "time_series",
             "instant": false,
             "interval": "1m",
@@ -973,7 +973,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum by (server) (rate(minio_s3_traffic_received_bytes{job=\"$scrape_jobs\"}[$__rate_interval]))",
+            "expr": "sum by (server) (rate(uitstor_s3_traffic_received_bytes{job=\"$scrape_jobs\"}[$__rate_interval]))",
             "interval": "1m",
             "intervalFactor": 2,
             "legendFormat": "Data Received [{{server}}]",
@@ -1069,7 +1069,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum by (server) (rate(minio_s3_traffic_sent_bytes{job=\"$scrape_jobs\"}[$__rate_interval]))",
+            "expr": "sum by (server) (rate(uitstor_s3_traffic_sent_bytes{job=\"$scrape_jobs\"}[$__rate_interval]))",
             "interval": "1m",
             "intervalFactor": 2,
             "legendFormat": "Data Sent [{{server}}]",
@@ -1182,7 +1182,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "minio_cluster_nodes_offline_total{job=\"$scrape_jobs\"}",
+            "expr": "uitstor_cluster_nodes_offline_total{job=\"$scrape_jobs\"}",
             "format": "table",
             "hide": false,
             "instant": true,
@@ -1262,7 +1262,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "minio_cluster_disk_offline_total{job=\"$scrape_jobs\"}",
+            "expr": "uitstor_cluster_disk_offline_total{job=\"$scrape_jobs\"}",
             "format": "table",
             "hide": false,
             "instant": true,
@@ -1345,7 +1345,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "topk(1, sum(minio_bucket_usage_object_total{job=\"$scrape_jobs\"}) by (instance))",
+            "expr": "topk(1, sum(uitstor_bucket_usage_object_total{job=\"$scrape_jobs\"}) by (instance))",
             "format": "time_series",
             "instant": false,
             "interval": "1m",
@@ -1409,7 +1409,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "minio_heal_time_last_activity_nano_seconds{job=\"$scrape_jobs\"}",
+            "expr": "uitstor_heal_time_last_activity_nano_seconds{job=\"$scrape_jobs\"}",
             "format": "time_series",
             "instant": true,
             "interval": "",
@@ -1477,7 +1477,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "minio_usage_last_activity_nano_seconds{job=\"$scrape_jobs\"}",
+            "expr": "uitstor_usage_last_activity_nano_seconds{job=\"$scrape_jobs\"}",
             "format": "time_series",
             "instant": true,
             "interval": "",
@@ -1539,7 +1539,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum by (server,api) (increase(minio_s3_requests_total{job=\"$scrape_jobs\"}[$__rate_interval]))",
+            "expr": "sum by (server,api) (increase(uitstor_s3_requests_total{job=\"$scrape_jobs\"}[$__rate_interval]))",
             "interval": "1m",
             "intervalFactor": 2,
             "legendFormat": "{{server,api}}",
@@ -1635,7 +1635,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum by (server,api) (increase(minio_s3_requests_errors_total{job=\"$scrape_jobs\"}[$__rate_interval]))",
+            "expr": "sum by (server,api) (increase(uitstor_s3_requests_errors_total{job=\"$scrape_jobs\"}[$__rate_interval]))",
             "interval": "1m",
             "intervalFactor": 2,
             "legendFormat": "{{server,api}}",
@@ -1757,7 +1757,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum by (server) (minio_bucket_replication_sent_bytes{job=\"$scrape_jobs\"})",
+            "expr": "sum by (server) (uitstor_bucket_replication_sent_bytes{job=\"$scrape_jobs\"})",
             "interval": "",
             "legendFormat": "replication sent bytes [{{server}}]",
             "refId": "A"
@@ -1838,7 +1838,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum by (server) (minio_bucket_replication_received_bytes{job=\"$scrape_jobs\"})",
+            "expr": "sum by (server) (uitstor_bucket_replication_received_bytes{job=\"$scrape_jobs\"})",
             "interval": "",
             "legendFormat": "replication received bytes [{{server}}]",
             "refId": "A"
@@ -1903,18 +1903,18 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "rate(minio_inter_node_traffic_sent_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
+            "expr": "rate(uitstor_inter_node_traffic_sent_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 2,
             "legendFormat": "Internode Bytes Received [{{server}}]",
-            "metric": "minio_http_requests_duration_seconds_count",
+            "metric": "uitstor_http_requests_duration_seconds_count",
             "refId": "A",
             "step": 4
           },
           {
             "exemplar": true,
-            "expr": "rate(minio_inter_node_traffic_received_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
+            "expr": "rate(uitstor_inter_node_traffic_received_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
             "interval": "",
             "legendFormat": "Internode Bytes Sent [{{server}}]",
             "refId": "B"
@@ -2006,14 +2006,14 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "sum by (instance) (minio_heal_objects_heal_total{job=\"$scrape_jobs\"})",
+            "expr": "sum by (instance) (uitstor_heal_objects_heal_total{job=\"$scrape_jobs\"})",
             "interval": "",
             "legendFormat": "Objects healed in current self heal run",
             "refId": "A"
           },
           {
             "exemplar": true,
-            "expr": "sum by (instance) (minio_heal_objects_error_total{job=\"$scrape_jobs\"})",
+            "expr": "sum by (instance) (uitstor_heal_objects_error_total{job=\"$scrape_jobs\"})",
             "hide": false,
             "interval": "",
             "legendFormat": "Heal errors in current self heal run",
@@ -2021,7 +2021,7 @@
           },
           {
             "exemplar": true,
-            "expr": "sum by (instance) (minio_heal_objects_total{job=\"$scrape_jobs\"}) ",
+            "expr": "sum by (instance) (uitstor_heal_objects_total{job=\"$scrape_jobs\"}) ",
             "hide": false,
             "interval": "",
             "legendFormat": "Objects scanned in current self heal run",
@@ -2114,7 +2114,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "rate(minio_node_process_cpu_total_seconds{job=\"$scrape_jobs\"}[$__rate_interval])",
+            "expr": "rate(uitstor_node_process_cpu_total_seconds{job=\"$scrape_jobs\"}[$__rate_interval])",
             "interval": "",
             "legendFormat": "CPU Usage Rate [{{server}}]",
             "refId": "A"
@@ -2206,7 +2206,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "minio_node_process_resident_memory_bytes{job=\"$scrape_jobs\"}",
+            "expr": "uitstor_node_process_resident_memory_bytes{job=\"$scrape_jobs\"}",
             "interval": "",
             "legendFormat": "Memory Used [{{server}}]",
             "refId": "A"
@@ -2298,7 +2298,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "minio_node_disk_used_bytes{job=\"$scrape_jobs\"}",
+            "expr": "uitstor_node_disk_used_bytes{job=\"$scrape_jobs\"}",
             "format": "time_series",
             "instant": false,
             "interval": "",
@@ -2392,7 +2392,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "minio_cluster_disk_free_inodes{job=\"$scrape_jobs\"}",
+            "expr": "uitstor_cluster_disk_free_inodes{job=\"$scrape_jobs\"}",
             "format": "time_series",
             "instant": false,
             "interval": "",
@@ -2499,7 +2499,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "rate(minio_node_syscall_read_total{job=\"$scrape_jobs\"}[$__rate_interval])",
+            "expr": "rate(uitstor_node_syscall_read_total{job=\"$scrape_jobs\"}[$__rate_interval])",
             "format": "time_series",
             "interval": "",
             "intervalFactor": 2,
@@ -2510,7 +2510,7 @@
           },
           {
             "exemplar": true,
-            "expr": "rate(minio_node_syscall_write_total{job=\"$scrape_jobs\"}[$__rate_interval])",
+            "expr": "rate(uitstor_node_syscall_write_total{job=\"$scrape_jobs\"}[$__rate_interval])",
             "interval": "",
             "legendFormat": "Write Syscalls [{{server}}]",
             "refId": "B"
@@ -2616,7 +2616,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "minio_node_file_descriptor_open_total{job=\"$scrape_jobs\"}",
+            "expr": "uitstor_node_file_descriptor_open_total{job=\"$scrape_jobs\"}",
             "interval": "",
             "legendFormat": "Open FDs [{{server}}]",
             "refId": "B"
@@ -2709,7 +2709,7 @@
         "targets": [
           {
             "exemplar": true,
-            "expr": "rate(minio_node_io_rchar_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
+            "expr": "rate(uitstor_node_io_rchar_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
             "format": "time_series",
             "instant": false,
             "interval": "",
@@ -2718,7 +2718,7 @@
           },
           {
             "exemplar": true,
-            "expr": "rate(minio_node_io_wchar_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
+            "expr": "rate(uitstor_node_io_wchar_bytes{job=\"$scrape_jobs\"}[$__rate_interval])",
             "interval": "",
             "legendFormat": "Node WChar [{{server}}]",
             "refId": "B"
@@ -2772,7 +2772,7 @@
     "schemaVersion": 30,
     "style": "dark",
     "tags": [
-      "minio"
+      "uitstor"
     ],
     "templating": {
       "list": [

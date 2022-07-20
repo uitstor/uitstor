@@ -1,10 +1,10 @@
 #!/bin/sh
 #
 
-# If command starts with an option, prepend minio.
-if [ "${1}" != "minio" ]; then
+# If command starts with an option, prepend uitstor.
+if [ "${1}" != "uitstor" ]; then
     if [ -n "${1}" ]; then
-        set -- minio "$@"
+        set -- uitstor "$@"
     fi
 fi
 

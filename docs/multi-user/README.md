@@ -8,13 +8,13 @@ In this document we will explain in detail on how to configure multiple users.
 
 ### 1. Prerequisites
 
-- Install mc - [MinIO Client Quickstart Guide](https://docs.min.io/docs/minio-client-quickstart-guide.html)
-- Install MinIO - [MinIO Quickstart Guide](https://docs.min.io/docs/minio-quickstart-guide)
-- Configure etcd (optional needed only in gateway or federation mode) - [Etcd V3 Quickstart Guide](https://github.com/minio/minio/blob/master/docs/sts/etcd.md)
+- Install mc - [MinIO Client Quickstart Guide](https://docs.min.io/docs/uitstor-client-quickstart-guide.html)
+- Install MinIO - [MinIO Quickstart Guide](https://docs.min.io/docs/uitstor-quickstart-guide)
+- Configure etcd (optional needed only in gateway or federation mode) - [Etcd V3 Quickstart Guide](https://github.com/uitstor/uitstor/blob/master/docs/sts/etcd.md)
 
 ### 2. Create a new user with canned policy
 
-Use [`mc admin policy`](https://docs.min.io/docs/minio-admin-complete-guide.html#policies) to create canned policies. Server provides a default set of canned policies namely `writeonly`, `readonly` and `readwrite` *(these policies apply to all resources on the server)*. These can be overridden by custom policies using `mc admin policy` command.
+Use [`mc admin policy`](https://docs.min.io/docs/uitstor-admin-complete-guide.html#policies) to create canned policies. Server provides a default set of canned policies namely `writeonly`, `readonly` and `readwrite` *(these policies apply to all resources on the server)*. These can be overridden by custom policies using `mc admin policy` command.
 
 Create new canned policy file `getonly.json`. This policy enables users to download all objects under `my-bucketname`.
 
@@ -41,31 +41,31 @@ EOF
 Create new canned policy by name `getonly` using `getonly.json` policy file.
 
 ```
-mc admin policy add myminio getonly getonly.json
+mc admin policy add myuitstor getonly getonly.json
 ```
 
 Create a new user `newuser` on MinIO use `mc admin user`.
 
 ```
-mc admin user add myminio newuser newuser123
+mc admin user add myuitstor newuser newuser123
 ```
 
 Once the user is successfully created you can now apply the `getonly` policy for this user.
 
 ```
-mc admin policy set myminio getonly user=newuser
+mc admin policy set myuitstor getonly user=newuser
 ```
 
 ### 3. Create a new group
 
 ```
-mc admin group add myminio newgroup newuser
+mc admin group add myuitstor newgroup newuser
 ```
 
 Once the group is successfully created you can now apply the `getonly` policy for this group.
 
 ```
-mc admin policy set myminio getonly group=newgroup
+mc admin policy set myuitstor getonly group=newgroup
 ```
 
 ### 4. Disable user
@@ -73,13 +73,13 @@ mc admin policy set myminio getonly group=newgroup
 Disable user `newuser`.
 
 ```
-mc admin user disable myminio newuser
+mc admin user disable myuitstor newuser
 ```
 
 Disable group `newgroup`.
 
 ```
-mc admin group disable myminio newgroup
+mc admin group disable myuitstor newgroup
 ```
 
 ### 5. Remove user
@@ -87,19 +87,19 @@ mc admin group disable myminio newgroup
 Remove the user `newuser`.
 
 ```
-mc admin user remove myminio newuser
+mc admin user remove myuitstor newuser
 ```
 
 Remove the user `newuser` from a group.
 
 ```
-mc admin group remove myminio newgroup newuser
+mc admin group remove myuitstor newgroup newuser
 ```
 
 Remove the group `newgroup`.
 
 ```
-mc admin group remove myminio newgroup
+mc admin group remove myuitstor newgroup
 ```
 
 ### 6. Change user or group policy
@@ -107,13 +107,13 @@ mc admin group remove myminio newgroup
 Change the policy for user `newuser` to `putonly` canned policy.
 
 ```
-mc admin policy set myminio putonly user=newuser
+mc admin policy set myuitstor putonly user=newuser
 ```
 
 Change the policy for group `newgroup` to `putonly` canned policy.
 
 ```
-mc admin policy set myminio putonly group=newgroup
+mc admin policy set myuitstor putonly group=newgroup
 ```
 
 ### 7. List all users or groups
@@ -121,20 +121,20 @@ mc admin policy set myminio putonly group=newgroup
 List all enabled and disabled users.
 
 ```
-mc admin user list myminio
+mc admin user list myuitstor
 ```
 
 List all enabled or disabled groups.
 
 ```
-mc admin group list myminio
+mc admin group list myuitstor
 ```
 
 ### 8. Configure `mc`
 
 ```
-mc alias set myminio-newuser http://localhost:9000 newuser newuser123 --api s3v4
-mc cat myminio-newuser/my-bucketname/my-objectname
+mc alias set myuitstor-newuser http://localhost:9000 newuser newuser123 --api s3v4
+mc cat myuitstor-newuser/my-bucketname/my-objectname
 ```
 
 ### Policy Variables
@@ -267,7 +267,7 @@ If the user is authenticating using an STS credential which was authorized from 
 
 ## Explore Further
 
-- [MinIO Client Complete Guide](https://docs.min.io/docs/minio-client-complete-guide)
-- [MinIO STS Quickstart Guide](https://docs.min.io/docs/minio-sts-quickstart-guide)
-- [MinIO Admin Complete Guide](https://docs.min.io/docs/minio-admin-complete-guide.html)
+- [MinIO Client Complete Guide](https://docs.min.io/docs/uitstor-client-complete-guide)
+- [MinIO STS Quickstart Guide](https://docs.min.io/docs/uitstor-sts-quickstart-guide)
+- [MinIO Admin Complete Guide](https://docs.min.io/docs/uitstor-admin-complete-guide.html)
 - [The MinIO documentation website](https://docs.min.io)

@@ -1,6 +1,6 @@
 # MinIO Healthcheck
 
-MinIO server exposes three un-authenticated, healthcheck endpoints liveness probe and a cluster probe at `/minio/health/live` and `/minio/health/cluster` respectively.
+MinIO server exposes three un-authenticated, healthcheck endpoints liveness probe and a cluster probe at `/uitstor/health/live` and `/uitstor/health/cluster` respectively.
 
 ## Liveness probe
 
@@ -9,7 +9,7 @@ This probe always responds with '200 OK'. Only fails if 'etcd' is configured and
 ```
 livenessProbe:
   httpGet:
-    path: /minio/health/live
+    path: /uitstor/health/live
     port: 9000
     scheme: HTTP
   initialDelaySeconds: 120
@@ -26,7 +26,7 @@ This probe always responds with '200 OK'. Only fails if 'etcd' is configured and
 ```
 readinessProbe:
   httpGet:
-    path: /minio/health/ready
+    path: /uitstor/health/ready
     port: 9000
     scheme: HTTP
   initialDelaySeconds: 120
@@ -43,7 +43,7 @@ readinessProbe:
 The reply is '200 OK' if cluster has write quorum if not it returns '503 Service Unavailable'.
 
 ```
-curl http://minio1:9001/minio/health/cluster
+curl http://uitstor1:9001/uitstor/health/cluster
 HTTP/1.1 503 Service Unavailable
 Accept-Ranges: bytes
 Content-Length: 0
@@ -62,7 +62,7 @@ Date: Tue, 21 Jul 2020 00:36:14 GMT
 The reply is '200 OK' if cluster has read quorum if not it returns '503 Service Unavailable'.
 
 ```
-curl http://minio1:9001/minio/health/cluster/read
+curl http://uitstor1:9001/uitstor/health/cluster/read
 HTTP/1.1 503 Service Unavailable
 Accept-Ranges: bytes
 Content-Length: 0
@@ -81,7 +81,7 @@ Date: Tue, 21 Jul 2020 00:36:14 GMT
 You may query the cluster probe endpoint to check if the node which received the request can be taken down for maintenance, if the server replies back '412 Precondition Failed' this means you will lose HA. '200 OK' means you are okay to proceed.
 
 ```
-curl http://minio1:9001/minio/health/cluster?maintenance=true
+curl http://uitstor1:9001/uitstor/health/cluster?maintenance=true
 HTTP/1.1 412 Precondition Failed
 Accept-Ranges: bytes
 Content-Length: 0

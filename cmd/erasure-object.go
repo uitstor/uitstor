@@ -32,15 +32,15 @@ import (
 	"github.com/klauspost/readahead"
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/bucket/object/lock"
-	"github.com/minio/minio/internal/bucket/replication"
-	"github.com/minio/minio/internal/event"
-	"github.com/minio/minio/internal/hash"
-	xhttp "github.com/minio/minio/internal/http"
-	xioutil "github.com/minio/minio/internal/ioutil"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/bucket/object/lock"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
+	"github.com/uitstor/uitstor/internal/event"
+	"github.com/uitstor/uitstor/internal/hash"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	xioutil "github.com/uitstor/uitstor/internal/ioutil"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 	"github.com/minio/pkg/mimedb"
 	uatomic "go.uber.org/atomic"
 )
@@ -96,7 +96,7 @@ func (er erasureObjects) CopyObject(ctx context.Context, srcBucket, srcObject, d
 
 	readQuorum, writeQuorum, err := objectQuorumFromMeta(ctx, metaArr, errs, er.defaultParityCount)
 	if err != nil {
-		if errors.Is(err, errErasureReadQuorum) && !strings.HasPrefix(srcBucket, minioMetaBucket) {
+		if errors.Is(err, errErasureReadQuorum) && !strings.HasPrefix(srcBucket, uitstorMetaBucket) {
 			_, derr := er.deleteIfDangling(ctx, srcBucket, srcObject, metaArr, errs, nil, srcOpts)
 			if derr != nil {
 				err = derr
@@ -233,7 +233,7 @@ func (er erasureObjects) GetObjectNInfo(ctx context.Context, bucket, object stri
 				}
 				if !metaArr[index].AcceptableDelta(diskMTime, shardDiskTimeDelta) {
 					// If disk mTime mismatches it is considered outdated
-					// https://github.com/minio/minio/pull/13803
+					// https://github.com/uitstor/uitstor/pull/13803
 					//
 					// This check only is active if we could find maximally
 					// occurring disk mtimes that are somewhat same across
@@ -576,7 +576,7 @@ func (er erasureObjects) getObjectFileInfo(ctx context.Context, bucket, object s
 
 	readQuorum, _, err := objectQuorumFromMeta(ctx, metaArr, errs, er.defaultParityCount)
 	if err != nil {
-		if errors.Is(err, errErasureReadQuorum) && !strings.HasPrefix(bucket, minioMetaBucket) {
+		if errors.Is(err, errErasureReadQuorum) && !strings.HasPrefix(bucket, uitstorMetaBucket) {
 			_, derr := er.deleteIfDangling(ctx, bucket, object, metaArr, errs, nil, opts)
 			if derr != nil {
 				err = derr
@@ -586,7 +586,7 @@ func (er erasureObjects) getObjectFileInfo(ctx context.Context, bucket, object s
 	}
 
 	if reducedErr := reduceReadQuorumErrs(ctx, errs, objectOpIgnoredErrs, readQuorum); reducedErr != nil {
-		if errors.Is(reducedErr, errErasureReadQuorum) && !strings.HasPrefix(bucket, minioMetaBucket) {
+		if errors.Is(reducedErr, errErasureReadQuorum) && !strings.HasPrefix(bucket, uitstorMetaBucket) {
 			_, derr := er.deleteIfDangling(ctx, bucket, object, metaArr, errs, nil, opts)
 			if derr != nil {
 				err = derr
@@ -757,7 +757,7 @@ func (er erasureObjects) putMetacacheObject(ctx context.Context, key string, r *
 	// Initialize parts metadata
 	partsMetadata := make([]FileInfo, len(storageDisks))
 
-	fi := newFileInfo(pathJoin(minioMetaBucket, key), dataDrives, parityDrives)
+	fi := newFileInfo(pathJoin(uitstorMetaBucket, key), dataDrives, parityDrives)
 	fi.DataDir = mustGetUUID()
 
 	// Initialize erasure metadata.
@@ -771,7 +771,7 @@ func (er erasureObjects) putMetacacheObject(ctx context.Context, key string, r *
 
 	erasure, err := NewErasure(ctx, fi.Erasure.DataBlocks, fi.Erasure.ParityBlocks, fi.Erasure.BlockSize)
 	if err != nil {
-		return ObjectInfo{}, toObjectErr(err, minioMetaBucket, key)
+		return ObjectInfo{}, toObjectErr(err, uitstorMetaBucket, key)
 	}
 
 	// Fetch buffer for I/O, returns from the pool if not allocates a new one and returns.
@@ -807,13 +807,13 @@ func (er erasureObjects) putMetacacheObject(ctx context.Context, key string, r *
 	n, erasureErr := erasure.Encode(ctx, data, writers, buffer, writeQuorum)
 	closeBitrotWriters(writers)
 	if erasureErr != nil {
-		return ObjectInfo{}, toObjectErr(erasureErr, minioMetaBucket, key)
+		return ObjectInfo{}, toObjectErr(erasureErr, uitstorMetaBucket, key)
 	}
 
 	// Should return IncompleteBody{} error when reader has fewer bytes
 	// than specified in request header.
 	if n < data.Size() {
-		return ObjectInfo{}, IncompleteBody{Bucket: minioMetaBucket, Object: key}
+		return ObjectInfo{}, IncompleteBody{Bucket: uitstorMetaBucket, Object: key}
 	}
 	var index []byte
 	if opts.IndexCB != nil {
@@ -860,11 +860,11 @@ func (er erasureObjects) putMetacacheObject(ctx context.Context, key string, r *
 		}
 	}
 
-	if _, err = writeUniqueFileInfo(ctx, onlineDisks, minioMetaBucket, key, partsMetadata, writeQuorum); err != nil {
-		return ObjectInfo{}, toObjectErr(err, minioMetaBucket, key)
+	if _, err = writeUniqueFileInfo(ctx, onlineDisks, uitstorMetaBucket, key, partsMetadata, writeQuorum); err != nil {
+		return ObjectInfo{}, toObjectErr(err, uitstorMetaBucket, key)
 	}
 
-	return fi.ToObjectInfo(minioMetaBucket, key, opts.Versioned || opts.VersionSuspended), nil
+	return fi.ToObjectInfo(uitstorMetaBucket, key, opts.Versioned || opts.VersionSuspended), nil
 }
 
 // PutObject - creates an object upon reading from the input stream
@@ -997,7 +997,7 @@ func (er erasureObjects) putObject(ctx context.Context, bucket string, object st
 	var online int
 	defer func() {
 		if online != len(onlineDisks) {
-			er.renameAll(context.Background(), minioMetaTmpBucket, tempObj)
+			er.renameAll(context.Background(), uitstorMetaTmpBucket, tempObj)
 		}
 	}()
 
@@ -1039,7 +1039,7 @@ func (er erasureObjects) putObject(ctx context.Context, bucket string, object st
 			continue
 		}
 
-		writers[i] = newBitrotWriter(disk, minioMetaTmpBucket, tempErasureObj, shardFileSize, DefaultBitrotAlgorithm, erasure.ShardSize())
+		writers[i] = newBitrotWriter(disk, uitstorMetaTmpBucket, tempErasureObj, shardFileSize, DefaultBitrotAlgorithm, erasure.ShardSize())
 	}
 
 	toEncode := io.Reader(data)
@@ -1059,7 +1059,7 @@ func (er erasureObjects) putObject(ctx context.Context, bucket string, object st
 	n, erasureErr := erasure.Encode(ctx, toEncode, writers, buffer, writeQuorum)
 	closeBitrotWriters(writers)
 	if erasureErr != nil {
-		return ObjectInfo{}, toObjectErr(erasureErr, minioMetaTmpBucket, tempErasureObj)
+		return ObjectInfo{}, toObjectErr(erasureErr, uitstorMetaTmpBucket, tempErasureObj)
 	}
 
 	// Should return IncompleteBody{} error when reader has fewer bytes
@@ -1133,7 +1133,7 @@ func (er erasureObjects) putObject(ctx context.Context, bucket string, object st
 	}
 
 	// Rename the successfully written temporary object to final location.
-	if onlineDisks, err = renameData(ctx, onlineDisks, minioMetaTmpBucket, tempObj, partsMetadata, bucket, object, writeQuorum); err != nil {
+	if onlineDisks, err = renameData(ctx, onlineDisks, uitstorMetaTmpBucket, tempObj, partsMetadata, bucket, object, writeQuorum); err != nil {
 		if errors.Is(err, errFileNotFound) {
 			return ObjectInfo{}, toObjectErr(errErasureWriteQuorum, bucket, object)
 		}
@@ -1626,7 +1626,7 @@ func (er erasureObjects) PutObjectMetadata(ctx context.Context, bucket, object s
 
 	readQuorum, _, err := objectQuorumFromMeta(ctx, metaArr, errs, er.defaultParityCount)
 	if err != nil {
-		if errors.Is(err, errErasureReadQuorum) && !strings.HasPrefix(bucket, minioMetaBucket) {
+		if errors.Is(err, errErasureReadQuorum) && !strings.HasPrefix(bucket, uitstorMetaBucket) {
 			_, derr := er.deleteIfDangling(ctx, bucket, object, metaArr, errs, nil, opts)
 			if derr != nil {
 				err = derr
@@ -1699,7 +1699,7 @@ func (er erasureObjects) PutObjectTags(ctx context.Context, bucket, object strin
 
 	readQuorum, _, err := objectQuorumFromMeta(ctx, metaArr, errs, er.defaultParityCount)
 	if err != nil {
-		if errors.Is(err, errErasureReadQuorum) && !strings.HasPrefix(bucket, minioMetaBucket) {
+		if errors.Is(err, errErasureReadQuorum) && !strings.HasPrefix(bucket, uitstorMetaBucket) {
 			_, derr := er.deleteIfDangling(ctx, bucket, object, metaArr, errs, nil, opts)
 			if derr != nil {
 				err = derr

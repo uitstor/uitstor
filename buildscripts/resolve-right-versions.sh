@@ -5,20 +5,20 @@ set -o pipefail
 set -x
 
 WORK_DIR="$PWD/.verify-$RANDOM"
-MINIO_CONFIG_DIR="$WORK_DIR/.minio"
-MINIO=( "$PWD/minio" --config-dir "$MINIO_CONFIG_DIR" server )
+MINIO_CONFIG_DIR="$WORK_DIR/.uitstor"
+MINIO=( "$PWD/uitstor" --config-dir "$MINIO_CONFIG_DIR" server )
 
-if [ ! -x "$PWD/minio" ]; then
-    echo "minio executable binary not found in current directory"
+if [ ! -x "$PWD/uitstor" ]; then
+    echo "uitstor executable binary not found in current directory"
     exit 1
 fi
 
-function start_minio_5drive() {
+function start_uitstor_5drive() {
     start_port=$1
 
-    export MINIO_ROOT_USER=minio
-    export MINIO_ROOT_PASSWORD=minio123
-    export MC_HOST_minio="http://minio:minio123@127.0.0.1:${start_port}/"
+    export MINIO_ROOT_USER=uitstor
+    export MINIO_ROOT_PASSWORD=uitstor123
+    export MC_HOST_uitstor="http://uitstor:uitstor123@127.0.0.1:${start_port}/"
     unset MINIO_KMS_AUTO_ENCRYPTION # do not auto-encrypt objects
     export MINIO_CI_CD=1
 
@@ -49,16 +49,16 @@ function start_minio_5drive() {
 	exit 1
     fi
 
-    "${WORK_DIR}/mc" stat minio/bucket/testobj
+    "${WORK_DIR}/mc" stat uitstor/bucket/testobj
 
-    pkill minio
+    pkill uitstor
     sleep 3
 }
 
 function main() {
     start_port=$(shuf -i 10000-65000 -n 1)
 
-    start_minio_5drive ${start_port}
+    start_uitstor_5drive ${start_port}
 }
 
 function purge()

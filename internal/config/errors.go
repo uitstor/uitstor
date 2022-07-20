@@ -22,7 +22,7 @@ var (
 	ErrInvalidFSValue = newErrFn(
 		"Invalid drive path",
 		"Please provide an existing deployment with MinIO",
-		"MinIO does not support newer NAS gateway deployments anymore refer https://github.com/minio/minio/issues/14331",
+		"MinIO does not support newer NAS gateway deployments anymore refer https://github.com/uitstor/uitstor/issues/14331",
 	)
 
 	ErrInvalidXLValue = newErrFn(
@@ -112,7 +112,7 @@ var (
 	ErrInvalidCacheEncryptionKey = newErrFn(
 		"Invalid cache encryption master key value",
 		"Please check the passed value",
-		"MINIO_CACHE_ENCRYPTION_SECRET_KEY: For more information, please refer to https://docs.min.io/docs/minio-disk-cache-guide",
+		"MINIO_CACHE_ENCRYPTION_SECRET_KEY: For more information, please refer to https://docs.min.io/docs/uitstor-disk-cache-guide",
 	)
 
 	ErrInvalidCacheRange = newErrFn(
@@ -172,13 +172,13 @@ var (
 	ErrInvalidErasureEndpoints = newErrFn(
 		"Invalid endpoint(s) in erasure mode",
 		"Please provide correct combination of local/remote paths",
-		"For more information, please refer to https://docs.min.io/docs/minio-erasure-code-quickstart-guide",
+		"For more information, please refer to https://docs.min.io/docs/uitstor-erasure-code-quickstart-guide",
 	)
 
 	ErrInvalidNumberOfErasureEndpoints = newErrFn(
 		"Invalid total number of endpoints for erasure mode",
 		"Please provide number of endpoints greater or equal to 2",
-		"For more information, please refer to https://docs.min.io/docs/minio-erasure-code-quickstart-guide",
+		"For more information, please refer to https://docs.min.io/docs/uitstor-erasure-code-quickstart-guide",
 	)
 
 	ErrStorageClassValue = newErrFn(
@@ -186,7 +186,7 @@ var (
 		"Please check the value",
 		`MINIO_STORAGE_CLASS_STANDARD: Format "EC:<Default_Parity_Standard_Class>" (e.g. "EC:3"). This sets the number of parity disks for MinIO server in Standard mode. Objects are stored in Standard mode, if storage class is not defined in Put request
 MINIO_STORAGE_CLASS_RRS: Format "EC:<Default_Parity_Reduced_Redundancy_Class>" (e.g. "EC:3"). This sets the number of parity disks for MinIO server in Reduced Redundancy mode. Objects are stored in Reduced Redundancy mode, if Put request specifies RRS storage class
-Refer to the link https://github.com/minio/minio/tree/master/docs/erasure/storage-class for more information`,
+Refer to the link https://github.com/uitstor/uitstor/tree/master/docs/erasure/storage-class for more information`,
 	)
 
 	ErrUnexpectedBackendVersion = newErrFn(
@@ -209,7 +209,7 @@ Refer to the link https://github.com/minio/minio/tree/master/docs/erasure/storag
 		"Please check the FS endpoint",
 		`FS mode requires only one writable disk path
 Example 1:
-   $ minio server /data/minio/`,
+   $ uitstor server /data/uitstor/`,
 	)
 
 	ErrUnsupportedBackend = newErrFn(
@@ -233,7 +233,7 @@ Example 1:
 	ErrPortAccess = newErrFn(
 		"Unable to use specified port",
 		"Please ensure MinIO binary has 'cap_net_bind_service=+ep' permissions",
-		`Use 'sudo setcap cap_net_bind_service=+ep /path/to/minio' to provide sufficient permissions`,
+		`Use 'sudo setcap cap_net_bind_service=+ep /path/to/uitstor' to provide sufficient permissions`,
 	)
 
 	ErrSSLUnexpectedError = newErrFn(
@@ -257,7 +257,7 @@ Example 1:
 	ErrNoCertsAndHTTPSEndpoints = newErrFn(
 		"HTTPS specified in endpoints, but no TLS certificate is found on the local machine",
 		"Please add TLS certificate or use HTTP endpoints only",
-		"Refer to https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls for information about how to load a TLS certificate in your server",
+		"Refer to https://docs.min.io/docs/how-to-secure-access-to-uitstor-server-with-tls for information about how to load a TLS certificate in your server",
 	)
 
 	ErrCertsAndHTTPEndpoints = newErrFn(
@@ -293,7 +293,7 @@ Example 1:
 	ErrInvalidGWSSEEnvValue = newErrFn(
 		"Invalid gateway SSE configuration",
 		"",
-		"Refer to https://docs.min.io/docs/minio-kms-quickstart-guide.html for setting up SSE",
+		"Refer to https://docs.min.io/docs/uitstor-kms-quickstart-guide.html for setting up SSE",
 	)
 
 	ErrInvalidReplicationWorkersValue = newErrFn(

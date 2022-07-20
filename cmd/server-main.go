@@ -35,16 +35,16 @@ import (
 	"time"
 
 	"github.com/minio/cli"
-	minio "github.com/minio/minio-go/v7"
+	uitstor "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/bucket/bandwidth"
-	"github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/fips"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/rest"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/bucket/bandwidth"
+	"github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/fips"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/rest"
 	"github.com/minio/pkg/certs"
 	"github.com/minio/pkg/env"
 )
@@ -115,20 +115,20 @@ FLAGS:
   {{range .VisibleFlags}}{{.}}
   {{end}}{{end}}
 EXAMPLES:
-  1. Start minio server on "/home/shared" directory.
+  1. Start uitstor server on "/home/shared" directory.
      {{.Prompt}} {{.HelpName}} /home/shared
 
   2. Start single node server with 64 local drives "/mnt/data1" to "/mnt/data64".
      {{.Prompt}} {{.HelpName}} /mnt/data{1...64}
 
-  3. Start distributed minio server on an 32 node setup with 32 drives each, run following command on all the nodes
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}minio
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}miniostorage
+  3. Start distributed uitstor server on an 32 node setup with 32 drives each, run following command on all the nodes
+     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}uitstor
+     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}uitstorstorage
      {{.Prompt}} {{.HelpName}} http://node{1...32}.example.com/mnt/export{1...32}
 
-  4. Start distributed minio server in an expanded setup, run the following command on all the nodes
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}minio
-     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}miniostorage
+  4. Start distributed uitstor server in an expanded setup, run the following command on all the nodes
+     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}uitstor
+     {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}uitstorstorage
      {{.Prompt}} {{.HelpName}} http://node{1...16}.example.com/mnt/export{1...32} \
             http://node{17...64}.example.com/mnt/export{1...64}
 `,
@@ -222,8 +222,8 @@ func serverHandleCmdArgs(ctx *cli.Context) {
 	globalRemoteTargetTransport = NewRemoteTargetHTTPTransport()()
 
 	// On macOS, if a process already listens on LOCALIPADDR:PORT, net.Listen() falls back
-	// to IPv6 address ie minio will start listening on IPv6 address whereas another
-	// (non-)minio process is listening on IPv4 of given port.
+	// to IPv6 address ie uitstor will start listening on IPv6 address whereas another
+	// (non-)uitstor process is listening on IPv4 of given port.
 	// To avoid this error situation we check for port availability.
 	logger.FatalIf(checkPortAvailability(globalMinioHost, globalMinioPort), "Unable to start the server")
 
@@ -347,7 +347,7 @@ func initServer(ctx context.Context, newObject ObjectLayer) error {
 		// at a given time, this big transaction lock ensures this
 		// appropriately. This is also true for rotation of encrypted
 		// content.
-		txnLk := newObject.NewNSLock(minioMetaBucket, minioConfigPrefix+"/transaction.lock")
+		txnLk := newObject.NewNSLock(uitstorMetaBucket, uitstorConfigPrefix+"/transaction.lock")
 
 		// let one of the server acquire the lock, if not let them timeout.
 		// which shall be retried again by this loop.
@@ -415,7 +415,7 @@ func initConfigSubsystem(ctx context.Context, newObject ObjectLayer) error {
 	return nil
 }
 
-// serverMain handler called for 'minio server' command.
+// serverMain handler called for 'uitstor server' command.
 func serverMain(ctx *cli.Context) {
 	signal.Notify(globalOSSignalCh, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 
@@ -647,7 +647,7 @@ func serverMain(ctx *cli.Context) {
 	if region == "" {
 		region = "us-east-1"
 	}
-	globalMinioClient, err = minio.New(globalLocalNodeName, &minio.Options{
+	globalMinioClient, err = uitstor.New(globalLocalNodeName, &uitstor.Options{
 		Creds:     credentials.NewStaticV4(globalActiveCred.AccessKey, globalActiveCred.SecretKey, ""),
 		Secure:    globalIsTLS,
 		Transport: globalProxyTransport,

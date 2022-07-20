@@ -21,14 +21,14 @@ import (
 	"os"
 
 	// MUST be first import.
-	_ "github.com/minio/minio/internal/init"
+	_ "github.com/uitstor/uitstor/internal/init"
 
-	minio "github.com/minio/minio/cmd"
+	uitstor "github.com/uitstor/uitstor/cmd"
 
 	// Import gateway
-	_ "github.com/minio/minio/cmd/gateway"
+	_ "github.com/uitstor/uitstor/cmd/gateway"
 )
 
 func main() {
-	minio.Main(os.Args)
+	uitstor.Main(os.Args)
 }

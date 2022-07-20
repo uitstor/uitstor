@@ -23,10 +23,10 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/minio/minio/internal/arn"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/config/identity/openid/provider"
-	xhttp "github.com/minio/minio/internal/http"
+	"github.com/uitstor/uitstor/internal/arn"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/config/identity/openid/provider"
+	xhttp "github.com/uitstor/uitstor/internal/http"
 	xnet "github.com/minio/pkg/net"
 )
 

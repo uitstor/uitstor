@@ -26,7 +26,7 @@ import (
 
 	"github.com/cespare/xxhash/v2"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 // XL constants.
@@ -68,7 +68,7 @@ type xlMetaV1Object struct {
 	// MinIO release tag for current object `xl.meta`.
 	Minio struct {
 		Release string `json:"release"`
-	} `json:"minio"`
+	} `json:"uitstor"`
 	// Metadata map for current object `xl.meta`.
 	Meta map[string]string `json:"meta,omitempty"`
 	// Captures all the individual object `xl.meta`.

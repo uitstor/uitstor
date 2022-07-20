@@ -1,27 +1,27 @@
 {{- if .Values.networkPolicy.enabled }}
 kind: NetworkPolicy
-apiVersion: {{ template "minio.networkPolicy.apiVersion" . }}
+apiVersion: {{ template "uitstor.networkPolicy.apiVersion" . }}
 metadata:
-  name: {{ template "minio.fullname" . }}
+  name: {{ template "uitstor.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ template "minio.name" . }}
-    chart: {{ template "minio.chart" . }}
+    app: {{ template "uitstor.name" . }}
+    chart: {{ template "uitstor.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   podSelector:
     matchLabels:
-      app: {{ template "minio.name" . }}
+      app: {{ template "uitstor.name" . }}
       release: {{ .Release.Name }}
   ingress:
     - ports:
-        - port: {{ .Values.minioAPIPort }}
-        - port: {{ .Values.minioConsolePort }}
+        - port: {{ .Values.uitstorAPIPort }}
+        - port: {{ .Values.uitstorConsolePort }}
       {{- if not .Values.networkPolicy.allowExternal }}
       from:
         - podSelector:
             matchLabels:
-              {{ template "minio.name" . }}-client: "true"
+              {{ template "uitstor.name" . }}-client: "true"
       {{- end }}
 {{- end }}

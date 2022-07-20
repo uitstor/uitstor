@@ -2,11 +2,11 @@
 
 > NAS gateway is deprecated and will be removed in future, no more fresh deployments are supported.
 
-MinIO Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple minio instances on the same shared NAS volume as a distributed object gateway.
+MinIO Gateway adds Amazon S3 compatibility to NAS storage. You may run multiple uitstor instances on the same shared NAS volume as a distributed object gateway.
 
 ## Support
 
-Gateway implementations are frozen and are not accepting any new features. Please reports any bugs at <https://github.com/minio/minio/issues> . If you are an existing customer please login to <https://subnet.min.io> for production support.
+Gateway implementations are frozen and are not accepting any new features. Please reports any bugs at <https://github.com/uitstor/uitstor/issues> . If you are an existing customer please login to <https://subnet.min.io> for production support.
 
 ## Run MinIO Gateway for NAS Storage
 
@@ -19,18 +19,18 @@ podman run \
  -p 9000:9000 \
  -p 9001:9001 \
  --name nas-s3 \
- -e "MINIO_ROOT_USER=minio" \
- -e "MINIO_ROOT_PASSWORD=minio123" \
+ -e "MINIO_ROOT_USER=uitstor" \
+ -e "MINIO_ROOT_PASSWORD=uitstor123" \
  -v /shared/nasvol:/container/vol \
- quay.io/minio/minio gateway nas /container/vol --console-address ":9001"
+ quay.io/uitstor/uitstor gateway nas /container/vol --console-address ":9001"
 ```
 
 ### Using Binary
 
 ```
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
-minio gateway nas /shared/nasvol
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
+uitstor gateway nas /shared/nasvol
 ```
 
 ## Test using MinIO Console
@@ -39,7 +39,7 @@ MinIO Gateway comes with an embedded web based object browser. Point your web br
 
 | Dashboard                                                                                   | Creating a bucket                                                                           |
 | -------------                                                                               | -------------                                                                               |
-| ![Dashboard](https://github.com/minio/minio/blob/master/docs/screenshots/pic1.png?raw=true) | ![Dashboard](https://github.com/minio/minio/blob/master/docs/screenshots/pic2.png?raw=true) |
+| ![Dashboard](https://github.com/uitstor/uitstor/blob/master/docs/screenshots/pic1.png?raw=true) | ![Dashboard](https://github.com/uitstor/uitstor/blob/master/docs/screenshots/pic2.png?raw=true) |
 
 ## Test using MinIO Client `mc`
 
@@ -109,6 +109,6 @@ NAS gateway implementation allows symlinks on regular files.
 
 ## Explore Further
 
-- [`mc` command-line interface](https://docs.min.io/docs/minio-client-quickstart-guide)
-- [`aws` command-line interface](https://docs.min.io/docs/aws-cli-with-minio)
-- [`minio-go` Go SDK](https://docs.min.io/docs/golang-client-quickstart-guide)
+- [`mc` command-line interface](https://docs.min.io/docs/uitstor-client-quickstart-guide)
+- [`aws` command-line interface](https://docs.min.io/docs/aws-cli-with-uitstor)
+- [`uitstor-go` Go SDK](https://docs.min.io/docs/golang-client-quickstart-guide)

@@ -30,16 +30,16 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/minio/minio-go/v7/pkg/set"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/rest"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/rest"
 	"github.com/minio/pkg/env"
 )
 
 const (
 	bootstrapRESTVersion       = "v1"
 	bootstrapRESTVersionPrefix = SlashSeparator + bootstrapRESTVersion
-	bootstrapRESTPrefix        = minioReservedBucketPath + "/bootstrap"
+	bootstrapRESTPrefix        = uitstorReservedBucketPath + "/bootstrap"
 	bootstrapRESTPath          = bootstrapRESTPrefix + bootstrapRESTVersionPrefix
 )
 

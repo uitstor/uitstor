@@ -26,15 +26,15 @@ For a quick installation, docker-compose reference configs are also available on
 ### Configure MinIO
 
 ```
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
-minio server /mnt/export
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
+uitstor server /mnt/export
 ```
 
 Here are all the available options to configure OpenID connect
 
 ```
-mc admin config set myminio/ identity_openid
+mc admin config set myuitstor/ identity_openid
 
 KEY:
 identity_openid  enable OpenID SSO support
@@ -51,7 +51,7 @@ comment       (sentence)  optionally add a comment to this setting
 and ENV based options
 
 ```
-mc admin config set myminio/ identity_openid --env
+mc admin config set myuitstor/ identity_openid --env
 
 KEY:
 identity_openid  enable OpenID SSO support
@@ -68,7 +68,7 @@ MINIO_IDENTITY_OPENID_COMMENT       (sentence)  optionally add a comment to this
 Set `identity_openid` config with `config_url`, `client_id` and restart MinIO
 
 ```
-~ mc admin config set myminio identity_openid config_url="http://CASDOOR_ENDPOINT/.well-known/openid-configuration" client_id=<client id> client_secret=<client secret> claim_name="tag"
+~ mc admin config set myuitstor identity_openid config_url="http://CASDOOR_ENDPOINT/.well-known/openid-configuration" client_id=<client id> client_secret=<client secret> claim_name="tag"
 ```
 
 > NOTE: As MinIO needs to use a claim attribute in JWT for its policy, you should configure it in casdoor as well. Currently, casdoor uses `tag` as a workaround for configuring MinIO's policy.
@@ -76,7 +76,7 @@ Set `identity_openid` config with `config_url`, `client_id` and restart MinIO
 Once successfully set restart the MinIO instance.
 
 ```
-mc admin service restart myminio
+mc admin service restart myuitstor
 ```
 
 ### Using WebIdentiy API
@@ -111,6 +111,6 @@ This will open the login page of Casdoor, upon successful login, STS credentials
 
 ## Explore Further
 
-- [Casdoor MinIO Integration](https://casdoor.org/docs/integration/minio)
-- [MinIO STS Quickstart Guide](https://docs.min.io/docs/minio-sts-quickstart-guide)
+- [Casdoor MinIO Integration](https://casdoor.org/docs/integration/uitstor)
+- [MinIO STS Quickstart Guide](https://docs.min.io/docs/uitstor-sts-quickstart-guide)
 - [The MinIO documentation website](https://docs.min.io)

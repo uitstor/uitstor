@@ -4,7 +4,7 @@ MinIO uses a key-management-system (KMS) to support SSE-S3. If a client requests
 
 ## Quick Start
 
-MinIO supports multiple KMS implementations via our [KES](https://github.com/minio/kes#kes) project. We run a KES instance at `https://play.min.io:7373` for you to experiment and quickly get started. To run MinIO with a KMS just fetch the root identity, set the following environment variables and then start your MinIO server. If you havn't installed MinIO, yet, then follow the MinIO [install instructions](https://docs.min.io/docs/minio-quickstart-guide) first.
+MinIO supports multiple KMS implementations via our [KES](https://github.com/minio/kes#kes) project. We run a KES instance at `https://play.min.io:7373` for you to experiment and quickly get started. To run MinIO with a KMS just fetch the root identity, set the following environment variables and then start your MinIO server. If you havn't installed MinIO, yet, then follow the MinIO [install instructions](https://docs.min.io/docs/uitstor-quickstart-guide) first.
 
 ### 1. Fetch the root identity
 
@@ -12,8 +12,8 @@ As the initial step, fetch the private key and certificate of the root identity:
 
 ```sh
 curl -sSL --tlsv1.2 \
-     -O 'https://raw.githubusercontent.com/minio/kes/master/root.key' \
-     -O 'https://raw.githubusercontent.com/minio/kes/master/root.cert'
+     -O 'https://raw.githubusercontent.com/uitstor/kes/master/root.key' \
+     -O 'https://raw.githubusercontent.com/uitstor/kes/master/root.cert'
 ```
 
 ### 2. Set the MinIO-KES configuration
@@ -22,15 +22,15 @@ curl -sSL --tlsv1.2 \
 export MINIO_KMS_KES_ENDPOINT=https://play.min.io:7373
 export MINIO_KMS_KES_KEY_FILE=root.key
 export MINIO_KMS_KES_CERT_FILE=root.cert
-export MINIO_KMS_KES_KEY_NAME=my-minio-key
+export MINIO_KMS_KES_KEY_NAME=my-uitstor-key
 ```
 
 ### 3. Start the MinIO Server
 
 ```sh
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
-minio server ~/export
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
+uitstor server ~/export
 ```
 
 > The KES instance at `https://play.min.io:7373` is meant to experiment and provides a way to get started quickly.
@@ -67,7 +67,7 @@ The MinIO-KES configuration is always the same - regardless of the underlying KM
 
 ### Further references
 
-- [Run MinIO with TLS / HTTPS](https://docs.min.io/docs/how-to-secure-access-to-minio-server-with-tls.html)
+- [Run MinIO with TLS / HTTPS](https://docs.min.io/docs/how-to-secure-access-to-uitstor-server-with-tls.html)
 - [Tweak the KES server configuration](https://github.com/minio/kes/wiki/Configuration)
 - [Run a load balancer infront of KES](https://github.com/minio/kes/wiki/TLS-Proxy)
 - [Understand the KES server concepts](https://github.com/minio/kes/wiki/Concepts)
@@ -81,13 +81,13 @@ Auto-Encryption is useful when MinIO administrator wants to ensure that all data
 MinIO automatically encrypts all objects on buckets if KMS is successfully configured and bucket encryption configuration is enabled for each bucket as shown below:
 
 ```
-mc encrypt set sse-s3 myminio/bucket/
+mc encrypt set sse-s3 myuitstor/bucket/
 ```
 
 Verify if MinIO has `sse-s3` enabled
 
 ```
-mc encrypt info myminio/bucket/
+mc encrypt info myuitstor/bucket/
 Auto encryption 'sse-s3' is enabled
 ```
 
@@ -108,12 +108,12 @@ export MINIO_KMS_AUTO_ENCRYPTION=on
 To verify auto-encryption, use the following `mc` command:
 
 ```
-mc cp test.file myminio/bucket/
+mc cp test.file myuitstor/bucket/
 test.file:              5 B / 5 B  ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓  100.00% 337 B/s 0s
 ```
 
 ```
-mc stat myminio/bucket/test.file
+mc stat myuitstor/bucket/test.file
 Name      : test.file
 ...
 Encrypted :
@@ -137,8 +137,8 @@ Certificates are no secrets and sent in plaintext as part of the TLS handshake.
 
 ## Explore Further
 
-- [Use `mc` with MinIO Server](https://docs.min.io/docs/minio-client-quickstart-guide)
-- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-minio)
-- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-minio)
-- [Use `minio-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
+- [Use `mc` with MinIO Server](https://docs.min.io/docs/uitstor-client-quickstart-guide)
+- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-uitstor)
+- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-uitstor)
+- [Use `uitstor-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
 - [The MinIO documentation website](https://docs.min.io)

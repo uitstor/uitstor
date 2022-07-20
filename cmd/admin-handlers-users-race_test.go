@@ -32,7 +32,7 @@ import (
 	"time"
 
 	"github.com/minio/madmin-go"
-	minio "github.com/minio/minio-go/v7"
+	uitstor "github.com/minio/minio-go/v7"
 )
 
 func runAllIAMConcurrencyTests(suite *TestSuiteIAM, c *check) {
@@ -82,7 +82,7 @@ func (s *TestSuiteIAM) TestDeleteUserRace(c *check) {
 	defer cancel()
 
 	bucket := getRandomBucketName()
-	err := s.client.MakeBucket(ctx, bucket, minio.MakeBucketOptions{})
+	err := s.client.MakeBucket(ctx, bucket, uitstor.MakeBucketOptions{})
 	if err != nil {
 		c.Fatalf("bucket creat error: %v", err)
 	}

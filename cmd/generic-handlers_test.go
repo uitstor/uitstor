@@ -24,8 +24,8 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/minio/minio/internal/crypto"
-	xhttp "github.com/minio/minio/internal/http"
+	"github.com/uitstor/uitstor/internal/crypto"
+	xhttp "github.com/uitstor/uitstor/internal/http"
 )
 
 // Tests request guess function for net/rpc requests.
@@ -34,7 +34,7 @@ func TestGuessIsRPC(t *testing.T) {
 		t.Fatal("Unexpected return for nil request")
 	}
 
-	u, err := url.Parse("http://localhost:9000/minio/lock")
+	u, err := url.Parse("http://localhost:9000/uitstor/lock")
 	if err != nil {
 		t.Fatal(err)
 	}

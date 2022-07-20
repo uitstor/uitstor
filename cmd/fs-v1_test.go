@@ -32,7 +32,7 @@ func TestNewFS(t *testing.T) {
 	// Do not attempt to create this path, the test validates
 	// so that NewFSObjectLayer initializes non existing paths
 	// and successfully returns initialized object layer.
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	_, err := NewFSObjectLayer("")
@@ -57,7 +57,7 @@ func TestFSShutdown(t *testing.T) {
 	objectName := "object"
 	// Create and return an fsObject with its path in the disk
 	prepareTest := func() (*FSObjects, string) {
-		disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+		disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 		obj := initFSObjects(disk, t)
 		fs := obj.(*FSObjects)
 
@@ -88,7 +88,7 @@ func TestFSGetBucketInfo(t *testing.T) {
 	t.Skip()
 
 	// Prepare for testing
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	obj := initFSObjects(disk, t)
@@ -132,7 +132,7 @@ func TestFSGetBucketInfo(t *testing.T) {
 
 func TestFSPutObject(t *testing.T) {
 	// Prepare for tests
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	obj := initFSObjects(disk, t)
@@ -171,7 +171,7 @@ func TestFSPutObject(t *testing.T) {
 func TestFSDeleteObject(t *testing.T) {
 	t.Skip()
 	// Prepare for tests
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	obj := initFSObjects(disk, t)
@@ -216,7 +216,7 @@ func TestFSDeleteObject(t *testing.T) {
 func TestFSDeleteBucket(t *testing.T) {
 	t.Skip()
 	// Prepare for testing
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	obj := initFSObjects(disk, t)
@@ -257,7 +257,7 @@ func TestFSDeleteBucket(t *testing.T) {
 func TestFSListBuckets(t *testing.T) {
 	t.Skip()
 	// Prepare for tests
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	obj := initFSObjects(disk, t)
@@ -298,7 +298,7 @@ func TestFSListBuckets(t *testing.T) {
 
 // TestFSHealObject - tests for fs HealObject
 func TestFSHealObject(t *testing.T) {
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	obj := initFSObjects(disk, t)
@@ -310,7 +310,7 @@ func TestFSHealObject(t *testing.T) {
 
 // TestFSHealObjects - tests for fs HealObjects to return not implemented.
 func TestFSHealObjects(t *testing.T) {
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	obj := initFSObjects(disk, t)

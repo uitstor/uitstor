@@ -25,9 +25,9 @@ import (
 
 	"github.com/dustin/go-humanize"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/config/storageclass"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/config/storageclass"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/console"
 	"github.com/minio/pkg/wildcard"
 )
@@ -52,7 +52,7 @@ func newBgHealSequence() *healSequence {
 		startTime:   UTCNow(),
 		clientToken: bgHealingUUID,
 		// run-background heal with reserved bucket
-		bucket:   minioReservedBucket,
+		bucket:   uitstorReservedBucket,
 		settings: hs,
 		currentStatus: healSequenceStatus{
 			Summary:      healNotStartedStatus,
@@ -239,8 +239,8 @@ func (er *erasureObjects) healErasureSet(ctx context.Context, buckets []string, 
 			}
 			// We might land at .metacache, .trash, .multipart
 			// no need to heal them skip, only when bucket
-			// is '.minio.sys'
-			if bucket == minioMetaBucket {
+			// is '.uitstor.sys'
+			if bucket == uitstorMetaBucket {
 				if wildcard.Match("buckets/*/.metacache/*", entry.name) {
 					return
 				}

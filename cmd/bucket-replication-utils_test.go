@@ -20,7 +20,7 @@ package cmd
 import (
 	"testing"
 
-	"github.com/minio/minio/internal/bucket/replication"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
 )
 
 var replicatedInfosTests = []struct {
@@ -150,32 +150,32 @@ var parseReplicationDecisionTest = []struct {
 
 	{ // 2.
 		name:   "replicate decision for one target",
-		dsc:    "arn:minio:replication::id:bucket=true;false;arn:minio:replication::id:bucket;id",
+		dsc:    "arn:uitstor:replication::id:bucket=true;false;arn:uitstor:replication::id:bucket;id",
 		expErr: nil,
 		expDsc: ReplicateDecision{
 			targetsMap: map[string]replicateTargetDecision{
-				"arn:minio:replication::id:bucket": newReplicateTargetDecision("arn:minio:replication::id:bucket", true, false),
+				"arn:uitstor:replication::id:bucket": newReplicateTargetDecision("arn:uitstor:replication::id:bucket", true, false),
 			},
 		},
 	},
 	{ // 3.
 		name:   "replicate decision for multiple targets",
-		dsc:    "arn:minio:replication::id:bucket=true;false;arn:minio:replication::id:bucket;id,arn:minio:replication::id2:bucket=false;true;arn:minio:replication::id2:bucket;id2",
+		dsc:    "arn:uitstor:replication::id:bucket=true;false;arn:uitstor:replication::id:bucket;id,arn:uitstor:replication::id2:bucket=false;true;arn:uitstor:replication::id2:bucket;id2",
 		expErr: nil,
 		expDsc: ReplicateDecision{
 			targetsMap: map[string]replicateTargetDecision{
-				"arn:minio:replication::id:bucket":  newReplicateTargetDecision("arn:minio:replication::id:bucket", true, false),
-				"arn:minio:replication::id2:bucket": newReplicateTargetDecision("arn:minio:replication::id2:bucket", false, true),
+				"arn:uitstor:replication::id:bucket":  newReplicateTargetDecision("arn:uitstor:replication::id:bucket", true, false),
+				"arn:uitstor:replication::id2:bucket": newReplicateTargetDecision("arn:uitstor:replication::id2:bucket", false, true),
 			},
 		},
 	},
 	{ // 4.
 		name:   "invalid format replicate decision for one target",
-		dsc:    "arn:minio:replication::id:bucket:true;false;arn:minio:replication::id:bucket;id",
+		dsc:    "arn:uitstor:replication::id:bucket:true;false;arn:uitstor:replication::id:bucket;id",
 		expErr: errInvalidReplicateDecisionFormat,
 		expDsc: ReplicateDecision{
 			targetsMap: map[string]replicateTargetDecision{
-				"arn:minio:replication::id:bucket": newReplicateTargetDecision("arn:minio:replication::id:bucket", true, false),
+				"arn:uitstor:replication::id:bucket": newReplicateTargetDecision("arn:uitstor:replication::id:bucket", true, false),
 			},
 		},
 	},

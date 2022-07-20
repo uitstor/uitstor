@@ -27,15 +27,15 @@ import (
 
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	bucketsse "github.com/minio/minio/internal/bucket/encryption"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	objectlock "github.com/minio/minio/internal/bucket/object/lock"
-	"github.com/minio/minio/internal/bucket/replication"
-	"github.com/minio/minio/internal/bucket/versioning"
-	"github.com/minio/minio/internal/event"
-	"github.com/minio/minio/internal/kms"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	bucketsse "github.com/uitstor/uitstor/internal/bucket/encryption"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	objectlock "github.com/uitstor/uitstor/internal/bucket/object/lock"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
+	"github.com/uitstor/uitstor/internal/bucket/versioning"
+	"github.com/uitstor/uitstor/internal/event"
+	"github.com/uitstor/uitstor/internal/kms"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 	"github.com/minio/pkg/bucket/policy"
 )
 
@@ -66,7 +66,7 @@ func (sys *BucketMetadataSys) Set(bucket string, meta BucketMetadata) {
 		return
 	}
 
-	if bucket != minioMetaBucket {
+	if bucket != uitstorMetaBucket {
 		sys.Lock()
 		sys.metadataMap[bucket] = meta
 		sys.Unlock()
@@ -95,7 +95,7 @@ func (sys *BucketMetadataSys) Update(ctx context.Context, bucket string, configF
 		return updatedAt, NotImplemented{}
 	}
 
-	if bucket == minioMetaBucket {
+	if bucket == uitstorMetaBucket {
 		return updatedAt, errInvalidArgument
 	}
 
@@ -168,7 +168,7 @@ func (sys *BucketMetadataSys) Update(ctx context.Context, bucket string, configF
 // For all other bucket specific metadata, use the relevant
 // calls implemented specifically for each of those features.
 func (sys *BucketMetadataSys) Get(bucket string) (BucketMetadata, error) {
-	if globalIsGateway || bucket == minioMetaBucket {
+	if globalIsGateway || bucket == uitstorMetaBucket {
 		return newBucketMetadata(bucket), errConfigNotFound
 	}
 
@@ -391,7 +391,7 @@ func (sys *BucketMetadataSys) GetConfig(ctx context.Context, bucket string) (Buc
 		return newBucketMetadata(bucket), NotImplemented{}
 	}
 
-	if bucket == minioMetaBucket {
+	if bucket == uitstorMetaBucket {
 		return newBucketMetadata(bucket), errInvalidArgument
 	}
 

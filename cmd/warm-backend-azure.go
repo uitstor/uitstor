@@ -130,7 +130,7 @@ func newWarmBackendAzure(conf madmin.TierAzure) (*warmBackendAzure, error) {
 	}, nil
 }
 
-// Convert azure errors to minio object layer errors.
+// Convert azure errors to uitstor object layer errors.
 func azureToObjectError(err error, params ...string) error {
 	if err == nil {
 		return nil

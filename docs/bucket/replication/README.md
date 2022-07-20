@@ -1,10 +1,10 @@
-# Bucket Replication Guide [![slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Replication Guide [![slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
 Bucket replication is designed to replicate selected objects in a bucket to a destination bucket.
 
-The contents of this page have been migrated to the new [MinIO Baremetal Documentation: Bucket Replication](https://docs.min.io/minio/baremetal/replication/replication-overview.html#) page. The [Bucket Replication](https://docs.min.io/minio/baremetal/replication/replication-overview.html#) section includes dedicated tutorials for configuring one-way "Active-Passive" and two-way "Active-Active" bucket replication. Please update your bookmarks to use the new MinIO documentation, as this legacy documentation will be deprecated and removed in the future.
+The contents of this page have been migrated to the new [MinIO Baremetal Documentation: Bucket Replication](https://docs.min.io/uitstor/baremetal/replication/replication-overview.html#) page. The [Bucket Replication](https://docs.min.io/uitstor/baremetal/replication/replication-overview.html#) section includes dedicated tutorials for configuring one-way "Active-Passive" and two-way "Active-Active" bucket replication. Please update your bookmarks to use the new MinIO documentation, as this legacy documentation will be deprecated and removed in the future.
 
-To replicate objects in a bucket to a destination bucket on a target site either in the same cluster or a different cluster, start by enabling [versioning](https://docs.minio.io/docs/minio-bucket-versioning-guide.html) for both source and destination buckets. Finally, the target site and the destination bucket need to be configured on the source MinIO server.
+To replicate objects in a bucket to a destination bucket on a target site either in the same cluster or a different cluster, start by enabling [versioning](https://docs.uitstor.io/docs/uitstor-bucket-versioning-guide.html) for both source and destination buckets. Finally, the target site and the destination bucket need to be configured on the source MinIO server.
 
 ## Highlights
 
@@ -21,8 +21,8 @@ Ensure that versioning is enabled on the source and target buckets with `mc vers
 Create a replication target on the source cluster as shown below:
 
 ```
-mc admin bucket remote add myminio/srcbucket https://accessKey:secretKey@replica-endpoint:9000/destbucket --service replication --region us-east-1
-Remote ARN = 'arn:minio:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket'
+mc admin bucket remote add myuitstor/srcbucket https://accessKey:secretKey@replica-endpoint:9000/destbucket --service replication --region us-east-1
+Remote ARN = 'arn:uitstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket'
 ```
 
 > The user running the above command needs *s3:GetReplicationConfiguration* and *s3:GetBucketVersioning* permission on the source cluster. We do not recommend running root credentials/super admin with replication, instead create a dedicated user. The access credentials used at the destination requires *s3:ReplicateObject* permission.
@@ -101,13 +101,13 @@ The access key provided for the replication *target* cluster should have these m
 }
 ```
 
-Please note that the permissions required by the admin user on the target cluster can be more fine grained to exclude permissions like "s3:ReplicateDelete", "s3:GetBucketObjectLockConfiguration" etc depending on whether delete replication rules are set up or if object locking is disabled on `destbucket`. The above policies assume that replication of objects, tags and delete marker replication are all enabled on object lock enabled buckets. A sample script to setup replication is provided [here](https://github.com/minio/minio/blob/master/docs/bucket/replication/setup_replication.sh)
+Please note that the permissions required by the admin user on the target cluster can be more fine grained to exclude permissions like "s3:ReplicateDelete", "s3:GetBucketObjectLockConfiguration" etc depending on whether delete replication rules are set up or if object locking is disabled on `destbucket`. The above policies assume that replication of objects, tags and delete marker replication are all enabled on object lock enabled buckets. A sample script to setup replication is provided [here](https://github.com/uitstor/uitstor/blob/master/docs/bucket/replication/setup_replication.sh)
 
 Once successfully created and authorized, the `mc admin bucket remote add` command generates a replication target ARN.  This command lists all the currently authorized replication targets:
 
 ```
-mc admin bucket remote ls myminio/srcbucket --service "replication"
-Remote ARN = 'arn:minio:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket'
+mc admin bucket remote ls myuitstor/srcbucket --service "replication"
+Remote ARN = 'arn:uitstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket'
 ```
 
 The replication configuration can now be added to the source bucket by applying the json file with replication configuration. The Remote ARN above is passed in as a json element in the configuration.
@@ -137,7 +137,7 @@ The replication configuration can now be added to the source bucket by applying 
         }
       },
       "Destination": {
-        "Bucket": "arn:minio:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket",
+        "Bucket": "arn:uitstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket",
         "StorageClass": "STANDARD"
       },
       "SourceSelectionCriteria": {
@@ -152,15 +152,15 @@ The replication configuration can now be added to the source bucket by applying 
 
 The replication configuration follows [AWS S3 Spec](https://docs.aws.amazon.com/AmazonS3/latest/dev/replication-add-config.html). Any objects uploaded to the source bucket that meet replication criteria will now be automatically replicated by the MinIO server to the remote destination bucket. Replication can be disabled at any time by disabling specific rules in the configuration or deleting the replication configuration entirely.
 
-When object locking is used in conjunction with replication, both source and destination buckets needs to have [object locking](https://docs.min.io/docs/minio-bucket-object-lock-guide.html) enabled. Similarly objects encrypted on the server side, will be replicated if destination also supports encryption.
+When object locking is used in conjunction with replication, both source and destination buckets needs to have [object locking](https://docs.min.io/docs/uitstor-bucket-object-lock-guide.html) enabled. Similarly objects encrypted on the server side, will be replicated if destination also supports encryption.
 
 Replication status can be seen in the metadata on the source and destination objects. On the source side, the `X-Amz-Replication-Status` changes from `PENDING` to `COMPLETED` or `FAILED` after replication attempt either succeeded or failed respectively. On the destination side, a `X-Amz-Replication-Status` status of `REPLICA` indicates that the object was replicated successfully. Any replication failures are automatically re-attempted during a periodic disk scanner cycle.
 
 To perform bi-directional replication, repeat the above process on the target site - this time setting the source bucket as the replication target. It is recommended that replication be run in a system with atleast two CPU's available to the process, so that replication can run in its own thread.
 
-![put](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/replication/PUT_bucket_replication.png)
+![put](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/bucket/replication/PUT_bucket_replication.png)
 
-![head](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/replication/HEAD_bucket_replication.png)
+![head](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/bucket/replication/HEAD_bucket_replication.png)
 
 ## Replica Modification sync
 
@@ -197,26 +197,26 @@ To add a replication rule allowing both delete marker replication, versioned del
 Additional permission of "s3:ReplicateDelete" action would need to be specified on the access key configured for the target cluster if Delete Marker replication or versioned delete replication is enabled.
 
 ```
-mc replicate add myminio/srcbucket/Tax --priority 1 --remote-bucket "arn:minio:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket" --tags "Year=2019&Company=AcmeCorp" --storage-class "STANDARD" --replicate "delete,delete-marker"
-Replication configuration applied successfully to myminio/srcbucket.
+mc replicate add myuitstor/srcbucket/Tax --priority 1 --remote-bucket "arn:uitstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket" --tags "Year=2019&Company=AcmeCorp" --storage-class "STANDARD" --replicate "delete,delete-marker"
+Replication configuration applied successfully to myuitstor/srcbucket.
 ```
 
 > NOTE: In mc versions RELEASE.2021-09-02T09-21-27Z and older, the remote target ARN needs to be passed in the --arn flag and actual remote bucket name in --remote-bucket flag of  `mc replicate add`. For example, with the ARN above the replication configuration used to be added with
 
 ```
-mc replicate add myminio/srcbucket/Tax --priority 1 --remote-bucket destbucket --arn "arn:minio:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket" --tags "Year=2019&Company=AcmeCorp" --storage-class "STANDARD" --replicate "delete,delete-marker"
-Replication configuration applied successfully to myminio/srcbucket.
+mc replicate add myuitstor/srcbucket/Tax --priority 1 --remote-bucket destbucket --arn "arn:uitstor:replication:us-east-1:c5be6b16-769d-432a-9ef1-4567081f3566:destbucket" --tags "Year=2019&Company=AcmeCorp" --storage-class "STANDARD" --replicate "delete,delete-marker"
+Replication configuration applied successfully to myuitstor/srcbucket.
 ```
 
 Also note that for `mc` version `RELEASE.2021-09-02T09-21-27Z` or older supports only a single remote target per bucket. To take advantage of multiple destination replication, use the latest version of `mc`
 
 Status of delete marker replication can be viewed by doing a GET/HEAD on the object version - it will return a `X-Minio-Replication-DeleteMarker-Status` header and http response code of `405`. In the case of permanent deletes, if the delete replication is pending or failed to propagate to the target cluster, GET/HEAD will return additional `X-Minio-Replication-Delete-Status` header and a http response code of `405`.
 
-![delete](https://raw.githubusercontent.com/minio/minio/master/docs/bucket/replication/DELETE_bucket_replication.png)
+![delete](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/bucket/replication/DELETE_bucket_replication.png)
 
 The status of replication can be monitored by configuring event notifications on the source and target buckets using `mc event add`.On the source side, the `s3:PutObject`, `s3:Replication:OperationCompletedReplication` and `s3:Replication:OperationFailedReplication` events show the status of replication in the `X-Amz-Replication-Status` metadata.
 
-On the target bucket, `s3:PutObject` event shows `X-Amz-Replication-Status` status of `REPLICA` in the metadata. Additional metrics to monitor backlog state for the purpose of bandwidth management and resource allocation are exposed via Prometheus - see <https://github.com/minio/minio/blob/master/docs/metrics/prometheus/list.md> for more details.
+On the target bucket, `s3:PutObject` event shows `X-Amz-Replication-Status` status of `REPLICA` in the metadata. Additional metrics to monitor backlog state for the purpose of bandwidth management and resource allocation are exposed via Prometheus - see <https://github.com/uitstor/uitstor/blob/master/docs/metrics/prometheus/list.md> for more details.
 
 ### Sync/Async Replication
 
@@ -224,7 +224,7 @@ By default, replication is completed asynchronously. If synchronous replication 
 remote replication target using the `mc admin bucket remote add` command
 
 ```
- mc admin bucket remote add myminio/srcbucket https://accessKey:secretKey@replica-endpoint:9000/destbucket --service replication --region us-east-1 --sync --healthcheck-seconds 100
+ mc admin bucket remote add myuitstor/srcbucket https://accessKey:secretKey@replica-endpoint:9000/destbucket --service replication --region us-east-1 --sync --healthcheck-seconds 100
 ```
 
 ### Existing object replication
@@ -267,6 +267,6 @@ In the above sample config, objects under prefixes matching any of the `Excluded
 
 ## Explore Further
 
-- [MinIO Bucket Replication Design](https://github.com/minio/minio/blob/master/docs/bucket/replication/DESIGN.md)
-- [MinIO Bucket Versioning Implementation](https://docs.minio.io/docs/minio-bucket-versioning-guide.html)
-- [MinIO Client Quickstart Guide](https://docs.minio.io/docs/minio-client-quickstart-guide.html)
+- [MinIO Bucket Replication Design](https://github.com/uitstor/uitstor/blob/master/docs/bucket/replication/DESIGN.md)
+- [MinIO Bucket Versioning Implementation](https://docs.uitstor.io/docs/uitstor-bucket-versioning-guide.html)
+- [MinIO Client Quickstart Guide](https://docs.uitstor.io/docs/uitstor-client-quickstart-guide.html)

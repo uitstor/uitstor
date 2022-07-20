@@ -36,13 +36,13 @@ import (
 	"github.com/bits-and-blooms/bloom/v3"
 	"github.com/dustin/go-humanize"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/bucket/object/lock"
-	"github.com/minio/minio/internal/bucket/replication"
-	"github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/config/heal"
-	"github.com/minio/minio/internal/event"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/bucket/object/lock"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
+	"github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/config/heal"
+	"github.com/uitstor/uitstor/internal/event"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/console"
 	uatomic "go.uber.org/atomic"
 )
@@ -149,7 +149,7 @@ func saveBackgroundHealInfo(ctx context.Context, objAPI ObjectLayer, info backgr
 // There should only ever be one scanner running per cluster.
 func runDataScanner(pctx context.Context, objAPI ObjectLayer) {
 	// Make sure only 1 scanner is running on the cluster.
-	locker := objAPI.NewNSLock(minioMetaBucket, "scanner/runDataScanner.lock")
+	locker := objAPI.NewNSLock(uitstorMetaBucket, "scanner/runDataScanner.lock")
 	lkctx, err := locker.GetLock(pctx, dataScannerLeaderLockTimeout)
 	if err != nil {
 		if intDataUpdateTracker.debug {

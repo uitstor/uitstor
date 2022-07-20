@@ -18,7 +18,7 @@
 package logger
 
 import (
-	"github.com/minio/minio/internal/config"
+	"github.com/uitstor/uitstor/internal/config"
 )
 
 // Help template for logger http and audit
@@ -33,7 +33,7 @@ var (
 		},
 		config.HelpKV{
 			Key:         Endpoint,
-			Description: `HTTP(s) endpoint e.g. "http://localhost:8080/minio/logs/server"`,
+			Description: `HTTP(s) endpoint e.g. "http://localhost:8080/uitstor/logs/server"`,
 			Type:        "url",
 			Sensitive:   true,
 		},
@@ -82,7 +82,7 @@ var (
 		},
 		config.HelpKV{
 			Key:         Endpoint,
-			Description: `HTTP(s) endpoint e.g. "http://localhost:8080/minio/logs/audit"`,
+			Description: `HTTP(s) endpoint e.g. "http://localhost:8080/uitstor/logs/audit"`,
 			Type:        "url",
 			Sensitive:   true,
 		},

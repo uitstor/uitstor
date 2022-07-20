@@ -26,9 +26,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/minio/minio/internal/bucket/replication"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/bucket/policy"
 )
 

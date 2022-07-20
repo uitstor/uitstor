@@ -189,7 +189,7 @@ func driveSpeedTest(ctx context.Context, opts madmin.DriveSpeedTestOpts) madmin.
 	localPaths := globalEndpoints.LocalDisksPaths()
 	paths := func() (tmpPaths []string) {
 		for _, lp := range localPaths {
-			tmpPaths = append(tmpPaths, pathJoin(lp, minioMetaTmpBucket))
+			tmpPaths = append(tmpPaths, pathJoin(lp, uitstorMetaTmpBucket))
 		}
 		return tmpPaths
 	}()

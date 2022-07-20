@@ -28,8 +28,8 @@ import (
 	"time"
 
 	jwtgo "github.com/golang-jwt/jwt/v4"
-	"github.com/minio/minio/internal/arn"
-	"github.com/minio/minio/internal/auth"
+	"github.com/uitstor/uitstor/internal/arn"
+	"github.com/uitstor/uitstor/internal/auth"
 	iampolicy "github.com/minio/pkg/iam/policy"
 	xnet "github.com/minio/pkg/net"
 )

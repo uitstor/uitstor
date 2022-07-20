@@ -2,7 +2,7 @@
 
 MinIO server supports storage class in erasure coding mode. This allows configurable data and parity disks per object.
 
-This page is intended as a summary of MinIO Erasure Coding. For a more complete explanation, see <https://docs.min.io/minio/baremetal/concepts/erasure-coding.html>.
+This page is intended as a summary of MinIO Erasure Coding. For a more complete explanation, see <https://docs.min.io/uitstor/baremetal/concepts/erasure-coding.html>.
 
 ## Overview
 
@@ -53,7 +53,7 @@ The default value for the `STANDARD` storage class depends on the number of volu
 | 6-7              |                 EC:3  |
 | 8 or more        |                 EC:4  |
 
-For more complete documentation on Erasure Set sizing, see the [MinIO Documentation on Erasure Sets](https://docs.min.io/minio/baremetal/concepts/erasure-coding.html#erasure-sets).
+For more complete documentation on Erasure Set sizing, see the [MinIO Documentation on Erasure Sets](https://docs.min.io/uitstor/baremetal/concepts/erasure-coding.html#erasure-sets).
 
 ### Allowed values for REDUCED_REDUNDANCY storage class
 
@@ -80,7 +80,7 @@ export MINIO_STORAGE_CLASS_STANDARD=EC:3
 export MINIO_STORAGE_CLASS_RRS=EC:2
 ```
 
-Storage class can also be set via `mc admin config` get/set commands to update the configuration. Refer [storage class](https://github.com/minio/minio/tree/master/docs/config#storage-class) for
+Storage class can also be set via `mc admin config` get/set commands to update the configuration. Refer [storage class](https://github.com/uitstor/uitstor/tree/master/docs/config#storage-class) for
 more details.
 
 #### Note
@@ -93,10 +93,10 @@ with values `REDUCED_REDUNDANCY` or `STANDARD`, MinIO server uses default parity
 
 ### Set metadata
 
-In below example `minio-go` is used to set the storage class to `REDUCED_REDUNDANCY`. This means this object will be split across 6 data disks and 2 parity disks (as per the storage class set in previous step).
+In below example `uitstor-go` is used to set the storage class to `REDUCED_REDUNDANCY`. This means this object will be split across 6 data disks and 2 parity disks (as per the storage class set in previous step).
 
 ```go
-s3Client, err := minio.New("localhost:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
+s3Client, err := uitstor.New("localhost:9000", "YOUR-ACCESSKEYID", "YOUR-SECRETACCESSKEY", true)
 if err != nil {
  log.Fatalln(err)
 }
@@ -111,7 +111,7 @@ if err != nil {
  log.Fatalln(err)
 }
 
-n, err := s3Client.PutObject("my-bucketname", "my-objectname", object, objectStat.Size(), minio.PutObjectOptions{ContentType: "application/octet-stream", StorageClass: "REDUCED_REDUNDANCY"})
+n, err := s3Client.PutObject("my-bucketname", "my-objectname", object, objectStat.Size(), uitstor.PutObjectOptions{ContentType: "application/octet-stream", StorageClass: "REDUCED_REDUNDANCY"})
 if err != nil {
  log.Fatalln(err)
 }

@@ -27,10 +27,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/event"
-	"github.com/minio/minio/internal/event/target"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/event"
+	"github.com/uitstor/uitstor/internal/event/target"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/env"
 	xnet "github.com/minio/pkg/net"
 )

@@ -47,7 +47,7 @@ func TestFSV1MetadataObjInfo(t *testing.T) {
 func TestReadFSMetadata(t *testing.T) {
 	t.Skip()
 
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	obj := initFSObjects(disk, t)
@@ -65,7 +65,7 @@ func TestReadFSMetadata(t *testing.T) {
 
 	// Construct the full path of fs.json
 	fsPath := pathJoin(bucketMetaPrefix, bucketName, objectName, "fs.json")
-	fsPath = pathJoin(fs.fsPath, minioMetaBucket, fsPath)
+	fsPath = pathJoin(fs.fsPath, uitstorMetaBucket, fsPath)
 
 	rlk, err := fs.rwPool.Open(fsPath)
 	if err != nil {
@@ -83,7 +83,7 @@ func TestReadFSMetadata(t *testing.T) {
 // TestWriteFSMetadata - tests of writeFSMetadata with healthy disk.
 func TestWriteFSMetadata(t *testing.T) {
 	t.Skip()
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	obj := initFSObjects(disk, t)
@@ -101,7 +101,7 @@ func TestWriteFSMetadata(t *testing.T) {
 
 	// Construct the full path of fs.json
 	fsPath := pathJoin(bucketMetaPrefix, bucketName, objectName, "fs.json")
-	fsPath = pathJoin(fs.fsPath, minioMetaBucket, fsPath)
+	fsPath = pathJoin(fs.fsPath, uitstorMetaBucket, fsPath)
 
 	rlk, err := fs.rwPool.Open(fsPath)
 	if err != nil {

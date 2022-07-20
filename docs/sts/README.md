@@ -15,17 +15,17 @@ Following are advantages for using temporary credentials:
 
 | AuthN                                                                                  | Description                                                                                                                                   |
 | :----------------------                                                                | ------------------------------------------                                                                                                    |
-| [**WebIdentity**](https://github.com/minio/minio/blob/master/docs/sts/web-identity.md) | Let users request temporary credentials using any OpenID(OIDC) compatible web identity providers such as KeyCloak, Dex, Facebook, Google etc. |
-| [**AD/LDAP**](https://github.com/minio/minio/blob/master/docs/sts/ldap.md)             | Let AD/LDAP users request temporary credentials using AD/LDAP username and password.                                                          |
-| [**AssumeRole**](https://github.com/minio/minio/blob/master/docs/sts/assume-role.md)   | Let MinIO users request temporary credentials using user access and secret keys.                                                              |
+| [**WebIdentity**](https://github.com/uitstor/uitstor/blob/master/docs/sts/web-identity.md) | Let users request temporary credentials using any OpenID(OIDC) compatible web identity providers such as KeyCloak, Dex, Facebook, Google etc. |
+| [**AD/LDAP**](https://github.com/uitstor/uitstor/blob/master/docs/sts/ldap.md)             | Let AD/LDAP users request temporary credentials using AD/LDAP username and password.                                                          |
+| [**AssumeRole**](https://github.com/uitstor/uitstor/blob/master/docs/sts/assume-role.md)   | Let MinIO users request temporary credentials using user access and secret keys.                                                              |
 
 ### Understanding JWT Claims
 
 > NOTE: JWT claims are only meant for WebIdentity and ClientGrants.
 > AssumeRole or LDAP users can skip the entire portion and directly visit one of the links below.
 >
-> - [**AssumeRole**](https://github.com/minio/minio/blob/master/docs/sts/assume-role.md)
-> - [**AD/LDAP**](https://github.com/minio/minio/blob/master/docs/sts/ldap.md)
+> - [**AssumeRole**](https://github.com/uitstor/uitstor/blob/master/docs/sts/assume-role.md)
+> - [**AD/LDAP**](https://github.com/uitstor/uitstor/blob/master/docs/sts/ldap.md)
 
 The id_token received is a signed JSON Web Token (JWT). Use a JWT decoder to decode the id_token to access the payload of the token that includes following JWT claims, `policy` claim is mandatory and should be present as part of your JWT claim. Without this claim the generated credentials will not have access to any resources on the server, using these credentials application would receive 'Access Denied' errors.
 
@@ -37,12 +37,12 @@ The id_token received is a signed JSON Web Token (JWT). Use a JWT decoder to dec
 
 In this document we will explain in detail on how to configure all the prerequisites.
 
-> NOTE: If you are interested in AssumeRole API only, skip to [here](https://github.com/minio/minio/blob/master/docs/sts/assume-role.md)
+> NOTE: If you are interested in AssumeRole API only, skip to [here](https://github.com/uitstor/uitstor/blob/master/docs/sts/assume-role.md)
 
 ### Prerequisites
 
-- [Configuring keycloak](https://github.com/minio/minio/blob/master/docs/sts/keycloak.md) or [Configuring Casdoor](https://github.com/minio/minio/blob/master/docs/sts/casdoor.md)
-- [Configuring etcd (optional needed only in gateway or federation mode)](https://github.com/minio/minio/blob/master/docs/sts/etcd.md)
+- [Configuring keycloak](https://github.com/uitstor/uitstor/blob/master/docs/sts/keycloak.md) or [Configuring Casdoor](https://github.com/uitstor/uitstor/blob/master/docs/sts/casdoor.md)
+- [Configuring etcd (optional needed only in gateway or federation mode)](https://github.com/uitstor/uitstor/blob/master/docs/sts/etcd.md)
 
 ### Setup MinIO with Identity Provider
 
@@ -51,21 +51,21 @@ Make sure we have followed the previous step and configured each software indepe
 #### KeyCloak
 
 ```
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
 export MINIO_IDENTITY_OPENID_CONFIG_URL=http://localhost:8080/auth/realms/demo/.well-known/openid-configuration
 export MINIO_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
-minio server /mnt/data
+uitstor server /mnt/data
 ```
 
 #### Casdoor
 
 ```
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
 export MINIO_IDENTITY_OPENID_CONFIG_URL=http://CASDOOR_ENDPOINT/.well-known/openid-configuration
 export MINIO_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
-minio server /mnt/data
+uitstor server /mnt/data
 ```
 
 ### Setup MinIO Gateway with Keycloak and Etcd
@@ -80,7 +80,7 @@ export MINIO_ROOT_PASSWORD=aws_secret_key
 export MINIO_IDENTITY_OPENID_CONFIG_URL=http://localhost:8080/auth/realms/demo/.well-known/openid-configuration
 export MINIO_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
 export MINIO_ETCD_ENDPOINTS=http://localhost:2379
-minio gateway s3
+uitstor gateway s3
 ```
 
 ### Using WebIdentiy API
@@ -121,5 +121,5 @@ These credentials can now be used to perform MinIO API operations.
 
 ## Explore Further
 
-- [MinIO Admin Complete Guide](https://docs.min.io/docs/minio-admin-complete-guide.html)
+- [MinIO Admin Complete Guide](https://docs.min.io/docs/uitstor-admin-complete-guide.html)
 - [The MinIO documentation website](https://docs.min.io)

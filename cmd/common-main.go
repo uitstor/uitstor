@@ -56,12 +56,12 @@ import (
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/handlers"
-	"github.com/minio/minio/internal/kms"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/handlers"
+	"github.com/uitstor/uitstor/internal/kms"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/certs"
 	"github.com/minio/pkg/console"
 	"github.com/minio/pkg/ellipses"
@@ -102,7 +102,7 @@ func init() {
 		PersistOnFailure: false,
 	}
 
-	t, _ := minioVersionToReleaseTime(Version)
+	t, _ := uitstorVersionToReleaseTime(Version)
 	if !t.IsZero() {
 		globalVersionUnix = uint64(t.Unix())
 	}
@@ -162,14 +162,14 @@ func init() {
 		shardDiskTimeDelta = 1 * time.Minute
 	}
 
-	// All minio-go API operations shall be performed only once,
+	// All uitstor-go API operations shall be performed only once,
 	// another way to look at this is we are turning off retries.
-	minio.MaxRetry = 1
+	uitstor.MaxRetry = 1
 }
 
 const consolePrefix = "CONSOLE_"
 
-func minioConfigToConsoleFeatures() {
+func uitstorConfigToConsoleFeatures() {
 	os.Setenv("CONSOLE_PBKDF_SALT", globalDeploymentID)
 	os.Setenv("CONSOLE_PBKDF_PASSPHRASE", globalDeploymentID)
 	if globalMinioEndpoint != "" {
@@ -193,7 +193,7 @@ func minioConfigToConsoleFeatures() {
 	// Enable if prometheus URL is set.
 	if value := env.Get("MINIO_PROMETHEUS_URL", ""); value != "" {
 		os.Setenv("CONSOLE_PROMETHEUS_URL", value)
-		if value := env.Get("MINIO_PROMETHEUS_JOB_ID", "minio-job"); value != "" {
+		if value := env.Get("MINIO_PROMETHEUS_JOB_ID", "uitstor-job"); value != "" {
 			os.Setenv("CONSOLE_PROMETHEUS_JOB_ID", value)
 			// Support additional labels for more granular filtering.
 			if value := env.Get("MINIO_PROMETHEUS_EXTRA_LABELS", ""); value != "" {
@@ -247,9 +247,9 @@ func initConsoleServer() (*restapi.Server, error) {
 	}
 
 	// enable all console environment variables
-	minioConfigToConsoleFeatures()
+	uitstorConfigToConsoleFeatures()
 
-	// set certs dir to minio directory
+	// set certs dir to uitstor directory
 	consoleCerts.GlobalCertsDir = &consoleCerts.ConfigDir{
 		Path: globalCertsDir.Get(),
 	}
@@ -316,9 +316,9 @@ func verifyObjectLayerFeatures(name string, objAPI ObjectLayer) {
 
 // Check for updates and print a notification message
 func checkUpdate(mode string) {
-	updateURL := minioReleaseInfoURL
+	updateURL := uitstorReleaseInfoURL
 	if runtime.GOOS == globalWindowsOSName {
-		updateURL = minioReleaseWindowsInfoURL
+		updateURL = uitstorReleaseWindowsInfoURL
 	}
 
 	u, err := url.Parse(updateURL)
@@ -526,7 +526,7 @@ func parsEnvEntry(envEntry string) (envKV, error) {
 // Similar to os.Environ returns a copy of strings representing
 // the environment values from a file, in the form "key, value".
 // in a structured form.
-func minioEnvironFromFile(envConfigFile string) ([]envKV, error) {
+func uitstorEnvironFromFile(envConfigFile string) ([]envKV, error) {
 	f, err := os.Open(envConfigFile)
 	if err != nil {
 		return nil, err
@@ -623,7 +623,7 @@ func loadEnvVarsFromFiles() {
 	}
 
 	if env.IsSet(config.EnvConfigEnvFile) {
-		ekvs, err := minioEnvironFromFile(env.Get(config.EnvConfigEnvFile, ""))
+		ekvs, err := uitstorEnvironFromFile(env.Get(config.EnvConfigEnvFile, ""))
 		if err != nil && !os.IsNotExist(err) {
 			logger.Fatal(err, "Unable to read the config environment file")
 		}
@@ -651,7 +651,7 @@ func handleCommonEnvVars() {
 			if !((u.Scheme == "http" || u.Scheme == "https") &&
 				u.Opaque == "" &&
 				!u.ForceQuery && u.RawQuery == "" && u.Fragment == "") {
-				err := fmt.Errorf("URL contains unexpected resources, expected URL to be of http(s)://minio.example.com format: %v", u)
+				err := fmt.Errorf("URL contains unexpected resources, expected URL to be of http(s)://uitstor.example.com format: %v", u)
 				logger.Fatal(err, "Invalid MINIO_BROWSER_REDIRECT_URL value is environment variable")
 			}
 			globalBrowserRedirectURL = u
@@ -667,7 +667,7 @@ func handleCommonEnvVars() {
 		if !((u.Scheme == "http" || u.Scheme == "https") &&
 			(u.Path == "/" || u.Path == "") && u.Opaque == "" &&
 			!u.ForceQuery && u.RawQuery == "" && u.Fragment == "") {
-			err := fmt.Errorf("URL contains unexpected resources, expected URL to be of http(s)://minio.example.com format: %v", u)
+			err := fmt.Errorf("URL contains unexpected resources, expected URL to be of http(s)://uitstor.example.com format: %v", u)
 			logger.Fatal(err, "Invalid MINIO_SERVER_URL value is environment variable")
 		}
 		u.Path = "" // remove any path component such as `/`
@@ -708,9 +708,9 @@ func handleCommonEnvVars() {
 
 	publicIPs := env.Get(config.EnvPublicIPs, "")
 	if len(publicIPs) != 0 {
-		minioEndpoints := strings.Split(publicIPs, config.ValueSeparator)
+		uitstorEndpoints := strings.Split(publicIPs, config.ValueSeparator)
 		domainIPs := set.NewStringSet()
-		for _, endpoint := range minioEndpoints {
+		for _, endpoint := range uitstorEndpoints {
 			if net.ParseIP(endpoint) == nil {
 				// Checking if the IP is a DNS entry.
 				addrs, err := globalDNSCache.LookupHost(GlobalContext, endpoint)

@@ -27,42 +27,42 @@ import (
 	"time"
 
 	"github.com/minio/console/restapi"
-	minio "github.com/minio/minio-go/v7"
+	uitstor "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/set"
-	"github.com/minio/minio/internal/bucket/bandwidth"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/handlers"
-	"github.com/minio/minio/internal/kms"
+	"github.com/uitstor/uitstor/internal/bucket/bandwidth"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/handlers"
+	"github.com/uitstor/uitstor/internal/kms"
 	"github.com/rs/dnscache"
 
 	"github.com/dustin/go-humanize"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/config/cache"
-	"github.com/minio/minio/internal/config/callhome"
-	"github.com/minio/minio/internal/config/compress"
-	"github.com/minio/minio/internal/config/dns"
-	xldap "github.com/minio/minio/internal/config/identity/ldap"
-	"github.com/minio/minio/internal/config/identity/openid"
-	idplugin "github.com/minio/minio/internal/config/identity/plugin"
-	xtls "github.com/minio/minio/internal/config/identity/tls"
-	polplugin "github.com/minio/minio/internal/config/policy/plugin"
-	"github.com/minio/minio/internal/config/storageclass"
-	"github.com/minio/minio/internal/config/subnet"
-	xhttp "github.com/minio/minio/internal/http"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/config/cache"
+	"github.com/uitstor/uitstor/internal/config/callhome"
+	"github.com/uitstor/uitstor/internal/config/compress"
+	"github.com/uitstor/uitstor/internal/config/dns"
+	xldap "github.com/uitstor/uitstor/internal/config/identity/ldap"
+	"github.com/uitstor/uitstor/internal/config/identity/openid"
+	idplugin "github.com/uitstor/uitstor/internal/config/identity/plugin"
+	xtls "github.com/uitstor/uitstor/internal/config/identity/tls"
+	polplugin "github.com/uitstor/uitstor/internal/config/policy/plugin"
+	"github.com/uitstor/uitstor/internal/config/storageclass"
+	"github.com/uitstor/uitstor/internal/config/subnet"
+	xhttp "github.com/uitstor/uitstor/internal/http"
 	etcd "go.etcd.io/etcd/client/v3"
 
-	"github.com/minio/minio/internal/event"
-	"github.com/minio/minio/internal/pubsub"
+	"github.com/uitstor/uitstor/internal/event"
+	"github.com/uitstor/uitstor/internal/pubsub"
 	"github.com/minio/pkg/certs"
 	xnet "github.com/minio/pkg/net"
 )
 
-// minio configuration related constants.
+// uitstor configuration related constants.
 const (
 	GlobalMinioDefaultPort = "9000"
 
 	globalMinioDefaultRegion = ""
-	// This is a sha256 output of ``arn:aws:iam::minio:user/admin``,
+	// This is a sha256 output of ``arn:aws:iam::uitstor:user/admin``,
 	// this is kept in present form to be compatible with S3 owner ID
 	// requirements -
 	//
@@ -138,16 +138,16 @@ var globalCLIContext = struct {
 }{}
 
 var (
-	// Indicates if the running minio server is distributed setup.
+	// Indicates if the running uitstor server is distributed setup.
 	globalIsDistErasure = false
 
-	// Indicates if the running minio server is an erasure-code backend.
+	// Indicates if the running uitstor server is an erasure-code backend.
 	globalIsErasure = false
 
-	// Indicates if the running minio server is in single drive XL mode.
+	// Indicates if the running uitstor server is in single drive XL mode.
 	globalIsErasureSD = false
 
-	// Indicates if the running minio is in gateway mode.
+	// Indicates if the running uitstor is in gateway mode.
 	globalIsGateway = false
 
 	// Indicates if server code should go through testing path.
@@ -371,14 +371,14 @@ var (
 	// Used for collecting stats for netperf
 	globalNetPerfMinDuration     = time.Second * 10
 	globalNetPerfRX              netPerfRX
-	globalObjectPerfBucket       = "minio-perf-test-tmp-bucket"
+	globalObjectPerfBucket       = "uitstor-perf-test-tmp-bucket"
 	globalObjectPerfUserMetadata = "X-Amz-Meta-Minio-Object-Perf" // Clients can set this to bypass S3 API service freeze. Used by object pref tests.
 
 	// MinIO version unix timestamp
 	globalVersionUnix uint64
 
 	// MinIO client
-	globalMinioClient *minio.Client
+	globalMinioClient *uitstor.Client
 
 	// Add new variable global values here.
 )

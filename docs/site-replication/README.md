@@ -25,34 +25,34 @@ The following Bucket features will **not be replicated**, is designed to differ 
 - All sites **must** have the same deployment credentials (i.e. `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD`).
 - **Removing a site** is not allowed from a set of replicated sites once configured.
 - All sites must be using the **same** external IDP(s) if any.
-- For [SSE-S3 or SSE-KMS encryption via KMS](https://docs.min.io/docs/minio-kms-quickstart-guide.html "MinIO KMS Guide"), all sites **must**  have access to a central KMS deployment. This can be achieved via a central KES server or multiple KES servers (say one per site) connected via a central KMS (Vault) server.
+- For [SSE-S3 or SSE-KMS encryption via KMS](https://docs.min.io/docs/uitstor-kms-quickstart-guide.html "MinIO KMS Guide"), all sites **must**  have access to a central KMS deployment. This can be achieved via a central KES server or multiple KES servers (say one per site) connected via a central KMS (Vault) server.
 
 ## Configuring Site Replication
 
 - Configure an alias in `mc` for each of the sites. For example if you have three MinIO sites, you may run:
 
 ```sh
-mc alias set minio1 https://minio1.example.com:9000 adminuser adminpassword
-mc alias set minio2 https://minio2.example.com:9000 adminuser adminpassword
-mc alias set minio3 https://minio3.example.com:9000 adminuser adminpassword
+mc alias set uitstor1 https://uitstor1.example.com:9000 adminuser adminpassword
+mc alias set uitstor2 https://uitstor2.example.com:9000 adminuser adminpassword
+mc alias set uitstor3 https://uitstor3.example.com:9000 adminuser adminpassword
 ```
 
 or
 
 ```sh
-export MC_HOST_minio1=https://adminuser:adminpassword@minio1.example.com
-export MC_HOST_minio2=https://adminuser:adminpassword@minio2.example.com
-export MC_HOST_minio3=https://adminuser:adminpassword@minio3.example.com
+export MC_HOST_uitstor1=https://adminuser:adminpassword@uitstor1.example.com
+export MC_HOST_uitstor2=https://adminuser:adminpassword@uitstor2.example.com
+export MC_HOST_uitstor3=https://adminuser:adminpassword@uitstor3.example.com
 ```
 
 - Add site replication configuration with:
 
 ```sh
-mc admin replicate add minio1 minio2 minio3
+mc admin replicate add uitstor1 uitstor2 uitstor3
 ```
 
 - Once the above command returns success, you may query site replication configuration with:
 
 ```sh
-mc admin replicate info minio1
+mc admin replicate info uitstor1
 ```

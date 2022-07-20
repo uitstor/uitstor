@@ -21,7 +21,7 @@ import (
 
 	"github.com/minio/cli"
 	"github.com/minio/madmin-go"
-	minio "github.com/minio/minio/cmd"
+	uitstor "github.com/uitstor/uitstor/cmd"
 )
 
 func init() {
@@ -38,12 +38,12 @@ PATH:
   path to NAS mount point
 
 EXAMPLES:
-  1. Start minio gateway server for NAS backend
+  1. Start uitstor gateway server for NAS backend
      {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.HelpName}} /shared/nasvol
 
-  2. Start minio gateway server for NAS with edge caching enabled
+  2. Start uitstor gateway server for NAS with edge caching enabled
      {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.EnvVarSetCommand}} MINIO_CACHE_DRIVES{{.AssignmentOperator}}"/mnt/drive1,/mnt/drive2,/mnt/drive3,/mnt/drive4"
@@ -55,8 +55,8 @@ EXAMPLES:
      {{.Prompt}} {{.HelpName}} /shared/nasvol
 `
 
-	minio.RegisterGatewayCommand(cli.Command{
-		Name:               minio.NASBackendGateway,
+	uitstor.RegisterGatewayCommand(cli.Command{
+		Name:               uitstor.NASBackendGateway,
 		Usage:              "Network-attached storage (NAS)",
 		Action:             nasGatewayMain,
 		CustomHelpTemplate: nasGatewayTemplate,
@@ -64,14 +64,14 @@ EXAMPLES:
 	})
 }
 
-// Handler for 'minio gateway nas' command line.
+// Handler for 'uitstor gateway nas' command line.
 func nasGatewayMain(ctx *cli.Context) {
 	// Validate gateway arguments.
 	if !ctx.Args().Present() || ctx.Args().First() == "help" {
-		cli.ShowCommandHelpAndExit(ctx, minio.NASBackendGateway, 1)
+		cli.ShowCommandHelpAndExit(ctx, uitstor.NASBackendGateway, 1)
 	}
 
-	minio.StartGateway(ctx, &NAS{ctx.Args().First()})
+	uitstor.StartGateway(ctx, &NAS{ctx.Args().First()})
 }
 
 // NAS implements Gateway.
@@ -81,13 +81,13 @@ type NAS struct {
 
 // Name implements Gateway interface.
 func (g *NAS) Name() string {
-	return minio.NASBackendGateway
+	return uitstor.NASBackendGateway
 }
 
 // NewGatewayLayer returns nas gatewaylayer.
-func (g *NAS) NewGatewayLayer(creds madmin.Credentials) (minio.ObjectLayer, error) {
+func (g *NAS) NewGatewayLayer(creds madmin.Credentials) (uitstor.ObjectLayer, error) {
 	var err error
-	newObject, err := minio.NewFSObjectLayer(g.path)
+	newObject, err := uitstor.NewFSObjectLayer(g.path)
 	if err != nil {
 		return nil, err
 	}
@@ -99,7 +99,7 @@ func (n *nasObjects) IsListenSupported() bool {
 	return false
 }
 
-func (n *nasObjects) StorageInfo(ctx context.Context) (si minio.StorageInfo, _ []error) {
+func (n *nasObjects) StorageInfo(ctx context.Context) (si uitstor.StorageInfo, _ []error) {
 	si, errs := n.ObjectLayer.StorageInfo(ctx)
 	si.Backend.GatewayOnline = si.Backend.Type == madmin.FS
 	si.Backend.Type = madmin.Gateway
@@ -108,7 +108,7 @@ func (n *nasObjects) StorageInfo(ctx context.Context) (si minio.StorageInfo, _ [
 
 // nasObjects implements gateway for MinIO and S3 compatible object storage servers.
 type nasObjects struct {
-	minio.ObjectLayer
+	uitstor.ObjectLayer
 }
 
 func (n *nasObjects) IsTaggingSupported() bool {

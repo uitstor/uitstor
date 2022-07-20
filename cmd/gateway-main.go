@@ -32,9 +32,9 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/minio/cli"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/config"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/config"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/certs"
 	"github.com/minio/pkg/env"
 )
@@ -153,7 +153,7 @@ func ValidateGatewayArguments(serverAddr, endpointAddr string) error {
 	return nil
 }
 
-// StartGateway - handler for 'minio gateway <name>'.
+// StartGateway - handler for 'uitstor gateway <name>'.
 func StartGateway(ctx *cli.Context, gw Gateway) {
 	signal.Notify(globalOSSignalCh, os.Interrupt, syscall.SIGTERM, syscall.SIGQUIT)
 
@@ -203,8 +203,8 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 	initHelp()
 
 	// On macOS, if a process already listens on LOCALIPADDR:PORT, net.Listen() falls back
-	// to IPv6 address ie minio will start listening on IPv6 address whereas another
-	// (non-)minio process is listening on IPv4 of given port.
+	// to IPv6 address ie uitstor will start listening on IPv6 address whereas another
+	// (non-)uitstor process is listening on IPv4 of given port.
 	// To avoid this error situation we check for port availability.
 	logger.FatalIf(checkPortAvailability(globalMinioHost, globalMinioPort), "Unable to start the gateway")
 
@@ -232,8 +232,8 @@ func StartGateway(ctx *cli.Context, gw Gateway) {
 	globalServerConfigMu.Unlock()
 
 	// Initialize router. `SkipClean(true)` stops gorilla/mux from
-	// normalizing URL path minio/minio#3256
-	// avoid URL path encoding minio/minio#8950
+	// normalizing URL path uitstor/uitstor#3256
+	// avoid URL path encoding uitstor/uitstor#8950
 	router := mux.NewRouter().SkipClean(true).UseEncodedPath()
 
 	// Enable STS router if etcd is enabled.

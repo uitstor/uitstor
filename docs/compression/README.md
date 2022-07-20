@@ -19,7 +19,7 @@ will increase speed when the content can be compressed.
 
 ### 1. Prerequisites
 
-Install MinIO - [MinIO Quickstart Guide](https://docs.min.io/docs/minio-quickstart-guide).
+Install MinIO - [MinIO Quickstart Guide](https://docs.min.io/docs/uitstor-quickstart-guide).
 
 ### 2. Run MinIO with compression
 
@@ -27,27 +27,27 @@ Compression can be enabled by updating the `compress` config settings for MinIO 
 Config `compress` settings take extensions and mime-types to be compressed.
 
 ```bash
-~ mc admin config get myminio compression
+~ mc admin config get myuitstor compression
 compression extensions=".txt,.log,.csv,.json,.tar,.xml,.bin" mime_types="text/*,application/json,application/xml"
 ```
 
 Default config includes most common highly compressible content extensions and mime-types.
 
 ```bash
-~ mc admin config set myminio compression extensions=".pdf" mime_types="application/pdf"
+~ mc admin config set myuitstor compression extensions=".pdf" mime_types="application/pdf"
 ```
 
 To show help on setting compression config values.
 
 ```bash
-~ mc admin config set myminio compression
+~ mc admin config set myuitstor compression
 ```
 
 To enable compression for all content, no matter the extension and content type
 (except for the default excluded types) set BOTH extensions and mime types to empty.
 
 ```bash
-~ mc admin config set myminio compression enable="on" extensions="" mime_types=""
+~ mc admin config set myuitstor compression enable="on" extensions="" mime_types=""
 ```
 
 The compression settings may also be set through environment variables.
@@ -73,7 +73,7 @@ your setup can use this feature combination safely.
 To enable compression+encryption use:
 
 ```bash
-~ mc admin config set myminio compression allow_encryption=on
+~ mc admin config set myuitstor compression allow_encryption=on
 ```
 
 Or alternatively through the environment variable `MINIO_COMPRESSION_ALLOW_ENCRYPTION=on`.
@@ -127,8 +127,8 @@ the data directory to view the size of the object.
 
 ## Explore Further
 
-- [Use `mc` with MinIO Server](https://docs.min.io/docs/minio-client-quickstart-guide)
-- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-minio)
-- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-minio)
-- [Use `minio-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
+- [Use `mc` with MinIO Server](https://docs.min.io/docs/uitstor-client-quickstart-guide)
+- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-uitstor)
+- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-uitstor)
+- [Use `uitstor-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
 - [The MinIO documentation website](https://docs.min.io)

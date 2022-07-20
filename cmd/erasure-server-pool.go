@@ -34,10 +34,10 @@ import (
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/config/storageclass"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/config/storageclass"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 	"github.com/minio/pkg/wildcard"
 )
 
@@ -222,7 +222,7 @@ func (z *erasureServerPools) GetRawData(ctx context.Context, volume, file string
 						r = io.NopCloser(bytes.NewBuffer([]byte{}))
 					}
 					// Keep disk path instead of ID, to ensure that the downloaded zip file can be
-					// easily automated with `minio server hostname{1...n}/disk{1...m}`.
+					// easily automated with `uitstor server hostname{1...n}/disk{1...m}`.
 					err = fn(r, disk.Hostname(), disk.Endpoint().Path, pathJoin(volume, si.Name), si)
 					r.Close()
 					if err != nil {
@@ -722,7 +722,7 @@ func (z *erasureServerPools) MakeBucketWithLocation(ctx context.Context, bucket 
 	g := errgroup.WithNErrs(len(z.serverPools))
 
 	// Lock the bucket name before creating.
-	lk := z.NewNSLock(minioMetaTmpBucket, bucket+".lck")
+	lk := z.NewNSLock(uitstorMetaTmpBucket, bucket+".lck")
 	lkctx, err := lk.GetLock(ctx, globalOperationTimeout)
 	if err != nil {
 		return err
@@ -1625,14 +1625,14 @@ func (z *erasureServerPools) DeleteBucket(ctx context.Context, bucket string, op
 	}
 
 	// Purge the entire bucket metadata entirely.
-	z.renameAll(context.Background(), minioMetaBucket, pathJoin(bucketMetaPrefix, bucket))
+	z.renameAll(context.Background(), uitstorMetaBucket, pathJoin(bucketMetaPrefix, bucket))
 
 	// Success.
 	return nil
 }
 
 // renameAll will rename bucket+prefix unconditionally across all disks to
-// minioMetaTmpDeletedBucket + unique uuid,
+// uitstorMetaTmpDeletedBucket + unique uuid,
 // Note that set distribution is ignored so it should only be used in cases where
 // data is not distributed across sets. Errors are logged but individual
 // disk failures are not returned.
@@ -1695,7 +1695,7 @@ func (z *erasureServerPools) ListBuckets(ctx context.Context) (buckets []BucketI
 
 func (z *erasureServerPools) HealFormat(ctx context.Context, dryRun bool) (madmin.HealResultItem, error) {
 	// Acquire lock on format.json
-	formatLock := z.NewNSLock(minioMetaBucket, formatConfigFile)
+	formatLock := z.NewNSLock(uitstorMetaBucket, formatConfigFile)
 	lkctx, err := formatLock.GetLock(ctx, globalOperationTimeout)
 	if err != nil {
 		return madmin.HealResultItem{}, err
@@ -1741,7 +1741,7 @@ func (z *erasureServerPools) HealBucket(ctx context.Context, bucket string, opts
 	}
 
 	// Attempt heal on the bucket metadata, ignore any failures
-	defer z.HealObject(ctx, minioMetaBucket, pathJoin(bucketMetaPrefix, bucket, bucketMetadataFile), "", opts)
+	defer z.HealObject(ctx, uitstorMetaBucket, pathJoin(bucketMetaPrefix, bucket, bucketMetadataFile), "", opts)
 
 	for _, pool := range z.serverPools {
 		result, err := pool.HealBucket(ctx, bucket, opts)
@@ -1940,8 +1940,8 @@ func (z *erasureServerPools) HealObjects(ctx context.Context, bucket, prefix str
 		}
 		// We might land at .metacache, .trash, .multipart
 		// no need to heal them skip, only when bucket
-		// is '.minio.sys'
-		if bucket == minioMetaBucket {
+		// is '.uitstor.sys'
+		if bucket == uitstorMetaBucket {
 			if wildcard.Match("buckets/*/.metacache/*", entry.name) {
 				return nil
 			}

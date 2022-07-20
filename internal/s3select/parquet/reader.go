@@ -25,8 +25,8 @@ import (
 	"github.com/bcicen/jstream"
 	parquetgo "github.com/fraugster/parquet-go"
 	parquettypes "github.com/fraugster/parquet-go/parquet"
-	jsonfmt "github.com/minio/minio/internal/s3select/json"
-	"github.com/minio/minio/internal/s3select/sql"
+	jsonfmt "github.com/uitstor/uitstor/internal/s3select/json"
+	"github.com/uitstor/uitstor/internal/s3select/sql"
 )
 
 // Reader implements reading records from parquet input.

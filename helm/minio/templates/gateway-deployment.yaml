@@ -4,14 +4,14 @@
 {{ $scheme = "https" }}
 {{ end }}
 {{ $bucketRoot := or ($.Values.bucketRoot) ($.Values.mountPath) }}
-apiVersion: {{ template "minio.deployment.apiVersion" . }}
+apiVersion: {{ template "uitstor.deployment.apiVersion" . }}
 kind: Deployment
 metadata:
-  name: {{ template "minio.fullname" . }}
+  name: {{ template "uitstor.fullname" . }}
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ template "minio.name" . }}
-    chart: {{ template "minio.chart" . }}
+    app: {{ template "uitstor.name" . }}
+    chart: {{ template "uitstor.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 {{- if .Values.additionalLabels }}
@@ -32,13 +32,13 @@ spec:
   replicas: {{ .Values.gateway.replicas }}
   selector:
     matchLabels:
-      app: {{ template "minio.name" . }}
+      app: {{ template "uitstor.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
-      name: {{ template "minio.fullname" . }}
+      name: {{ template "uitstor.fullname" . }}
       labels:
-        app: {{ template "minio.name" . }}
+        app: {{ template "uitstor.name" . }}
         release: {{ .Release.Name }}
 {{- if .Values.podLabels }}
 {{ toYaml .Values.podLabels | indent 8 }}
@@ -72,10 +72,10 @@ spec:
             - "/bin/sh"
             - "-ce"
             {{- if eq .Values.gateway.type "nas" }}
-            - "/usr/bin/docker-entrypoint.sh minio gateway nas {{ $bucketRoot }} -S {{ .Values.certsPath }} --address :{{ .Values.minioAPIPort }} --console-address :{{ .Values.minioConsolePort }} {{- template "minio.extraArgs" . }} "
+            - "/usr/bin/docker-entrypoint.sh uitstor gateway nas {{ $bucketRoot }} -S {{ .Values.certsPath }} --address :{{ .Values.uitstorAPIPort }} --console-address :{{ .Values.uitstorConsolePort }} {{- template "uitstor.extraArgs" . }} "
             {{- end }}
           volumeMounts:
-            - name: minio-user
+            - name: uitstor-user
               mountPath: "/tmp/credentials"
               readOnly: true
             {{- if .Values.persistence.enabled }}
@@ -87,28 +87,28 @@ spec:
             {{- end }}
             {{- if .Values.extraSecret }}
             - name: extra-secret
-              mountPath: "/tmp/minio-config-env"
+              mountPath: "/tmp/uitstor-config-env"
             {{- end }}
-            {{- include "minio.tlsKeysVolumeMount" . | indent 12 }}
+            {{- include "uitstor.tlsKeysVolumeMount" . | indent 12 }}
           ports:
             - name: {{ $scheme }}
-              containerPort: {{ .Values.minioAPIPort }}
+              containerPort: {{ .Values.uitstorAPIPort }}
             - name: {{ $scheme }}-console
-              containerPort: {{ .Values.minioConsolePort }}
+              containerPort: {{ .Values.uitstorConsolePort }}
           env:
             - name: MINIO_ROOT_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "minio.secretName" . }}
+                  name: {{ template "uitstor.secretName" . }}
                   key: rootUser
             - name: MINIO_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ template "minio.secretName" . }}
+                  name: {{ template "uitstor.secretName" . }}
                   key: rootPassword
             {{- if .Values.extraSecret }}
             - name: MINIO_CONFIG_ENV_FILE
-              value: "/tmp/minio-config-env/config.env"
+              value: "/tmp/uitstor-config-env/config.env"
             {{- end}}
             {{- if .Values.metrics.serviceMonitor.public }}
             - name: MINIO_PROMETHEUS_AUTH_TYPE
@@ -144,7 +144,7 @@ spec:
       nodeSelector:
 {{ toYaml . | indent 8 }}
 {{- end }}
-{{- include "minio.imagePullSecrets" . | indent 6 }}
+{{- include "uitstor.imagePullSecrets" . | indent 6 }}
 {{- with .Values.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
@@ -157,17 +157,17 @@ spec:
         - name: export
         {{- if .Values.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim | default (include "minio.fullname" .) }}
+            claimName: {{ .Values.persistence.existingClaim | default (include "uitstor.fullname" .) }}
         {{- else }}
           emptyDir: {}
         {{- end }}
-        - name: minio-user
+        - name: uitstor-user
           secret:
-            secretName: {{ template "minio.secretName" . }}
+            secretName: {{ template "uitstor.secretName" . }}
         {{- if .Values.extraSecret }}
         - name: extra-secret
           secret:
             secretName: {{ .Values.extraSecret }}
         {{- end }}
-        {{- include "minio.tlsKeysVolume" . | indent 8 }}
+        {{- include "uitstor.tlsKeysVolume" . | indent 8 }}
 {{- end }}

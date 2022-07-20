@@ -118,8 +118,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/minio/minio/internal/fips"
-	"github.com/minio/minio/internal/hash/sha256"
+	"github.com/uitstor/uitstor/internal/fips"
+	"github.com/uitstor/uitstor/internal/hash/sha256"
 	"github.com/minio/sio"
 )
 

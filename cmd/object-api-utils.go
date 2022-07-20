@@ -40,16 +40,16 @@ import (
 	"github.com/klauspost/compress/s2"
 	"github.com/klauspost/readahead"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
-	"github.com/minio/minio/internal/config/compress"
-	"github.com/minio/minio/internal/config/dns"
-	"github.com/minio/minio/internal/config/storageclass"
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/fips"
-	"github.com/minio/minio/internal/hash"
-	"github.com/minio/minio/internal/hash/sha256"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/ioutil"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/config/compress"
+	"github.com/uitstor/uitstor/internal/config/dns"
+	"github.com/uitstor/uitstor/internal/config/storageclass"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/fips"
+	"github.com/uitstor/uitstor/internal/hash"
+	"github.com/uitstor/uitstor/internal/hash/sha256"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/ioutil"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/trie"
 	"github.com/minio/pkg/wildcard"
 	"github.com/minio/sio"
@@ -57,15 +57,15 @@ import (
 
 const (
 	// MinIO meta bucket.
-	minioMetaBucket = ".minio.sys"
+	uitstorMetaBucket = ".uitstor.sys"
 	// Multipart meta prefix.
 	mpartMetaPrefix = "multipart"
 	// MinIO Multipart meta prefix.
-	minioMetaMultipartBucket = minioMetaBucket + SlashSeparator + mpartMetaPrefix
+	uitstorMetaMultipartBucket = uitstorMetaBucket + SlashSeparator + mpartMetaPrefix
 	// MinIO tmp meta prefix.
-	minioMetaTmpBucket = minioMetaBucket + "/tmp"
+	uitstorMetaTmpBucket = uitstorMetaBucket + "/tmp"
 	// MinIO tmp meta prefix for deleted objects.
-	minioMetaTmpDeletedBucket = minioMetaTmpBucket + "/.trash"
+	uitstorMetaTmpDeletedBucket = uitstorMetaTmpBucket + "/.trash"
 	// DNS separator (period), used for bucket name validation.
 	dnsDelimiter = "."
 	// On compressed files bigger than this;
@@ -83,7 +83,7 @@ const (
 // isMinioBucket returns true if given bucket is a MinIO internal
 // bucket and false otherwise.
 func isMinioMetaBucketName(bucket string) bool {
-	return strings.HasPrefix(bucket, minioMetaBucket)
+	return strings.HasPrefix(bucket, uitstorMetaBucket)
 }
 
 // IsValidBucketName verifies that a bucket name is in accordance with
@@ -151,7 +151,7 @@ func IsValidBucketName(bucket string) bool {
 //
 // - Backslash ("\")
 //
-// additionally minio does not support object names with trailing SlashSeparator.
+// additionally uitstor does not support object names with trailing SlashSeparator.
 func IsValidObjectName(object string) bool {
 	if len(object) == 0 {
 		return false
@@ -351,14 +351,14 @@ func isReservedOrInvalidBucket(bucketEntry string, strict bool) bool {
 	return isMinioMetaBucket(bucketEntry) || isMinioReservedBucket(bucketEntry)
 }
 
-// Returns true if input bucket is a reserved minio meta bucket '.minio.sys'.
+// Returns true if input bucket is a reserved uitstor meta bucket '.uitstor.sys'.
 func isMinioMetaBucket(bucketName string) bool {
-	return bucketName == minioMetaBucket
+	return bucketName == uitstorMetaBucket
 }
 
-// Returns true if input bucket is a reserved minio bucket 'minio'.
+// Returns true if input bucket is a reserved uitstor bucket 'uitstor'.
 func isMinioReservedBucket(bucketName string) bool {
-	return bucketName == minioReservedBucket
+	return bucketName == uitstorReservedBucket
 }
 
 // returns a slice of hosts by reading a slice of DNS records
@@ -960,8 +960,8 @@ func sealETagFn(key crypto.ObjectKey) SealMD5CurrFn {
 	return fn
 }
 
-// CleanMinioInternalMetadataKeys removes X-Amz-Meta- prefix from minio internal
-// encryption metadata that was sent by minio gateway
+// CleanMinioInternalMetadataKeys removes X-Amz-Meta- prefix from uitstor internal
+// encryption metadata that was sent by uitstor gateway
 func CleanMinioInternalMetadataKeys(metadata map[string]string) map[string]string {
 	newMeta := make(map[string]string, len(metadata))
 	for k, v := range metadata {

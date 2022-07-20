@@ -29,9 +29,9 @@ import (
 	"sync"
 	"testing"
 
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/logger/message/log"
-	"github.com/minio/minio/internal/logger/target/types"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger/message/log"
+	"github.com/uitstor/uitstor/internal/logger/target/types"
 )
 
 type testLoggerI interface {
@@ -125,7 +125,7 @@ func TestDataUpdateTracker(t *testing.T) {
 		},
 		{
 			// System bucket
-			in:    ".minio.sys/ignoreme/pls",
+			in:    ".uitstor.sys/ignoreme/pls",
 			exist: false,
 		},
 		{

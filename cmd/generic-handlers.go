@@ -31,11 +31,11 @@ import (
 	xnet "github.com/minio/pkg/net"
 
 	"github.com/dustin/go-humanize"
-	"github.com/minio/minio/internal/config/dns"
-	"github.com/minio/minio/internal/crypto"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/http/stats"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/config/dns"
+	"github.com/uitstor/uitstor/internal/crypto"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/http/stats"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 const (
@@ -58,7 +58,7 @@ const (
 // is reserved and for internal use only.
 const (
 	ReservedMetadataPrefix      = "X-Minio-Internal-"
-	ReservedMetadataPrefixLower = "x-minio-internal-"
+	ReservedMetadataPrefixLower = "x-uitstor-internal-"
 )
 
 // containsReservedMetadata returns true if the http.Header contains
@@ -128,9 +128,9 @@ func setRequestLimitHandler(h http.Handler) http.Handler {
 
 // Reserved bucket.
 const (
-	minioReservedBucket              = "minio"
-	minioReservedBucketPath          = SlashSeparator + minioReservedBucket
-	minioReservedBucketPathWithSlash = SlashSeparator + minioReservedBucket + SlashSeparator
+	uitstorReservedBucket              = "uitstor"
+	uitstorReservedBucketPath          = SlashSeparator + uitstorReservedBucket
+	uitstorReservedBucketPathWithSlash = SlashSeparator + uitstorReservedBucket + SlashSeparator
 
 	loginPathPrefix = SlashSeparator + "login"
 )
@@ -162,7 +162,7 @@ var redirectPrefixes = map[string]struct{}{
 	"favicon-32x32.png": {},
 	"favicon-96x96.png": {},
 	"index.html":        {},
-	minioReservedBucket: {},
+	uitstorReservedBucket: {},
 }
 
 // Fetch redirect location if urlPath satisfies certain
@@ -221,9 +221,9 @@ func guessIsMetricsReq(req *http.Request) bool {
 	}
 	aType := getRequestAuthType(req)
 	return (aType == authTypeAnonymous || aType == authTypeJWT) &&
-		req.URL.Path == minioReservedBucketPath+prometheusMetricsPathLegacy ||
-		req.URL.Path == minioReservedBucketPath+prometheusMetricsV2ClusterPath ||
-		req.URL.Path == minioReservedBucketPath+prometheusMetricsV2NodePath
+		req.URL.Path == uitstorReservedBucketPath+prometheusMetricsPathLegacy ||
+		req.URL.Path == uitstorReservedBucketPath+prometheusMetricsV2ClusterPath ||
+		req.URL.Path == uitstorReservedBucketPath+prometheusMetricsV2NodePath
 }
 
 // guessIsRPCReq - returns true if the request is for an RPC endpoint.
@@ -232,10 +232,10 @@ func guessIsRPCReq(req *http.Request) bool {
 		return false
 	}
 	return req.Method == http.MethodPost &&
-		strings.HasPrefix(req.URL.Path, minioReservedBucketPath+SlashSeparator)
+		strings.HasPrefix(req.URL.Path, uitstorReservedBucketPath+SlashSeparator)
 }
 
-// Check to allow access to the reserved "bucket" `/minio` for Admin
+// Check to allow access to the reserved "bucket" `/uitstor` for Admin
 // API requests.
 func isAdminReq(r *http.Request) bool {
 	return strings.HasPrefix(r.URL.Path, adminPathPrefix)
@@ -318,7 +318,7 @@ func setHTTPStatsHandler(h http.Handler) http.Handler {
 			globalConnStats.incOutputBytes(meteredResponse.BytesWritten())
 			return
 		}
-		if strings.HasPrefix(r.URL.Path, minioReservedBucketPath) {
+		if strings.HasPrefix(r.URL.Path, uitstorReservedBucketPath) {
 			globalConnStats.incAdminInputBytes(meteredRequest.BytesRead())
 			globalConnStats.incAdminOutputBytes(meteredResponse.BytesWritten())
 			return
@@ -329,7 +329,7 @@ func setHTTPStatsHandler(h http.Handler) http.Handler {
 
 		if r.URL != nil {
 			bucket := url2Bucket(r.URL.Path)
-			if bucket != "" && bucket != minioReservedBucket {
+			if bucket != "" && bucket != uitstorReservedBucket {
 				globalBucketConnStats.incS3InputBytes(bucket, meteredRequest.BytesRead())
 				globalBucketConnStats.incS3OutputBytes(bucket, meteredResponse.BytesWritten())
 			}

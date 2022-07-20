@@ -25,8 +25,8 @@ import (
 )
 
 const (
-	// Default minio configuration directory where below configuration files/directories are stored.
-	defaultMinioConfigDir = ".minio"
+	// Default uitstor configuration directory where below configuration files/directories are stored.
+	defaultMinioConfigDir = ".uitstor"
 
 	// Directory contains below files/directories for HTTPS configuration.
 	certsDir = "certs"
@@ -96,7 +96,7 @@ func mkdirAllIgnorePerm(path string) error {
 }
 
 func getConfigFile() string {
-	return filepath.Join(globalConfigDir.Get(), minioConfigFile)
+	return filepath.Join(globalConfigDir.Get(), uitstorConfigFile)
 }
 
 func getPublicCertFile() string {

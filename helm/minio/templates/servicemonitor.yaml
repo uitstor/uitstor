@@ -2,15 +2,15 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:
-  name: {{ template "minio.fullname" . }}
+  name: {{ template "uitstor.fullname" . }}
   {{- if .Values.metrics.serviceMonitor.namespace }}
   namespace: {{ .Values.metrics.serviceMonitor.namespace }}
   {{ else }}
   namespace: {{ .Release.Namespace | quote }}
   {{- end }}
   labels:
-    app: {{ template "minio.name" . }}
-    chart: {{ template "minio.chart" . }}
+    app: {{ template "uitstor.name" . }}
+    chart: {{ template "uitstor.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
     {{- if .Values.metrics.serviceMonitor.additionalLabels }}
@@ -30,12 +30,12 @@ spec:
           secret:
             name: {{ .Values.tls.certSecret }}
             key: {{ .Values.tls.publicCrt }}
-        serverName: {{ template "minio.fullname" . }}
+        serverName: {{ template "uitstor.fullname" . }}
     {{ else }}
     - port: http
       scheme: http
     {{- end }}
-      path: /minio/v2/metrics/cluster
+      path: /uitstor/v2/metrics/cluster
       {{- if .Values.metrics.serviceMonitor.interval }}
       interval: {{ .Values.metrics.serviceMonitor.interval }}
       {{- end }}
@@ -47,7 +47,7 @@ spec:
       {{- end }}
       {{- if not .Values.metrics.serviceMonitor.public }}
       bearerTokenSecret:
-        name: {{ template "minio.fullname" . }}-prometheus
+        name: {{ template "uitstor.fullname" . }}-prometheus
         key: token
       {{- end }}
   namespaceSelector:
@@ -55,7 +55,7 @@ spec:
       - {{ .Release.Namespace | quote }}
   selector:
     matchLabels:
-      app: {{ include "minio.name" . }}
+      app: {{ include "uitstor.name" . }}
       release: {{ .Release.Name }}
       monitoring: "true"
 {{- end }}

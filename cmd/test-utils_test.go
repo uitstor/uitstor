@@ -62,12 +62,12 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 	"github.com/minio/minio-go/v7/pkg/signer"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/hash"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/rest"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/hash"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/rest"
 	"github.com/minio/pkg/bucket/policy"
 )
 
@@ -713,7 +713,7 @@ func newTestStreamingRequest(method, urlStr string, dataLength, chunkSize int64,
 
 	if body == nil {
 		// this is added to avoid panic during ioutil.ReadAll(req.Body).
-		// th stack trace can be found here  https://github.com/minio/minio/pull/2074 .
+		// th stack trace can be found here  https://github.com/uitstor/uitstor/pull/2074 .
 		// This is very similar to https://github.com/golang/go/issues/7527.
 		req.Body = ioutil.NopCloser(bytes.NewReader([]byte("")))
 	}
@@ -887,7 +887,7 @@ func preSignV2(req *http.Request, accessKeyID, secretAccessKey string, expires i
 		return errors.New("Presign cannot be generated without access and secret keys")
 	}
 
-	// FIXME: Remove following portion of code after fixing a bug in minio-go preSignV2.
+	// FIXME: Remove following portion of code after fixing a bug in uitstor-go preSignV2.
 
 	d := UTCNow()
 	// Find epoch expires when the request will expire.
@@ -1457,11 +1457,11 @@ func getTestRoot() (string, error) {
 	return ioutil.TempDir(globalTestTmpDir, "api-")
 }
 
-// getRandomDisks - Creates a slice of N random disks, each of the form - minio-XXX
+// getRandomDisks - Creates a slice of N random disks, each of the form - uitstor-XXX
 func getRandomDisks(N int) ([]string, error) {
 	var erasureDisks []string
 	for i := 0; i < N; i++ {
-		path, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+		path, err := ioutil.TempDir(globalTestTmpDir, "uitstor-")
 		if err != nil {
 			// Remove directories created so far.
 			removeRoots(erasureDisks)
@@ -1895,7 +1895,7 @@ func ExecObjectLayerDiskAlteredTest(t *testing.T, objTest objTestDiskNotFoundTyp
 type objTestStaleFilesType func(obj ObjectLayer, instanceType string, dirs []string, t *testing.T)
 
 // ExecObjectLayerStaleFilesTest - executes object layer tests those leaves stale
-// files/directories under .minio/tmp.  Creates Erasure ObjectLayer instance and runs test for Erasure layer.
+// files/directories under .uitstor/tmp.  Creates Erasure ObjectLayer instance and runs test for Erasure layer.
 func ExecObjectLayerStaleFilesTest(t *testing.T, objTest objTestStaleFilesType) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

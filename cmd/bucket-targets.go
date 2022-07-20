@@ -25,13 +25,13 @@ import (
 	jsoniter "github.com/json-iterator/go"
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7"
-	miniogo "github.com/minio/minio-go/v7"
+	uitstorgo "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
-	"github.com/minio/minio/internal/bucket/replication"
-	"github.com/minio/minio/internal/bucket/versioning"
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/kms"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/replication"
+	"github.com/uitstor/uitstor/internal/bucket/versioning"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/kms"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 const (
@@ -99,7 +99,7 @@ func (sys *BucketTargetSys) Delete(bucket string) {
 	delete(sys.targetsMap, bucket)
 }
 
-// SetTarget - sets a new minio-go client target for this bucket.
+// SetTarget - sets a new uitstor-go client target for this bucket.
 func (sys *BucketTargetSys) SetTarget(ctx context.Context, bucket string, tgt *madmin.BucketTarget, update bool) error {
 	if globalIsGateway {
 		return nil
@@ -113,7 +113,7 @@ func (sys *BucketTargetSys) SetTarget(ctx context.Context, bucket string, tgt *m
 	}
 	// validate if target credentials are ok
 	if _, err = clnt.BucketExists(ctx, tgt.TargetBucket); err != nil {
-		if minio.ToErrorResponse(err).Code == "NoSuchBucket" {
+		if uitstor.ToErrorResponse(err).Code == "NoSuchBucket" {
 			return BucketRemoteTargetNotFound{Bucket: tgt.TargetBucket}
 		}
 		return BucketRemoteConnectionErr{Bucket: tgt.TargetBucket, Err: err}
@@ -235,7 +235,7 @@ func (sys *BucketTargetSys) RemoveTarget(ctx context.Context, bucket, arnStr str
 	return nil
 }
 
-// GetRemoteTargetClient returns minio-go client for replication target instance
+// GetRemoteTargetClient returns uitstor-go client for replication target instance
 func (sys *BucketTargetSys) GetRemoteTargetClient(ctx context.Context, arn string) *TargetClient {
 	sys.RLock()
 	defer sys.RUnlock()
@@ -304,7 +304,7 @@ func (sys *BucketTargetSys) UpdateAllTargets(bucket string, tgts *madmin.BucketT
 	sys.targetsMap[bucket] = tgts.Targets
 }
 
-// create minio-go clients for buckets having remote targets
+// create uitstor-go clients for buckets having remote targets
 func (sys *BucketTargetSys) set(bucket BucketInfo, meta BucketMetadata) {
 	cfg := meta.bucketTargetConfig
 	if cfg == nil || cfg.Empty() {
@@ -327,12 +327,12 @@ func (sys *BucketTargetSys) set(bucket BucketInfo, meta BucketMetadata) {
 	sys.targetsMap[bucket.Name] = cfg.Targets
 }
 
-// Returns a minio-go Client configured to access remote host described in replication target config.
+// Returns a uitstor-go Client configured to access remote host described in replication target config.
 func (sys *BucketTargetSys) getRemoteTargetClient(tcfg *madmin.BucketTarget) (*TargetClient, error) {
 	config := tcfg.Credentials
 	creds := credentials.NewStaticV4(config.AccessKey, config.SecretKey, "")
 
-	api, err := minio.New(tcfg.Endpoint, &miniogo.Options{
+	api, err := uitstor.New(tcfg.Endpoint, &uitstorgo.Options{
 		Creds:     creds,
 		Secure:    tcfg.Secure,
 		Region:    tcfg.Region,
@@ -426,7 +426,7 @@ func parseBucketTargetConfig(bucket string, cdata, cmetadata []byte) (*madmin.Bu
 
 // TargetClient is the struct for remote target client.
 type TargetClient struct {
-	*miniogo.Client
+	*uitstorgo.Client
 	healthCheckDuration time.Duration
 	Bucket              string // remote bucket target
 	replicateSync       bool

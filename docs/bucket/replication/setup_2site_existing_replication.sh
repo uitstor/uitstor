@@ -15,8 +15,8 @@ catch() {
     fi
 
     echo "Cleaning up instances of MinIO"
-    pkill minio
-    pkill -9 minio
+    pkill uitstor
+    pkill -9 uitstor
     rm -rf /tmp/multisitea
     rm -rf /tmp/multisiteb
     rm -rf /tmp/data
@@ -27,33 +27,33 @@ catch
 set -e
 export MINIO_CI_CD=1
 export MINIO_BROWSER=off
-export MINIO_ROOT_USER="minio"
-export MINIO_ROOT_PASSWORD="minio123"
+export MINIO_ROOT_USER="uitstor"
+export MINIO_ROOT_PASSWORD="uitstor123"
 export MINIO_KMS_AUTO_ENCRYPTION=off
 export MINIO_PROMETHEUS_AUTH_TYPE=public
-export MINIO_KMS_SECRET_KEY=my-minio-key:OSMM+vkKUTCvQs9YL/CVMIMt43HFhkUpqJxTmGl6rYw=
+export MINIO_KMS_SECRET_KEY=my-uitstor-key:OSMM+vkKUTCvQs9YL/CVMIMt43HFhkUpqJxTmGl6rYw=
 unset MINIO_KMS_KES_CERT_FILE
 unset MINIO_KMS_KES_KEY_FILE
 unset MINIO_KMS_KES_ENDPOINT
 unset MINIO_KMS_KES_KEY_NAME
 
-wget -O mc https://dl.minio.io/client/mc/release/linux-amd64/mc \
+wget -O mc https://dl.uitstor.io/client/mc/release/linux-amd64/mc \
     && chmod +x mc
 
-minio server --address 127.0.0.1:9001 "http://127.0.0.1:9001/tmp/multisitea/data/disterasure/xl{1...4}" \
+uitstor server --address 127.0.0.1:9001 "http://127.0.0.1:9001/tmp/multisitea/data/disterasure/xl{1...4}" \
       "http://127.0.0.1:9002/tmp/multisitea/data/disterasure/xl{5...8}" >/tmp/sitea_1.log 2>&1 &
-minio server --address 127.0.0.1:9002 "http://127.0.0.1:9001/tmp/multisitea/data/disterasure/xl{1...4}" \
+uitstor server --address 127.0.0.1:9002 "http://127.0.0.1:9001/tmp/multisitea/data/disterasure/xl{1...4}" \
       "http://127.0.0.1:9002/tmp/multisitea/data/disterasure/xl{5...8}" >/tmp/sitea_2.log 2>&1 &
 
-minio server --address 127.0.0.1:9003 "http://127.0.0.1:9003/tmp/multisiteb/data/disterasure/xl{1...4}" \
+uitstor server --address 127.0.0.1:9003 "http://127.0.0.1:9003/tmp/multisiteb/data/disterasure/xl{1...4}" \
       "http://127.0.0.1:9004/tmp/multisiteb/data/disterasure/xl{5...8}" >/tmp/siteb_1.log 2>&1 &
-minio server --address 127.0.0.1:9004 "http://127.0.0.1:9003/tmp/multisiteb/data/disterasure/xl{1...4}" \
+uitstor server --address 127.0.0.1:9004 "http://127.0.0.1:9003/tmp/multisiteb/data/disterasure/xl{1...4}" \
       "http://127.0.0.1:9004/tmp/multisiteb/data/disterasure/xl{5...8}" >/tmp/siteb_2.log 2>&1 &
 
 sleep 10s
 
-export MC_HOST_sitea=http://minio:minio123@127.0.0.1:9001
-export MC_HOST_siteb=http://minio:minio123@127.0.0.1:9004
+export MC_HOST_sitea=http://uitstor:uitstor123@127.0.0.1:9001
+export MC_HOST_siteb=http://uitstor:uitstor123@127.0.0.1:9004
 
 ./mc mb sitea/bucket
 
@@ -71,7 +71,7 @@ done
 
 echo "adding replication config for site a -> site b"
 remote_arn=$(./mc admin bucket remote add sitea/bucket/ \
-   http://minio:minio123@127.0.0.1:9004/bucket \
+   http://uitstor:uitstor123@127.0.0.1:9004/bucket \
    --service "replication" --json | jq -r ".RemoteARN")
 echo "adding replication rule for a -> b : ${remote_arn}"
 

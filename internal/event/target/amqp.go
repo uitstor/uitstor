@@ -28,7 +28,7 @@ import (
 	"path/filepath"
 	"sync"
 
-	"github.com/minio/minio/internal/event"
+	"github.com/uitstor/uitstor/internal/event"
 	xnet "github.com/minio/pkg/net"
 	"github.com/streadway/amqp"
 )
@@ -224,8 +224,8 @@ func (target *AMQPTarget) send(eventData event.Event, ch *amqp.Channel, confirms
 
 	headers := make(amqp.Table)
 	// Add more information here as required, but be aware to not overload headers
-	headers["minio-bucket"] = eventData.S3.Bucket.Name
-	headers["minio-event"] = eventData.EventName.String()
+	headers["uitstor-bucket"] = eventData.S3.Bucket.Name
+	headers["uitstor-event"] = eventData.EventName.String()
 
 	if err = ch.ExchangeDeclare(target.args.Exchange, target.args.ExchangeType, target.args.Durable,
 		target.args.AutoDeleted, target.args.Internal, target.args.NoWait, nil); err != nil {

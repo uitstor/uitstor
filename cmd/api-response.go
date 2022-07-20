@@ -29,10 +29,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/handlers"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/handlers"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 const (
@@ -419,7 +419,7 @@ func generateListBucketsResponse(buckets []BucketInfo) ListBucketsResponse {
 	data := ListBucketsResponse{}
 	owner := Owner{
 		ID:          globalMinioDefaultOwnerID,
-		DisplayName: "minio",
+		DisplayName: "uitstor",
 	}
 
 	for _, bucket := range buckets {
@@ -440,7 +440,7 @@ func generateListVersionsResponse(bucket, prefix, marker, versionIDMarker, delim
 	versions := make([]ObjectVersion, 0, len(resp.Objects))
 	owner := Owner{
 		ID:          globalMinioDefaultOwnerID,
-		DisplayName: "minio",
+		DisplayName: "uitstor",
 	}
 	data := ListVersionsResponse{}
 
@@ -498,7 +498,7 @@ func generateListObjectsV1Response(bucket, prefix, marker, delimiter, encodingTy
 	contents := make([]Object, 0, len(resp.Objects))
 	owner := Owner{
 		ID:          globalMinioDefaultOwnerID,
-		DisplayName: "minio",
+		DisplayName: "uitstor",
 	}
 	data := ListObjectsResponse{}
 
@@ -547,7 +547,7 @@ func generateListObjectsV2Response(bucket, prefix, token, nextToken, startAfter,
 	contents := make([]Object, 0, len(objects))
 	owner := Owner{
 		ID:          globalMinioDefaultOwnerID,
-		DisplayName: "minio",
+		DisplayName: "uitstor",
 	}
 	data := ListObjectsV2Response{}
 

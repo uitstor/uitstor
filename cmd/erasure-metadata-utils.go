@@ -23,8 +23,8 @@ import (
 	"fmt"
 	"hash/crc32"
 
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 )
 
 // Returns number of errors that occurred the most (incl. nil) and the

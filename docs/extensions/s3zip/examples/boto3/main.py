@@ -12,7 +12,7 @@ s3 = boto3.client('s3',
 
 
 def _add_header(request, **kwargs):
-    request.headers.add_header('x-minio-extract', 'true')
+    request.headers.add_header('x-uitstor-extract', 'true')
 event_system = s3.meta.events
 event_system.register_first('before-sign.s3.*', _add_header)
 

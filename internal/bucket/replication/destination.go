@@ -29,7 +29,7 @@ import (
 const DestinationARNPrefix = "arn:aws:s3:::"
 
 // DestinationARNMinIOPrefix - destination ARN prefix for MinIO.
-const DestinationARNMinIOPrefix = "arn:minio:replication:"
+const DestinationARNMinIOPrefix = "arn:uitstor:replication:"
 
 // Destination - destination in ReplicationConfiguration.
 type Destination struct {
@@ -62,7 +62,7 @@ func (d Destination) LegacyArn() bool {
 	return strings.HasPrefix(d.ARN, DestinationARNPrefix)
 }
 
-// TargetArn returns true if arn format has prefix  "arn:minio:replication:::"
+// TargetArn returns true if arn format has prefix  "arn:uitstor:replication:::"
 // used for multi-destination targets
 func (d Destination) TargetArn() bool {
 	return strings.HasPrefix(d.ARN, DestinationARNMinIOPrefix)

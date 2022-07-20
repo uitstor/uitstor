@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 // Prints the formatted startup message.

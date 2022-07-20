@@ -22,7 +22,7 @@ import (
 	"io"
 	"sync"
 
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 // Writes in parallel to writers

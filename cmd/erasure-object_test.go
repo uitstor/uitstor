@@ -32,7 +32,7 @@ import (
 	"testing"
 
 	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/minio/internal/config/storageclass"
+	"github.com/uitstor/uitstor/internal/config/storageclass"
 )
 
 func TestRepeatPutObjectPart(t *testing.T) {
@@ -68,7 +68,7 @@ func TestRepeatPutObjectPart(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	// PutObjectPart should succeed even if part already exists. ref: https://github.com/minio/minio/issues/1930
+	// PutObjectPart should succeed even if part already exists. ref: https://github.com/uitstor/uitstor/issues/1930
 	_, err = objLayer.PutObjectPart(ctx, "bucket1", "mpartObj1", uploadID, 1, mustGetPutObjReader(t, bytes.NewReader(fiveMBBytes), 5*humanize.MiByte, md5Hex, ""), opts)
 	if err != nil {
 		t.Fatal(err)
@@ -1073,7 +1073,7 @@ func TestGetObjectInlineNotInline(t *testing.T) {
 	// Create a backend with 4 disks named disk{1...4}, this name convention
 	// because we will unzip some object data from a sample archive.
 	const numDisks = 4
-	path, err := ioutil.TempDir(globalTestTmpDir, "minio-")
+	path, err := ioutil.TempDir(globalTestTmpDir, "uitstor-")
 	if err != nil {
 		t.Fatal(err)
 	}

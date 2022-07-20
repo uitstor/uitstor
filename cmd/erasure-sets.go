@@ -36,10 +36,10 @@ import (
 	"github.com/minio/madmin-go"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	"github.com/minio/minio/internal/bpool"
-	"github.com/minio/minio/internal/dsync"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/sync/errgroup"
+	"github.com/uitstor/uitstor/internal/bpool"
+	"github.com/uitstor/uitstor/internal/dsync"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/sync/errgroup"
 	"github.com/minio/pkg/console"
 )
 
@@ -1172,7 +1172,7 @@ func markRootDisksAsDown(storageDisks []StorageAPI, errs []error) {
 			continue
 		}
 		if storageDisks[i] != nil && infos[i].RootDisk {
-			// We should not heal on root disk. i.e in a situation where the minio-administrator has unmounted a
+			// We should not heal on root disk. i.e in a situation where the uitstor-administrator has unmounted a
 			// defective drive we should not heal a path on the root disk.
 			logger.LogIf(GlobalContext, fmt.Errorf("Disk `%s` is part of root disk, will not be used", storageDisks[i]))
 			storageDisks[i] = nil

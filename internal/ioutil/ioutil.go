@@ -27,7 +27,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio/internal/disk"
+	"github.com/uitstor/uitstor/internal/disk"
 )
 
 // WriteOnCloser implements io.WriteCloser and always

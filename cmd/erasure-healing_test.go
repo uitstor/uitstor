@@ -627,7 +627,7 @@ func TestHealCorrectQuorum(t *testing.T) {
 			t.Fatal("Expected all xl.meta healed, but partial heal detected")
 		}
 
-		fileInfos, errs = readAllFileInfo(ctx, erasureDisks, minioMetaBucket, cfgFile, "", false)
+		fileInfos, errs = readAllFileInfo(ctx, erasureDisks, uitstorMetaBucket, cfgFile, "", false)
 		nfi, err = getLatestFileInfo(ctx, fileInfos, errs)
 		if errors.Is(err, errFileNotFound) {
 			continue
@@ -637,19 +637,19 @@ func TestHealCorrectQuorum(t *testing.T) {
 		}
 
 		for i := 0; i < nfi.Erasure.ParityBlocks; i++ {
-			erasureDisks[i].Delete(context.Background(), minioMetaBucket, pathJoin(cfgFile, xlStorageFormatFile), DeleteOptions{
+			erasureDisks[i].Delete(context.Background(), uitstorMetaBucket, pathJoin(cfgFile, xlStorageFormatFile), DeleteOptions{
 				Recursive: false,
 				Force:     false,
 			})
 		}
 
 		// Try healing now, it should heal the content properly.
-		_, err = objLayer.HealObject(ctx, minioMetaBucket, cfgFile, "", hopts)
+		_, err = objLayer.HealObject(ctx, uitstorMetaBucket, cfgFile, "", hopts)
 		if err != nil {
 			t.Fatal(err)
 		}
 
-		fileInfos, errs = readAllFileInfo(ctx, erasureDisks, minioMetaBucket, cfgFile, "", false)
+		fileInfos, errs = readAllFileInfo(ctx, erasureDisks, uitstorMetaBucket, cfgFile, "", false)
 		if countErrs(errs, nil) != len(fileInfos) {
 			t.Fatal("Expected all xl.meta healed, but partial heal detected")
 		}

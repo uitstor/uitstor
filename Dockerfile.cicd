@@ -1,3 +1,3 @@
-FROM minio/minio:edge
+FROM uitstor/uitstor:edge
 
-CMD ["minio", "server", "/data"]
+CMD ["uitstor", "server", "/data"]

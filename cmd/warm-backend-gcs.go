@@ -28,7 +28,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 
-	xioutil "github.com/minio/minio/internal/ioutil"
+	xioutil "github.com/uitstor/uitstor/internal/ioutil"
 )
 
 type warmBackendGCS struct {
@@ -114,7 +114,7 @@ func newWarmBackendGCS(conf madmin.TierGCS) (*warmBackendGCS, error) {
 	return &warmBackendGCS{client, conf.Bucket, conf.Prefix, conf.StorageClass}, nil
 }
 
-// Convert GCS errors to minio object layer errors.
+// Convert GCS errors to uitstor object layer errors.
 func gcsToObjectError(err error, params ...string) error {
 	if err == nil {
 		return nil
@@ -156,7 +156,7 @@ func gcsToObjectError(err error, params ...string) error {
 
 	googleAPIErr, ok := err.(*googleapi.Error)
 	if !ok {
-		// We don't interpret non MinIO errors. As minio errors will
+		// We don't interpret non MinIO errors. As uitstor errors will
 		// have StatusCode to help to convert to object errors.
 		return err
 	}

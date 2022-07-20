@@ -1,6 +1,6 @@
 # Disk Caching Design [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)
 
-This document explains some basic assumptions and design approach, limits of the disk caching feature. If you're looking to get started with disk cache, we suggest you go through the [getting started document](https://github.com/minio/minio/blob/master/docs/disk-caching/README.md) first.
+This document explains some basic assumptions and design approach, limits of the disk caching feature. If you're looking to get started with disk cache, we suggest you go through the [getting started document](https://github.com/uitstor/uitstor/blob/master/docs/disk-caching/README.md) first.
 
 ## Supported environment variables
 
@@ -36,7 +36,7 @@ export MINIO_CACHE_AFTER=3
 export MINIO_CACHE_WATERMARK_LOW=70
 export MINIO_CACHE_WATERMARK_HIGH=90
 
-minio gateway s3 https://s3.amazonaws.com
+uitstor gateway s3 https://s3.amazonaws.com
 ```
 
 ### Run MinIO gateway with cache on Docker Container
@@ -73,7 +73,7 @@ sudo mount -o relatime /tmp/data /mnt/cache
 podman run --net=host -e MINIO_ROOT_USER={s3-access-key} -e MINIO_ROOT_PASSWORD={s3-secret-key} \
     -e MINIO_CACHE_DRIVES=/cache -e MINIO_CACHE_QUOTA=99 -e MINIO_CACHE_AFTER=0 \
     -e MINIO_CACHE_WATERMARK_LOW=90 -e MINIO_CACHE_WATERMARK_HIGH=95 \
-    -v /mnt/cache:/cache  quay.io/minio/minio gateway s3 --console-address ":9001"
+    -v /mnt/cache:/cache  quay.io/uitstor/uitstor gateway s3 --console-address ":9001"
 ```
 
 ## Assumptions
@@ -109,7 +109,7 @@ master key to automatically encrypt all cached content.
 
 ### Crash Recovery
 
-Upon restart of minio gateway after a running minio process is killed or crashes, disk caching resumes automatically. The garbage collection cycle resumes and any previously cached entries are served from cache.
+Upon restart of uitstor gateway after a running uitstor process is killed or crashes, disk caching resumes automatically. The garbage collection cycle resumes and any previously cached entries are served from cache.
 
 ## Limits
 

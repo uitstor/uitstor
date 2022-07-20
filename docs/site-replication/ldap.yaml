@@ -4,7 +4,7 @@ version: '3.7'
 
 services:
   openldap:
-    image: quay.io/minio/openldap
+    image: quay.io/uitstor/openldap
     ports:
       - "389:389"
       - "636:636"

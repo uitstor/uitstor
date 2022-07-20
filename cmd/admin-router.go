@@ -24,11 +24,11 @@ import (
 	"github.com/klauspost/compress/gzhttp"
 	"github.com/klauspost/compress/gzip"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 const (
-	adminPathPrefix       = minioReservedBucketPath + "/admin"
+	adminPathPrefix       = uitstorReservedBucketPath + "/admin"
 	adminAPIVersion       = madmin.AdminAPIVersion
 	adminAPIVersionPrefix = SlashSeparator + adminAPIVersion
 )

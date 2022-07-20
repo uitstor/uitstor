@@ -1,11 +1,11 @@
-# MinIO Deployment Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# MinIO Deployment Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
 MinIO is a cloud-native application designed to scale in a sustainable manner in multi-tenant environments. Orchestration platforms provide perfect launchpad for MinIO to scale. Below is the list of MinIO deployment documents for various orchestration platforms:
 
 | Orchestration platforms                                                                            |
 |:---------------------------------------------------------------------------------------------------|
-| [`Kubernetes`](https://docs.min.io/docs/deploy-minio-on-kubernetes)                                |
-| [`Docker Compose`](https://docs.min.io/docs/deploy-minio-on-docker-compose) (only for test setups) |
+| [`Kubernetes`](https://docs.min.io/docs/deploy-uitstor-on-kubernetes)                                |
+| [`Docker Compose`](https://docs.min.io/docs/deploy-uitstor-on-docker-compose) (only for test setups) |
 
 ## Why is MinIO cloud-native?
 
@@ -19,4 +19,4 @@ MinIO is built ground up on the cloud-native premise. With features like erasure
 
 In a typical modern infrastructure deployment, application, database, key-store, etc. already live in containers and are managed by orchestration platforms. MinIO brings robust, scalable, AWS S3 compatible object storage to the lot.
 
-![Cloud-native](https://github.com/minio/minio/blob/master/docs/screenshots/Minio_Cloud_Native_Arch.jpg?raw=true)
+![Cloud-native](https://github.com/uitstor/uitstor/blob/master/docs/screenshots/Minio_Cloud_Native_Arch.jpg?raw=true)

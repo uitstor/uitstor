@@ -25,11 +25,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/minio/minio/internal/disk"
+	"github.com/uitstor/uitstor/internal/disk"
 )
 
 func TestFree(t *testing.T) {
-	path, err := ioutil.TempDir(os.TempDir(), "minio-")
+	path, err := ioutil.TempDir(os.TempDir(), "uitstor-")
 	defer os.RemoveAll(path)
 	if err != nil {
 		t.Fatal(err)

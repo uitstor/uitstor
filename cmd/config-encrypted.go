@@ -26,9 +26,9 @@ import (
 	"unicode/utf8"
 
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/kms"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/kms"
+	"github.com/uitstor/uitstor/internal/logger"
 	etcd "go.etcd.io/etcd/client/v3"
 )
 
@@ -38,7 +38,7 @@ func handleEncryptedConfigBackend(objAPI ObjectLayer) error {
 		return fmt.Errorf("Unable to encrypt config %w", err)
 	}
 	if err = migrateConfigPrefixToEncrypted(objAPI, encrypted); err != nil {
-		return fmt.Errorf("Unable to migrate all config at .minio.sys/config/: %w", err)
+		return fmt.Errorf("Unable to migrate all config at .uitstor.sys/config/: %w", err)
 	}
 	return nil
 }
@@ -80,7 +80,7 @@ func migrateIAMConfigsEtcdToEncrypted(ctx context.Context, client *etcd.Client) 
 	listCtx, cancel := context.WithTimeout(ctx, 1*time.Minute)
 	defer cancel()
 
-	r, err := client.Get(listCtx, minioConfigPrefix, etcd.WithPrefix(), etcd.WithKeysOnly())
+	r, err := client.Get(listCtx, uitstorConfigPrefix, etcd.WithPrefix(), etcd.WithKeysOnly())
 	if err != nil {
 		return err
 	}
@@ -99,11 +99,11 @@ func migrateIAMConfigsEtcdToEncrypted(ctx context.Context, client *etcd.Client) 
 			if err != nil {
 				if GlobalKMS != nil {
 					pdata, err = config.DecryptBytes(GlobalKMS, data, kms.Context{
-						minioMetaBucket: path.Join(minioMetaBucket, string(kv.Key)),
+						uitstorMetaBucket: path.Join(uitstorMetaBucket, string(kv.Key)),
 					})
 					if err != nil {
 						pdata, err = config.DecryptBytes(GlobalKMS, data, kms.Context{
-							minioMetaBucket: string(kv.Key),
+							uitstorMetaBucket: string(kv.Key),
 						})
 						if err != nil {
 							return fmt.Errorf("Decrypting IAM config failed %w, possibly credentials are incorrect", err)
@@ -116,7 +116,7 @@ func migrateIAMConfigsEtcdToEncrypted(ctx context.Context, client *etcd.Client) 
 
 		if GlobalKMS != nil {
 			data, err = config.EncryptBytes(GlobalKMS, data, kms.Context{
-				minioMetaBucket: path.Join(minioMetaBucket, string(kv.Key)),
+				uitstorMetaBucket: path.Join(uitstorMetaBucket, string(kv.Key)),
 			})
 			if err != nil {
 				return err
@@ -148,7 +148,7 @@ func migrateConfigPrefixToEncrypted(objAPI ObjectLayer, encrypted bool) error {
 
 	var marker string
 	for {
-		res, err := objAPI.ListObjects(GlobalContext, minioMetaBucket, minioConfigPrefix, marker, "", maxObjectList)
+		res, err := objAPI.ListObjects(GlobalContext, uitstorMetaBucket, uitstorConfigPrefix, marker, "", maxObjectList)
 		if err != nil {
 			return err
 		}

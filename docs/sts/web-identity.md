@@ -13,7 +13,7 @@ By default, the temporary security credentials created by AssumeRoleWithWebIdent
 Configuration can be performed via MinIO's standard configuration API (i.e. using `mc admin config set/get` commands) or equivalently via environment variables. For brevity we show only environment variables here:
 
 ```
-$ mc admin config set myminio identity_openid --env
+$ mc admin config set myuitstor identity_openid --env
 KEY:
 identity_openid[:name]  enable OpenID SSO support
 
@@ -46,16 +46,16 @@ Sample environment variables:
 ```
 MINIO_IDENTITY_OPENID_DISPLAY_NAME="my first openid"
 MINIO_IDENTITY_OPENID_CONFIG_URL=http://myopenid.com/.well-known/openid-configuration
-MINIO_IDENTITY_OPENID_CLIENT_ID="minio-client-app"
-MINIO_IDENTITY_OPENID_CLIENT_SECRET="minio-client-app-secret"
+MINIO_IDENTITY_OPENID_CLIENT_ID="uitstor-client-app"
+MINIO_IDENTITY_OPENID_CLIENT_SECRET="uitstor-client-app-secret"
 MINIO_IDENTITY_OPENID_SCOPES="openid,groups"
 MINIO_IDENTITY_OPENID_REDIRECT_URI="http://127.0.0.1:10000/oauth_callback"
 MINIO_IDENTITY_OPENID_ROLE_POLICY="consoleAdmin"
 
 MINIO_IDENTITY_OPENID_DISPLAY_NAME_APP2="another oidc"
 MINIO_IDENTITY_OPENID_CONFIG_URL_APP2="http://anotheroidc.com/.well-known/openid-configuration"
-MINIO_IDENTITY_OPENID_CLIENT_ID_APP2="minio-client-app-2"
-MINIO_IDENTITY_OPENID_CLIENT_SECRET_APP2="minio-client-app-secret-2"
+MINIO_IDENTITY_OPENID_CLIENT_ID_APP2="uitstor-client-app-2"
+MINIO_IDENTITY_OPENID_CLIENT_SECRET_APP2="uitstor-client-app-secret-2"
 MINIO_IDENTITY_OPENID_SCOPES_APP2="openid,groups"
 MINIO_IDENTITY_OPENID_REDIRECT_URI_APP2="http://127.0.0.1:10000/oauth_callback"
 MINIO_IDENTITY_OPENID_ROLE_POLICY_APP2="readwrite"
@@ -71,8 +71,8 @@ Sample environment variables:
 ```
 MINIO_IDENTITY_OPENID_DISPLAY_NAME="my openid"
 MINIO_IDENTITY_OPENID_CONFIG_URL=http://myopenid.com/.well-known/openid-configuration
-MINIO_IDENTITY_OPENID_CLIENT_ID="minio-client-app"
-MINIO_IDENTITY_OPENID_CLIENT_SECRET="minio-client-app-secret"
+MINIO_IDENTITY_OPENID_CLIENT_ID="uitstor-client-app"
+MINIO_IDENTITY_OPENID_CLIENT_SECRET="uitstor-client-app-secret"
 MINIO_IDENTITY_OPENID_SCOPES="openid,groups"
 MINIO_IDENTITY_OPENID_REDIRECT_URI="http://127.0.0.1:10000/oauth_callback"
 MINIO_IDENTITY_OPENID_CLAIM_NAME="groups"
@@ -158,7 +158,7 @@ XML error response for this API is similar to [AWS STS AssumeRoleWithWebIdentity
 ## Sample `POST` Request
 
 ```
-http://minio.cluster:9000?Action=AssumeRoleWithWebIdentity&DurationSeconds=3600&WebIdentityToken=eyJ4NXQiOiJOVEF4Wm1NeE5ETXlaRGczTVRVMVpHTTBNekV6T0RKaFpXSTRORE5sWkRVMU9HRmtOakZpTVEiLCJraWQiOiJOVEF4Wm1NeE5ETXlaRGczTVRVMVpHTTBNekV6T0RKaFpXSTRORE5sWkRVMU9HRmtOakZpTVEiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJQb0VnWFA2dVZPNDVJc0VOUm5nRFhqNUF1NVlhIiwiYXpwIjoiUG9FZ1hQNnVWTzQ1SXNFTlJuZ0RYajVBdTVZYSIsImlzcyI6Imh0dHBzOlwvXC9sb2NhbGhvc3Q6OTQ0M1wvb2F1dGgyXC90b2tlbiIsImV4cCI6MTU0MTgwOTU4MiwiaWF0IjoxNTQxODA1OTgyLCJqdGkiOiI2Y2YyMGIwZS1lNGZmLTQzZmQtYTdiYS1kYTc3YTE3YzM2MzYifQ.Jm29jPliRvrK6Os34nSK3rhzIYLFjE__zdVGNng3uGKXGKzP3We_i6NPnhA0szJXMOKglXzUF1UgSz8MctbaxFS8XDusQPVe4LkB_45hwBm6TmBxzui911nt-1RbBLN_jZIlvl2lPrbTUH5hSn9kEkph6seWanTNQpz9tNEoVa6R_OX3kpJqxe8tLQUWw453A1JTwFNhdHa6-f1K8_Q_eEZ_4gOYINQ9t_fhTibdbkXZkJQFLop-Jwoybi9s4nwQU_dATocgcufq5eCeNItQeleT-23lGxIz0X7CiJrJynYLdd-ER0F77SumqEb5iCxhxuf4H7dovwd1kAmyKzLxpw&Version=2011-06-15
+http://uitstor.cluster:9000?Action=AssumeRoleWithWebIdentity&DurationSeconds=3600&WebIdentityToken=eyJ4NXQiOiJOVEF4Wm1NeE5ETXlaRGczTVRVMVpHTTBNekV6T0RKaFpXSTRORE5sWkRVMU9HRmtOakZpTVEiLCJraWQiOiJOVEF4Wm1NeE5ETXlaRGczTVRVMVpHTTBNekV6T0RKaFpXSTRORE5sWkRVMU9HRmtOakZpTVEiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJQb0VnWFA2dVZPNDVJc0VOUm5nRFhqNUF1NVlhIiwiYXpwIjoiUG9FZ1hQNnVWTzQ1SXNFTlJuZ0RYajVBdTVZYSIsImlzcyI6Imh0dHBzOlwvXC9sb2NhbGhvc3Q6OTQ0M1wvb2F1dGgyXC90b2tlbiIsImV4cCI6MTU0MTgwOTU4MiwiaWF0IjoxNTQxODA1OTgyLCJqdGkiOiI2Y2YyMGIwZS1lNGZmLTQzZmQtYTdiYS1kYTc3YTE3YzM2MzYifQ.Jm29jPliRvrK6Os34nSK3rhzIYLFjE__zdVGNng3uGKXGKzP3We_i6NPnhA0szJXMOKglXzUF1UgSz8MctbaxFS8XDusQPVe4LkB_45hwBm6TmBxzui911nt-1RbBLN_jZIlvl2lPrbTUH5hSn9kEkph6seWanTNQpz9tNEoVa6R_OX3kpJqxe8tLQUWw453A1JTwFNhdHa6-f1K8_Q_eEZ_4gOYINQ9t_fhTibdbkXZkJQFLop-Jwoybi9s4nwQU_dATocgcufq5eCeNItQeleT-23lGxIz0X7CiJrJynYLdd-ER0F77SumqEb5iCxhxuf4H7dovwd1kAmyKzLxpw&Version=2011-06-15
 ```
 
 ## Sample Response
@@ -185,19 +185,19 @@ http://minio.cluster:9000?Action=AssumeRoleWithWebIdentity&DurationSeconds=3600&
 ## Using WebIdentity API
 
 ```
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
 export MINIO_IDENTITY_OPENID_CONFIG_URL=https://accounts.google.com/.well-known/openid-configuration
 export MINIO_IDENTITY_OPENID_CLIENT_ID="843351d4-1080-11ea-aa20-271ecba3924a"
 # Optional: Allow to specify the requested OpenID scopes (OpenID only requires the `openid` scope)
 #export MINIO_IDENTITY_OPENID_SCOPES="openid,profile,email"
-minio server /mnt/export
+uitstor server /mnt/export
 ```
 
 or using `mc`
 
 ```
-mc admin config get myminio identity_openid
+mc admin config get myuitstor identity_openid
 identity_openid config_url=https://accounts.google.com/.well-known/openid-configuration client_id=843351d4-1080-11ea-aa20-271ecba3924a
 ```
 
@@ -241,11 +241,11 @@ $ go run web-identity.go -cid 204367807228-ok7601k6gj1pgge7m09h7d79co8p35xx.apps
 To support WebIdentity based login for MinIO Console, set openid configuration and restart MinIO
 
 ```
-mc admin config set myminio identity_openid config_url="<CONFIG_URL>" client_id="<client_identifier>"
+mc admin config set myuitstor identity_openid config_url="<CONFIG_URL>" client_id="<client_identifier>"
 ```
 
 ```
-mc admin service restart myminio
+mc admin service restart myuitstor
 ```
 
 Sample URLs for Keycloak are
@@ -260,5 +260,5 @@ JWT token returned by the Identity Provider should include a custom claim for th
 
 ## Explore Further
 
-- [MinIO Admin Complete Guide](https://docs.min.io/docs/minio-admin-complete-guide.html)
+- [MinIO Admin Complete Guide](https://docs.min.io/docs/uitstor-admin-complete-guide.html)
 - [The MinIO documentation website](https://docs.min.io)

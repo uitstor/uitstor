@@ -38,11 +38,11 @@ import (
 	"github.com/dustin/go-humanize"
 	jsoniter "github.com/json-iterator/go"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/disk"
-	xioutil "github.com/minio/minio/internal/ioutil"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/disk"
+	xioutil "github.com/uitstor/uitstor/internal/ioutil"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/console"
 	"github.com/yargevad/filepathx"
 )
@@ -285,7 +285,7 @@ func newXLStorage(ep Endpoint) (s *xlStorage, err error) {
 		} else {
 			s.oDirect = true
 		}
-		renameAll(filePath, pathJoin(s.diskPath, minioMetaTmpDeletedBucket, uuid))
+		renameAll(filePath, pathJoin(s.diskPath, uitstorMetaTmpDeletedBucket, uuid))
 
 		// Create all necessary bucket folders if possible.
 		if err = makeFormatErasureMetaVolumes(s); err != nil {
@@ -372,7 +372,7 @@ func (s *xlStorage) SetDiskLoc(poolIdx, setIdx, diskIdx int) {
 }
 
 func (s *xlStorage) Healing() *healingTracker {
-	healingFile := pathJoin(s.diskPath, minioMetaBucket,
+	healingFile := pathJoin(s.diskPath, uitstorMetaBucket,
 		bucketMetaPrefix, healingTrackerFilename)
 	b, err := ioutil.ReadFile(healingFile)
 	if err != nil {
@@ -537,7 +537,7 @@ func (s *xlStorage) NSScanner(ctx context.Context, cache dataUsageCache, updates
 			case noTiers, oi.DeleteMarker, oi.TransitionedObject.FreeVersion:
 				continue
 			}
-			tier := minioHotTier
+			tier := uitstorHotTier
 			if oi.TransitionedObject.Status == lifecycle.TransitionComplete {
 				tier = oi.TransitionedObject.Tier
 			}
@@ -612,7 +612,7 @@ func (s *xlStorage) getVolDir(volume string) (string, error) {
 }
 
 func (s *xlStorage) checkFormatJSON() (os.FileInfo, error) {
-	formatFile := pathJoin(s.diskPath, minioMetaBucket, formatConfigFile)
+	formatFile := pathJoin(s.diskPath, uitstorMetaBucket, formatConfigFile)
 	fi, err := Lstat(formatFile)
 	if err != nil {
 		// If the disk is still not initialized.
@@ -664,7 +664,7 @@ func (s *xlStorage) GetDiskID() (string, error) {
 		return diskID, nil
 	}
 
-	formatFile := pathJoin(s.diskPath, minioMetaBucket, formatConfigFile)
+	formatFile := pathJoin(s.diskPath, uitstorMetaBucket, formatConfigFile)
 	b, err := ioutil.ReadFile(formatFile)
 	if err != nil {
 		// If the disk is still not initialized.
@@ -987,7 +987,7 @@ func (s *xlStorage) DeleteVersions(ctx context.Context, volume string, versions 
 
 func (s *xlStorage) moveToTrash(filePath string, recursive, force bool) error {
 	pathUUID := mustGetUUID()
-	targetPath := pathutil.Join(s.diskPath, minioMetaTmpDeletedBucket, pathUUID)
+	targetPath := pathutil.Join(s.diskPath, uitstorMetaTmpDeletedBucket, pathUUID)
 
 	var renameFn func(source, target string) error
 	if recursive {
@@ -1479,7 +1479,7 @@ func (s *xlStorage) readAllData(ctx context.Context, volumeDir string, filePath 
 func (s *xlStorage) ReadAll(ctx context.Context, volume string, path string) (buf []byte, err error) {
 	// Specific optimization to avoid re-read from the drives for `format.json`
 	// in-case the caller is a network operation.
-	if volume == minioMetaBucket && path == formatConfigFile {
+	if volume == uitstorMetaBucket && path == formatConfigFile {
 		s.RLock()
 		formatData := make([]byte, len(s.formatData))
 		copy(formatData, s.formatData)
@@ -1823,9 +1823,9 @@ func (s *xlStorage) CreateFile(ctx context.Context, volume, path string, fileSiz
 	parentFilePath := pathutil.Dir(filePath)
 	defer func() {
 		if err != nil {
-			if volume == minioMetaTmpBucket {
+			if volume == uitstorMetaTmpBucket {
 				// only cleanup parent path if the
-				// parent volume name is minioMetaTmpBucket
+				// parent volume name is uitstorMetaTmpBucket
 				removeAll(parentFilePath)
 			}
 		}
@@ -2114,7 +2114,7 @@ func (s *xlStorage) Delete(ctx context.Context, volume string, path string, dele
 
 func skipAccessChecks(volume string) (ok bool) {
 	switch volume {
-	case minioMetaTmpBucket, minioMetaBucket, minioMetaMultipartBucket, minioMetaTmpDeletedBucket:
+	case uitstorMetaTmpBucket, uitstorMetaBucket, uitstorMetaMultipartBucket, uitstorMetaTmpDeletedBucket:
 		ok = true
 	}
 	return ok
@@ -2417,7 +2417,7 @@ func (s *xlStorage) RenameData(ctx context.Context, srcVolume, srcPath string, f
 		}
 	}
 
-	// srcFilePath is always in minioMetaTmpBucket, an attempt to
+	// srcFilePath is always in uitstorMetaTmpBucket, an attempt to
 	// remove the temporary folder is enough since at this point
 	// ideally all transaction should be complete.
 

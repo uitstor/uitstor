@@ -32,7 +32,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/auth"
+	"github.com/uitstor/uitstor/internal/auth"
 )
 
 // adminErasureTestBed - encapsulates subsystems that need to be setup for
@@ -63,7 +63,7 @@ func prepareAdminErasureTestBed(ctx context.Context) (*adminErasureTestBed, erro
 		return nil, xlErr
 	}
 
-	// Initialize minio server config.
+	// Initialize uitstor server config.
 	if err := newTestConfig(globalMinioDefaultRegion, objLayer); err != nil {
 		cancel()
 		return nil, err

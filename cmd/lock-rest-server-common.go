@@ -24,7 +24,7 @@ import (
 const (
 	lockRESTVersion       = "v7" // Add msgp for lockArgs
 	lockRESTVersionPrefix = SlashSeparator + lockRESTVersion
-	lockRESTPrefix        = minioReservedBucketPath + "/lock"
+	lockRESTPrefix        = uitstorReservedBucketPath + "/lock"
 )
 
 const (

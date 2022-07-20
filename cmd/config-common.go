@@ -24,13 +24,13 @@ import (
 	"io/ioutil"
 	"net/http"
 
-	"github.com/minio/minio/internal/hash"
+	"github.com/uitstor/uitstor/internal/hash"
 )
 
 var errConfigNotFound = errors.New("config file not found")
 
 func readConfigWithMetadata(ctx context.Context, store objectIO, configFile string) ([]byte, ObjectInfo, error) {
-	r, err := store.GetObjectNInfo(ctx, minioMetaBucket, configFile, nil, http.Header{}, readLock, ObjectOptions{})
+	r, err := store.GetObjectNInfo(ctx, uitstorMetaBucket, configFile, nil, http.Header{}, readLock, ObjectOptions{})
 	if err != nil {
 		// Treat object not found as config not found.
 		if isErrObjectNotFound(err) {
@@ -61,7 +61,7 @@ type objectDeleter interface {
 }
 
 func deleteConfig(ctx context.Context, objAPI objectDeleter, configFile string) error {
-	_, err := objAPI.DeleteObject(ctx, minioMetaBucket, configFile, ObjectOptions{
+	_, err := objAPI.DeleteObject(ctx, uitstorMetaBucket, configFile, ObjectOptions{
 		DeletePrefix: true,
 	})
 	if err != nil && isErrObjectNotFound(err) {
@@ -76,12 +76,12 @@ func saveConfig(ctx context.Context, store objectIO, configFile string, data []b
 		return err
 	}
 
-	_, err = store.PutObject(ctx, minioMetaBucket, configFile, NewPutObjReader(hashReader), ObjectOptions{MaxParity: true})
+	_, err = store.PutObject(ctx, uitstorMetaBucket, configFile, NewPutObjReader(hashReader), ObjectOptions{MaxParity: true})
 	return err
 }
 
 func checkConfig(ctx context.Context, objAPI ObjectLayer, configFile string) error {
-	if _, err := objAPI.GetObjectInfo(ctx, minioMetaBucket, configFile, ObjectOptions{}); err != nil {
+	if _, err := objAPI.GetObjectInfo(ctx, uitstorMetaBucket, configFile, ObjectOptions{}); err != nil {
 		// Treat object not found as config not found.
 		if isErrObjectNotFound(err) {
 			return errConfigNotFound

@@ -24,14 +24,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/hash"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/hash"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/env"
 	xnet "github.com/minio/pkg/net"
 
-	minio "github.com/minio/minio-go/v7"
+	uitstor "github.com/minio/minio-go/v7"
 )
 
 var (
@@ -57,7 +57,7 @@ var (
 	IsStringEqual = isStringEqual
 )
 
-// FromMinioClientMetadata converts minio metadata to map[string]string
+// FromMinioClientMetadata converts uitstor metadata to map[string]string
 func FromMinioClientMetadata(metadata map[string][]string) map[string]string {
 	mm := make(map[string]string, len(metadata))
 	for k, v := range metadata {
@@ -66,8 +66,8 @@ func FromMinioClientMetadata(metadata map[string][]string) map[string]string {
 	return mm
 }
 
-// FromMinioClientObjectPart converts minio ObjectPart to PartInfo
-func FromMinioClientObjectPart(op minio.ObjectPart) PartInfo {
+// FromMinioClientObjectPart converts uitstor ObjectPart to PartInfo
+func FromMinioClientObjectPart(op uitstor.ObjectPart) PartInfo {
 	return PartInfo{
 		Size:         op.Size,
 		ETag:         canonicalizeETag(op.ETag),
@@ -76,10 +76,10 @@ func FromMinioClientObjectPart(op minio.ObjectPart) PartInfo {
 	}
 }
 
-// FromMinioClientListPartsInfo converts minio ListObjectPartsResult to ListPartsInfo
-func FromMinioClientListPartsInfo(lopr minio.ListObjectPartsResult) ListPartsInfo {
-	// Convert minio ObjectPart to PartInfo
-	fromMinioClientObjectParts := func(parts []minio.ObjectPart) []PartInfo {
+// FromMinioClientListPartsInfo converts uitstor ListObjectPartsResult to ListPartsInfo
+func FromMinioClientListPartsInfo(lopr uitstor.ListObjectPartsResult) ListPartsInfo {
+	// Convert uitstor ObjectPart to PartInfo
+	fromMinioClientObjectParts := func(parts []uitstor.ObjectPart) []PartInfo {
 		toParts := make([]PartInfo, len(parts))
 		for i, part := range parts {
 			toParts[i] = FromMinioClientObjectPart(part)
@@ -100,8 +100,8 @@ func FromMinioClientListPartsInfo(lopr minio.ListObjectPartsResult) ListPartsInf
 	}
 }
 
-// FromMinioClientListMultipartsInfo converts minio ListMultipartUploadsResult to ListMultipartsInfo
-func FromMinioClientListMultipartsInfo(lmur minio.ListMultipartUploadsResult) ListMultipartsInfo {
+// FromMinioClientListMultipartsInfo converts uitstor ListMultipartUploadsResult to ListMultipartsInfo
+func FromMinioClientListMultipartsInfo(lmur uitstor.ListMultipartUploadsResult) ListMultipartsInfo {
 	uploads := make([]MultipartInfo, len(lmur.Uploads))
 
 	for i, um := range lmur.Uploads {
@@ -132,8 +132,8 @@ func FromMinioClientListMultipartsInfo(lmur minio.ListMultipartUploadsResult) Li
 	}
 }
 
-// FromMinioClientObjectInfo converts minio ObjectInfo to gateway ObjectInfo
-func FromMinioClientObjectInfo(bucket string, oi minio.ObjectInfo) ObjectInfo {
+// FromMinioClientObjectInfo converts uitstor ObjectInfo to gateway ObjectInfo
+func FromMinioClientObjectInfo(bucket string, oi uitstor.ObjectInfo) ObjectInfo {
 	userDefined := FromMinioClientMetadata(oi.Metadata)
 	userDefined[xhttp.ContentType] = oi.ContentType
 
@@ -151,8 +151,8 @@ func FromMinioClientObjectInfo(bucket string, oi minio.ObjectInfo) ObjectInfo {
 	}
 }
 
-// FromMinioClientListBucketV2Result converts minio ListBucketResult to ListObjectsInfo
-func FromMinioClientListBucketV2Result(bucket string, result minio.ListBucketV2Result) ListObjectsV2Info {
+// FromMinioClientListBucketV2Result converts uitstor ListBucketResult to ListObjectsInfo
+func FromMinioClientListBucketV2Result(bucket string, result uitstor.ListBucketV2Result) ListObjectsV2Info {
 	objects := make([]ObjectInfo, len(result.Contents))
 
 	for i, oi := range result.Contents {
@@ -174,8 +174,8 @@ func FromMinioClientListBucketV2Result(bucket string, result minio.ListBucketV2R
 	}
 }
 
-// FromMinioClientListBucketResult converts minio ListBucketResult to ListObjectsInfo
-func FromMinioClientListBucketResult(bucket string, result minio.ListBucketResult) ListObjectsInfo {
+// FromMinioClientListBucketResult converts uitstor ListBucketResult to ListObjectsInfo
+func FromMinioClientListBucketResult(bucket string, result uitstor.ListBucketResult) ListObjectsInfo {
 	objects := make([]ObjectInfo, len(result.Contents))
 
 	for i, oi := range result.Contents {
@@ -195,8 +195,8 @@ func FromMinioClientListBucketResult(bucket string, result minio.ListBucketResul
 	}
 }
 
-// FromMinioClientListBucketResultToV2Info converts minio ListBucketResult to ListObjectsV2Info
-func FromMinioClientListBucketResultToV2Info(bucket string, result minio.ListBucketResult) ListObjectsV2Info {
+// FromMinioClientListBucketResultToV2Info converts uitstor ListBucketResult to ListObjectsV2Info
+func FromMinioClientListBucketResultToV2Info(bucket string, result uitstor.ListBucketResult) ListObjectsV2Info {
 	objects := make([]ObjectInfo, len(result.Contents))
 
 	for i, oi := range result.Contents {
@@ -235,17 +235,17 @@ func ToMinioClientMetadata(metadata map[string]string) map[string]string {
 	return mm
 }
 
-// ToMinioClientCompletePart converts CompletePart to minio CompletePart
-func ToMinioClientCompletePart(part CompletePart) minio.CompletePart {
-	return minio.CompletePart{
+// ToMinioClientCompletePart converts CompletePart to uitstor CompletePart
+func ToMinioClientCompletePart(part CompletePart) uitstor.CompletePart {
+	return uitstor.CompletePart{
 		ETag:       part.ETag,
 		PartNumber: part.PartNumber,
 	}
 }
 
-// ToMinioClientCompleteParts converts []CompletePart to minio []CompletePart
-func ToMinioClientCompleteParts(parts []CompletePart) []minio.CompletePart {
-	mparts := make([]minio.CompletePart, len(parts))
+// ToMinioClientCompleteParts converts []CompletePart to uitstor []CompletePart
+func ToMinioClientCompleteParts(parts []CompletePart) []uitstor.CompletePart {
+	mparts := make([]uitstor.CompletePart, len(parts))
 	for i, part := range parts {
 		mparts[i] = ToMinioClientCompletePart(part)
 	}
@@ -270,7 +270,7 @@ func IsBackendOnline(ctx context.Context, host string) bool {
 	return true
 }
 
-// ErrorRespToObjectError converts MinIO errors to minio object layer errors.
+// ErrorRespToObjectError converts MinIO errors to uitstor object layer errors.
 func ErrorRespToObjectError(err error, params ...string) error {
 	if err == nil {
 		return nil
@@ -289,14 +289,14 @@ func ErrorRespToObjectError(err error, params ...string) error {
 		return BackendDown{Err: err.Error()}
 	}
 
-	minioErr, ok := err.(minio.ErrorResponse)
+	uitstorErr, ok := err.(uitstor.ErrorResponse)
 	if !ok {
-		// We don't interpret non MinIO errors. As minio errors will
+		// We don't interpret non MinIO errors. As uitstor errors will
 		// have StatusCode to help to convert to object errors.
 		return err
 	}
 
-	switch minioErr.Code {
+	switch uitstorErr.Code {
 	case "PreconditionFailed":
 		err = PreConditionFailed{}
 	case "InvalidRange":
@@ -336,7 +336,7 @@ func ErrorRespToObjectError(err error, params ...string) error {
 		err = PartTooSmall{}
 	}
 
-	switch minioErr.StatusCode {
+	switch uitstorErr.StatusCode {
 	case http.StatusMethodNotAllowed:
 		err = toObjectErr(errMethodNotAllowed, bucket, object)
 	case http.StatusBadGateway:
@@ -393,7 +393,7 @@ func gatewayHandleEnvVars() {
 
 // shouldMeterRequest checks whether incoming request should be added to prometheus gateway metrics
 func shouldMeterRequest(req *http.Request) bool {
-	return req.URL != nil && !strings.HasPrefix(req.URL.Path, minioReservedBucketPath+slashSeparator)
+	return req.URL != nil && !strings.HasPrefix(req.URL.Path, uitstorReservedBucketPath+slashSeparator)
 }
 
 // MetricsTransport is a custom wrapper around Transport to track metrics

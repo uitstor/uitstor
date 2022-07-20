@@ -29,9 +29,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/minio/minio/internal/crypto"
-	xioutil "github.com/minio/minio/internal/ioutil"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/crypto"
+	xioutil "github.com/uitstor/uitstor/internal/ioutil"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/bucket/policy"
 	xnet "github.com/minio/pkg/net"
 	"github.com/minio/zipindex"
@@ -42,11 +42,11 @@ const (
 	archiveExt             = "." + archiveType // ".zip"
 	archiveSeparator       = "/"
 	archivePattern         = archiveExt + archiveSeparator                // ".zip/"
-	archiveTypeMetadataKey = ReservedMetadataPrefixLower + "archive-type" // "x-minio-internal-archive-type"
-	archiveInfoMetadataKey = ReservedMetadataPrefixLower + "archive-info" // "x-minio-internal-archive-info"
+	archiveTypeMetadataKey = ReservedMetadataPrefixLower + "archive-type" // "x-uitstor-internal-archive-type"
+	archiveInfoMetadataKey = ReservedMetadataPrefixLower + "archive-info" // "x-uitstor-internal-archive-info"
 
 	// Peek into a zip archive
-	xMinIOExtract = "x-minio-extract"
+	xMinIOExtract = "x-uitstor-extract"
 )
 
 // splitZipExtensionPath splits the S3 path to the zip file and the path inside the zip:

@@ -29,7 +29,7 @@ XML response for this API is similar to [AWS STS AssumeRoleWithWebIdentity](http
 Sample request with `curl`:
 
 ```sh
-curl -XPOST 'http://localhost:9001/?Action=AssumeRoleWithCustomToken&Version=2011-06-15&Token=aaa&RoleArn=arn:minio:iam:::role/idmp-vGxBdLkOc8mQPU1-UQbBh-yWWVQ'
+curl -XPOST 'http://localhost:9001/?Action=AssumeRoleWithCustomToken&Version=2011-06-15&Token=aaa&RoleArn=arn:uitstor:iam:::role/idmp-vGxBdLkOc8mQPU1-UQbBh-yWWVQ'
 ```
 
 Prettified Response:

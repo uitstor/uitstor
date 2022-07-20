@@ -24,8 +24,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/minio/minio/internal/crypto"
-	"github.com/minio/minio/internal/hash"
+	"github.com/uitstor/uitstor/internal/crypto"
+	"github.com/uitstor/uitstor/internal/hash"
 )
 
 var toAPIErrorTests = []struct {
@@ -67,7 +67,7 @@ var toAPIErrorTests = []struct {
 }
 
 func TestAPIErrCode(t *testing.T) {
-	disk := filepath.Join(globalTestTmpDir, "minio-"+nextSuffix())
+	disk := filepath.Join(globalTestTmpDir, "uitstor-"+nextSuffix())
 	defer os.RemoveAll(disk)
 
 	initFSObjects(disk, t)

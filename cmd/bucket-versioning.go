@@ -20,8 +20,8 @@ package cmd
 import (
 	"strings"
 
-	"github.com/minio/minio/internal/bucket/versioning"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/versioning"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 // BucketVersioningSys - policy subsystem.
@@ -74,7 +74,7 @@ func (sys *BucketVersioningSys) Get(bucket string) (*versioning.Versioning, erro
 		return &versioning.Versioning{XMLNS: "http://s3.amazonaws.com/doc/2006-03-01/"}, nil
 	}
 
-	if bucket == minioMetaBucket || strings.HasPrefix(bucket, minioMetaBucket) {
+	if bucket == uitstorMetaBucket || strings.HasPrefix(bucket, uitstorMetaBucket) {
 		return &versioning.Versioning{XMLNS: "http://s3.amazonaws.com/doc/2006-03-01/"}, nil
 	}
 

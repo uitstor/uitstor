@@ -36,41 +36,41 @@ import (
 	"sync/atomic"
 	"time"
 
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/env"
 	xnet "github.com/minio/pkg/net"
 	"github.com/minio/selfupdate"
 )
 
 const (
-	minioReleaseTagTimeLayout = "2006-01-02T15-04-05Z"
-	minioOSARCH               = runtime.GOOS + "-" + runtime.GOARCH
-	minioReleaseURL           = "https://dl.min.io/server/minio/release/" + minioOSARCH + SlashSeparator
+	uitstorReleaseTagTimeLayout = "2006-01-02T15-04-05Z"
+	uitstorOSARCH               = runtime.GOOS + "-" + runtime.GOARCH
+	uitstorReleaseURL           = "https://dl.min.io/server/uitstor/release/" + uitstorOSARCH + SlashSeparator
 
 	envMinisignPubKey = "MINIO_UPDATE_MINISIGN_PUBKEY"
 	updateTimeout     = 10 * time.Second
 )
 
 // For windows our files have .exe additionally.
-var minioReleaseWindowsInfoURL = minioReleaseURL + "minio.exe.sha256sum"
+var uitstorReleaseWindowsInfoURL = uitstorReleaseURL + "uitstor.exe.sha256sum"
 
-// minioVersionToReleaseTime - parses a standard official release
+// uitstorVersionToReleaseTime - parses a standard official release
 // MinIO version string.
 //
 // An official binary's version string is the release time formatted
 // with RFC3339 (in UTC) - e.g. `2017-09-29T19:16:56Z`
-func minioVersionToReleaseTime(version string) (releaseTime time.Time, err error) {
+func uitstorVersionToReleaseTime(version string) (releaseTime time.Time, err error) {
 	return time.Parse(time.RFC3339, version)
 }
 
 // releaseTimeToReleaseTag - converts a time to a string formatted as
 // an official MinIO release tag.
 //
-// An official minio release tag looks like:
+// An official uitstor release tag looks like:
 // `RELEASE.2017-09-29T19-16-56Z`
 func releaseTimeToReleaseTag(releaseTime time.Time) string {
-	return "RELEASE." + releaseTime.Format(minioReleaseTagTimeLayout)
+	return "RELEASE." + releaseTime.Format(uitstorReleaseTagTimeLayout)
 }
 
 // releaseTagToReleaseTime - reverse of `releaseTimeToReleaseTag()`
@@ -82,7 +82,7 @@ func releaseTagToReleaseTime(releaseTag string) (releaseTime time.Time, err erro
 	if fields[0] != "RELEASE" {
 		return releaseTime, fmt.Errorf("%s is not a valid release tag", releaseTag)
 	}
-	return time.Parse(minioReleaseTagTimeLayout, fields[1])
+	return time.Parse(uitstorReleaseTagTimeLayout, fields[1])
 }
 
 // getModTime - get the file modification time of `path`
@@ -93,7 +93,7 @@ func getModTime(path string) (t time.Time, err error) {
 		return t, fmt.Errorf("Unable to get absolute path of %s. %w", path, err)
 	}
 
-	// Version is minio non-standard, we will use minio binary's
+	// Version is uitstor non-standard, we will use uitstor binary's
 	// ModTime as release time.
 	fi, err := Stat(absPath)
 	if err != nil {
@@ -105,19 +105,19 @@ func getModTime(path string) (t time.Time, err error) {
 }
 
 // GetCurrentReleaseTime - returns this process's release time.  If it
-// is official minio version, parsed version is returned else minio
+// is official uitstor version, parsed version is returned else uitstor
 // binary's mod time is returned.
 func GetCurrentReleaseTime() (releaseTime time.Time, err error) {
-	if releaseTime, err = minioVersionToReleaseTime(Version); err == nil {
+	if releaseTime, err = uitstorVersionToReleaseTime(Version); err == nil {
 		return releaseTime, err
 	}
 
-	// Looks like version is minio non-standard, we use minio
+	// Looks like version is uitstor non-standard, we use uitstor
 	// binary's ModTime as release time:
 	return getModTime(os.Args[0])
 }
 
-// IsDocker - returns if the environment minio is running in docker or
+// IsDocker - returns if the environment uitstor is running in docker or
 // not. The check is a simple file existence check.
 //
 // https://github.com/moby/moby/blob/master/daemon/initlayer/setup_unix.go#L25
@@ -139,7 +139,7 @@ func IsDocker() bool {
 	return false
 }
 
-// IsDCOS returns true if minio is running in DCOS.
+// IsDCOS returns true if uitstor is running in DCOS.
 func IsDCOS() bool {
 	if !globalIsCICD {
 		// http://mesos.apache.org/documentation/latest/docker-containerizer/
@@ -149,7 +149,7 @@ func IsDCOS() bool {
 	return false
 }
 
-// IsKubernetes returns true if minio is running in kubernetes.
+// IsKubernetes returns true if uitstor is running in kubernetes.
 func IsKubernetes() bool {
 	if !globalIsCICD {
 		// Kubernetes env used to validate if we are
@@ -161,7 +161,7 @@ func IsKubernetes() bool {
 	return false
 }
 
-// IsBOSH returns true if minio is deployed from a bosh package
+// IsBOSH returns true if uitstor is deployed from a bosh package
 func IsBOSH() bool {
 	// "/var/vcap/bosh" exists in BOSH deployed instance.
 	_, err := os.Stat("/var/vcap/bosh")
@@ -207,7 +207,7 @@ func getHelmVersion(helmInfoFilePath string) string {
 // IsSourceBuild - returns if this binary is a non-official build from
 // source code.
 func IsSourceBuild() bool {
-	_, err := minioVersionToReleaseTime(Version)
+	_, err := uitstorVersionToReleaseTime(Version)
 	return err != nil
 }
 
@@ -222,7 +222,7 @@ func IsPCFTile() bool {
 //   MinIO (<OS>; <ARCH>[; <MODE>][; dcos][; kubernetes][; docker][; source]) MinIO/<VERSION> MinIO/<RELEASE-TAG> MinIO/<COMMIT-ID> [MinIO/universe-<PACKAGE-NAME>] [MinIO/helm-<HELM-VERSION>]
 //
 // Any change here should be discussed by opening an issue at
-// https://github.com/minio/minio/issues.
+// https://github.com/uitstor/uitstor/issues.
 func getUserAgent(mode string) string {
 	userAgentParts := []string{}
 	// Helper function to concisely append a pair of strings to a
@@ -360,13 +360,13 @@ func downloadReleaseURL(u *url.URL, timeout time.Duration, mode string) (content
 }
 
 // parseReleaseData - parses release info file content fetched from
-// official minio download server.
+// official uitstor download server.
 //
 // The expected format is a single line with two words like:
 //
-// fbe246edbd382902db9a4035df7dce8cb441357d minio.RELEASE.2016-10-07T01-16-39Z.<hotfix_optional>
+// fbe246edbd382902db9a4035df7dce8cb441357d uitstor.RELEASE.2016-10-07T01-16-39Z.<hotfix_optional>
 //
-// The second word must be `minio.` appended to a standard release tag.
+// The second word must be `uitstor.` appended to a standard release tag.
 func parseReleaseData(data string) (sha256Sum []byte, releaseTime time.Time, releaseInfo string, err error) {
 	defer func() {
 		if err != nil {
@@ -391,13 +391,13 @@ func parseReleaseData(data string) (sha256Sum []byte, releaseTime time.Time, rel
 
 	releaseInfo = fields[1]
 
-	// Split release of style minio.RELEASE.2019-08-21T19-40-07Z.<hotfix>
+	// Split release of style uitstor.RELEASE.2019-08-21T19-40-07Z.<hotfix>
 	nfields := strings.SplitN(releaseInfo, ".", 2)
 	if len(nfields) != 2 {
 		err = fmt.Errorf("Unknown release information `%s`", releaseInfo)
 		return sha256Sum, releaseTime, releaseInfo, err
 	}
-	if nfields[0] != "minio" {
+	if nfields[0] != "uitstor" {
 		err = fmt.Errorf("Unknown release `%s`", releaseInfo)
 		return sha256Sum, releaseTime, releaseInfo, err
 	}
@@ -438,10 +438,10 @@ func getLatestReleaseTime(u *url.URL, timeout time.Duration, mode string) (sha25
 
 const (
 	// Kubernetes deployment doc link.
-	kubernetesDeploymentDoc = "https://docs.min.io/docs/deploy-minio-on-kubernetes"
+	kubernetesDeploymentDoc = "https://docs.min.io/docs/deploy-uitstor-on-kubernetes"
 
 	// Mesos deployment doc link.
-	mesosDeploymentDoc = "https://docs.min.io/docs/deploy-minio-on-dc-os"
+	mesosDeploymentDoc = "https://docs.min.io/docs/deploy-uitstor-on-dc-os"
 )
 
 func getDownloadURL(releaseTag string) (downloadURL string) {
@@ -460,15 +460,15 @@ func getDownloadURL(releaseTag string) (downloadURL string) {
 	// Check if we are docker environment, return docker update command
 	if IsDocker() {
 		// Construct release tag name.
-		return fmt.Sprintf("podman pull quay.io/minio/minio:%s", releaseTag)
+		return fmt.Sprintf("podman pull quay.io/uitstor/uitstor:%s", releaseTag)
 	}
 
 	// For binary only installations, we return link to the latest binary.
 	if runtime.GOOS == "windows" {
-		return minioReleaseURL + "minio.exe"
+		return uitstorReleaseURL + "uitstor.exe"
 	}
 
-	return minioReleaseURL + "minio"
+	return uitstorReleaseURL + "uitstor"
 }
 
 func getUpdateReaderFromFile(u *url.URL) (io.ReadCloser, error) {

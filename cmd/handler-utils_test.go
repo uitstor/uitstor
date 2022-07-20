@@ -29,7 +29,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/minio/minio/internal/config"
+	"github.com/uitstor/uitstor/internal/config"
 )
 
 // Tests validate bucket LocationConstraint.
@@ -160,11 +160,11 @@ func TestExtractMetadataHeaders(t *testing.T) {
 		{
 			header: http.Header{
 				"X-Amz-Meta-Appid":   []string{"amz-meta"},
-				"X-Minio-Meta-Appid": []string{"minio-meta"},
+				"X-Minio-Meta-Appid": []string{"uitstor-meta"},
 			},
 			metadata: map[string]string{
 				"X-Amz-Meta-Appid":   "amz-meta",
-				"X-Minio-Meta-Appid": "minio-meta",
+				"X-Minio-Meta-Appid": "uitstor-meta",
 			},
 			shouldFail: false,
 		},

@@ -29,7 +29,7 @@ import (
 	"testing"
 
 	humanize "github.com/dustin/go-humanize"
-	"github.com/minio/minio/internal/hash"
+	"github.com/uitstor/uitstor/internal/hash"
 )
 
 func md5Header(data []byte) map[string]string {
@@ -44,8 +44,8 @@ func TestObjectAPIPutObjectSingle(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIPutObject(obj ObjectLayer, instanceType string, t TestErrHandler) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "uitstor-bucket"
+	object := "uitstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -235,8 +235,8 @@ func TestObjectAPIPutObjectDiskNotFound(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIPutObjectDiskNotFound(obj ObjectLayer, instanceType string, disks []string, t *testing.T) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "uitstor-bucket"
+	object := "uitstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -347,8 +347,8 @@ func TestObjectAPIPutObjectStaleFiles(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIPutObjectStaleFiles(obj ObjectLayer, instanceType string, disks []string, t *testing.T) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "uitstor-bucket"
+	object := "uitstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -366,7 +366,7 @@ func testObjectAPIPutObjectStaleFiles(obj ObjectLayer, instanceType string, disk
 	}
 
 	for _, disk := range disks {
-		tmpMetaDir := path.Join(disk, minioMetaTmpBucket)
+		tmpMetaDir := path.Join(disk, uitstorMetaTmpBucket)
 		files, err := ioutil.ReadDir(tmpMetaDir)
 		if err != nil {
 			t.Fatal(err)
@@ -379,7 +379,7 @@ func testObjectAPIPutObjectStaleFiles(obj ObjectLayer, instanceType string, disk
 			found = true
 		}
 		if found {
-			t.Fatalf("%s: expected: empty, got: non-empty %#v", minioMetaTmpBucket, files)
+			t.Fatalf("%s: expected: empty, got: non-empty %#v", uitstorMetaTmpBucket, files)
 		}
 	}
 }
@@ -392,8 +392,8 @@ func TestObjectAPIMultipartPutObjectStaleFiles(t *testing.T) {
 // Tests validate correctness of PutObject.
 func testObjectAPIMultipartPutObjectStaleFiles(obj ObjectLayer, instanceType string, disks []string, t *testing.T) {
 	// Generating cases for which the PutObject fails.
-	bucket := "minio-bucket"
-	object := "minio-object"
+	bucket := "uitstor-bucket"
+	object := "uitstor-object"
 
 	// Create bucket.
 	err := obj.MakeBucketWithLocation(context.Background(), bucket, BucketOptions{})
@@ -444,7 +444,7 @@ func testObjectAPIMultipartPutObjectStaleFiles(obj ObjectLayer, instanceType str
 	}
 
 	for _, disk := range disks {
-		tmpMetaDir := path.Join(disk, minioMetaTmpBucket)
+		tmpMetaDir := path.Join(disk, uitstorMetaTmpBucket)
 		files, err := ioutil.ReadDir(tmpMetaDir)
 		if err != nil {
 			// Its OK to have non-existen tmpMetaDir.

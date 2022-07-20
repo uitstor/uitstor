@@ -26,9 +26,9 @@ import (
 	"path"
 	"time"
 
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/lock"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/lock"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 // FS format version strings.
@@ -48,7 +48,7 @@ type formatFSV1 struct {
 
 // formatFSV2 - structure is same as formatFSV1. But the multipart backend
 // structure is flat instead of hierarchy now.
-// In .minio.sys/multipart we have:
+// In .uitstor.sys/multipart we have:
 // sha256(bucket/object)/uploadID/[fs.json, 1.etag, 2.etag ....]
 type formatFSV2 = formatFSV1
 
@@ -109,11 +109,11 @@ func formatFSMigrateV1ToV2(ctx context.Context, wlk *lock.LockedFile, fsPath str
 		return fmt.Errorf(`format.json version expected %s, found %s`, formatFSVersionV1, version)
 	}
 
-	if err = fsRemoveAll(ctx, path.Join(fsPath, minioMetaMultipartBucket)); err != nil {
+	if err = fsRemoveAll(ctx, path.Join(fsPath, uitstorMetaMultipartBucket)); err != nil {
 		return err
 	}
 
-	if err = os.MkdirAll(path.Join(fsPath, minioMetaMultipartBucket), 0o755); err != nil {
+	if err = os.MkdirAll(path.Join(fsPath, uitstorMetaMultipartBucket), 0o755); err != nil {
 		return err
 	}
 
@@ -164,7 +164,7 @@ func formatFSMigrate(ctx context.Context, wlk *lock.LockedFile, fsPath string) e
 // Creates a new format.json if unformatted.
 func createFormatFS(fsFormatPath string) error {
 	// Attempt a write lock on formatConfigFile `format.json`
-	// file stored in minioMetaBucket(.minio.sys) directory.
+	// file stored in uitstorMetaBucket(.uitstor.sys) directory.
 	lk, err := lock.TryLockedOpenFile(fsFormatPath, os.O_RDWR|os.O_CREATE, 0o600)
 	if err != nil {
 		return err
@@ -177,7 +177,7 @@ func createFormatFS(fsFormatPath string) error {
 		return err
 	}
 	if fi.Size() != 0 {
-		// format.json already got created because of another minio process's createFormatFS()
+		// format.json already got created because of another uitstor process's createFormatFS()
 		return nil
 	}
 
@@ -186,10 +186,10 @@ func createFormatFS(fsFormatPath string) error {
 
 // This function returns a read-locked format.json reference to the caller.
 // The file descriptor should be kept open throughout the life
-// of the process so that another minio process does not try to
+// of the process so that another uitstor process does not try to
 // migrate the backend when we are actively working on the backend.
 func initFormatFS(ctx context.Context, fsPath string) (rlk *lock.RLockedFile, err error) {
-	fsFormatPath := pathJoin(fsPath, minioMetaBucket, formatConfigFile)
+	fsFormatPath := pathJoin(fsPath, uitstorMetaBucket, formatConfigFile)
 
 	// Add a deployment ID, if it does not exist.
 	if err := formatFSFixDeploymentID(ctx, fsFormatPath); err != nil {
@@ -203,7 +203,7 @@ func initFormatFS(ctx context.Context, fsPath string) (rlk *lock.RLockedFile, er
 		rlk, err := lock.RLockedOpenFile(fsFormatPath)
 		if err == nil {
 			// format.json can be empty in a rare condition when another
-			// minio process just created the file but could not hold lock
+			// uitstor process just created the file but could not hold lock
 			// and write to it.
 			var fi os.FileInfo
 			fi, err = rlk.Stat()
@@ -220,7 +220,7 @@ func initFormatFS(ctx context.Context, fsPath string) (rlk *lock.RLockedFile, er
 			err = createFormatFS(fsFormatPath)
 			if err == lock.ErrAlreadyLocked {
 				// Lock already present, sleep and attempt again.
-				// Can happen in a rare situation when a parallel minio process
+				// Can happen in a rare situation when a parallel uitstor process
 				// holds the lock and creates format.json
 				time.Sleep(100 * time.Millisecond)
 				continue
@@ -254,7 +254,7 @@ func initFormatFS(ctx context.Context, fsPath string) (rlk *lock.RLockedFile, er
 			// Format needs migration
 			rlk.Close()
 			// Hold write lock during migration so that we do not disturb any
-			// minio processes running in parallel.
+			// uitstor processes running in parallel.
 			var wlk *lock.LockedFile
 			wlk, err = lock.TryLockedOpenFile(fsFormatPath, os.O_RDWR, 0)
 			if err == lock.ErrAlreadyLocked {
@@ -297,7 +297,7 @@ func formatFSFixDeploymentID(ctx context.Context, fsFormatPath string) error {
 	rlk, err := lock.RLockedOpenFile(fsFormatPath)
 	if err == nil {
 		// format.json can be empty in a rare condition when another
-		// minio process just created the file but could not hold lock
+		// uitstor process just created the file but could not hold lock
 		// and write to it.
 		var fi os.FileInfo
 		fi, err = rlk.Stat()
@@ -360,7 +360,7 @@ func formatFSFixDeploymentID(ctx context.Context, fsFormatPath string) error {
 			wlk, err = lock.TryLockedOpenFile(fsFormatPath, os.O_RDWR, 0)
 			if err == lock.ErrAlreadyLocked {
 				// Lock already present, sleep and attempt again
-				logger.Info("Another minio process(es) might be holding a lock to the file %s. Please kill that minio process(es) (elapsed %s)\n", fsFormatPath, getElapsedTime())
+				logger.Info("Another uitstor process(es) might be holding a lock to the file %s. Please kill that uitstor process(es) (elapsed %s)\n", fsFormatPath, getElapsedTime())
 				time.Sleep(time.Duration(r.Float64() * float64(5*time.Second)))
 				continue
 			}

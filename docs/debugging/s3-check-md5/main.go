@@ -81,7 +81,7 @@ func main() {
 	}
 
 	secure := strings.EqualFold(u.Scheme, "https")
-	transport, err := minio.DefaultTransport(secure)
+	transport, err := uitstor.DefaultTransport(secure)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -90,7 +90,7 @@ func main() {
 		transport.TLSClientConfig.InsecureSkipVerify = true
 	}
 
-	s3Client, err := minio.New(u.Host, &minio.Options{
+	s3Client, err := uitstor.New(u.Host, &uitstor.Options{
 		Creds:     credentials.NewStaticV4(accessKey, secretKey, ""),
 		Secure:    secure,
 		Transport: transport,
@@ -117,7 +117,7 @@ func main() {
 	}
 
 	for _, bucket := range buckets {
-		opts := minio.ListObjectsOptions{
+		opts := uitstor.ListObjectsOptions{
 			Recursive:    true,
 			Prefix:       prefix,
 			WithVersions: versions,
@@ -164,7 +164,7 @@ func main() {
 			var partsMD5Sum [][]byte
 			var failedMD5 bool
 			for p := 1; p <= parts; p++ {
-				opts := minio.GetObjectOptions{
+				opts := uitstor.GetObjectOptions{
 					VersionID:  object.VersionID,
 					PartNumber: p,
 				}

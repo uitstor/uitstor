@@ -32,10 +32,10 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gorilla/mux"
 	"github.com/minio/madmin-go"
-	b "github.com/minio/minio/internal/bucket/bandwidth"
-	"github.com/minio/minio/internal/event"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/pubsub"
+	b "github.com/uitstor/uitstor/internal/bucket/bandwidth"
+	"github.com/uitstor/uitstor/internal/event"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/pubsub"
 	"github.com/tinylib/msgp/msgp"
 )
 
@@ -285,7 +285,7 @@ func (s *peerRESTServer) StartProfilingHandler(w http.ResponseWriter, r *http.Re
 	globalProfilerMu.Lock()
 	defer globalProfilerMu.Unlock()
 	if globalProfiler == nil {
-		globalProfiler = make(map[string]minioProfiler, 10)
+		globalProfiler = make(map[string]uitstorProfiler, 10)
 	}
 
 	// Stop profiler of all types if already running
@@ -435,7 +435,7 @@ func (s *peerRESTServer) GetMetricsHandler(w http.ResponseWriter, r *http.Reques
 }
 
 // GetSysConfigHandler - returns system config information.
-// (only the config that are of concern to minio)
+// (only the config that are of concern to uitstor)
 func (s *peerRESTServer) GetSysConfigHandler(w http.ResponseWriter, r *http.Request) {
 	if !s.IsValid(w, r) {
 		s.writeErrorResponse(w, errors.New("Invalid request"))
@@ -451,7 +451,7 @@ func (s *peerRESTServer) GetSysConfigHandler(w http.ResponseWriter, r *http.Requ
 }
 
 // GetSysServicesHandler - returns system services information.
-// (only the services that are of concern to minio)
+// (only the services that are of concern to uitstor)
 func (s *peerRESTServer) GetSysServicesHandler(w http.ResponseWriter, r *http.Request) {
 	if !s.IsValid(w, r) {
 		s.writeErrorResponse(w, errors.New("Invalid request"))

@@ -39,7 +39,7 @@ verify_checksum_mc() {
 add_alias() {
     for i in $(seq 1 4); do
         echo "... attempting to add alias $i"
-        until (mc alias set minio http://127.0.0.1:9000 minioadmin minioadmin); do
+        until (mc alias set uitstor http://127.0.0.1:9000 uitstoradmin uitstoradmin); do
             echo "...waiting... for 5secs" && sleep 5
         done
     done
@@ -55,7 +55,7 @@ __init__() {
 
     go install github.com/minio/mc@latest
 
-    TAG=minio/minio:dev make docker
+    TAG=uitstor/uitstor:dev make docker
 
     MINIO_VERSION=RELEASE.2019-12-19T22-52-26Z docker-compose \
                  -f "buildscripts/upgrade-tests/compose.yml" \
@@ -63,14 +63,14 @@ __init__() {
 
     add_alias
 
-    mc mb minio/minio-test/
-    mc cp ./minio minio/minio-test/to-read/
-    mc cp /etc/hosts minio/minio-test/to-read/hosts
-    mc policy set download minio/minio-test
+    mc mb uitstor/uitstor-test/
+    mc cp ./uitstor uitstor/uitstor-test/to-read/
+    mc cp /etc/hosts uitstor/uitstor-test/to-read/hosts
+    mc policy set download uitstor/uitstor-test
 
-    verify_checksum_mc ./minio minio/minio-test/to-read/minio
+    verify_checksum_mc ./uitstor uitstor/uitstor-test/to-read/uitstor
 
-    curl -s http://127.0.0.1:9000/minio-test/to-read/hosts | sha256sum
+    curl -s http://127.0.0.1:9000/uitstor-test/to-read/hosts | sha256sum
 
     MINIO_VERSION=dev docker-compose -f "buildscripts/upgrade-tests/compose.yml" stop
 }
@@ -80,11 +80,11 @@ main() {
 
     add_alias
 
-    verify_checksum_after_heal minio/minio-test http://127.0.0.1:9000/minio-test/to-read/hosts
+    verify_checksum_after_heal uitstor/uitstor-test http://127.0.0.1:9000/uitstor-test/to-read/hosts
 
-    verify_checksum_mc ./minio minio/minio-test/to-read/minio
+    verify_checksum_mc ./uitstor uitstor/uitstor-test/to-read/uitstor
 
-    verify_checksum_mc /etc/hosts minio/minio-test/to-read/hosts
+    verify_checksum_mc /etc/hosts uitstor/uitstor-test/to-read/hosts
 
     cleanup
 }

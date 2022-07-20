@@ -5,29 +5,29 @@ set -E
 set -o pipefail
 set -x
 
-if [ ! -x "$PWD/minio" ]; then
-    echo "minio executable binary not found in current directory"
+if [ ! -x "$PWD/uitstor" ]; then
+    echo "uitstor executable binary not found in current directory"
     exit 1
 fi
 
 WORK_DIR="$PWD/.verify-$RANDOM"
-MINIO_CONFIG_DIR="$WORK_DIR/.minio"
-MINIO_OLD=( "$PWD/minio.RELEASE.2021-11-24T23-19-33Z" --config-dir "$MINIO_CONFIG_DIR" server )
-MINIO=( "$PWD/minio" --config-dir "$MINIO_CONFIG_DIR" server )
+MINIO_CONFIG_DIR="$WORK_DIR/.uitstor"
+MINIO_OLD=( "$PWD/uitstor.RELEASE.2021-11-24T23-19-33Z" --config-dir "$MINIO_CONFIG_DIR" server )
+MINIO=( "$PWD/uitstor" --config-dir "$MINIO_CONFIG_DIR" server )
 
 function download_old_release() {
-    if [ ! -f minio.RELEASE.2021-11-24T23-19-33Z ]; then
-	curl --silent -O https://dl.minio.io/server/minio/release/linux-amd64/archive/minio.RELEASE.2021-11-24T23-19-33Z
-	chmod a+x minio.RELEASE.2021-11-24T23-19-33Z
+    if [ ! -f uitstor.RELEASE.2021-11-24T23-19-33Z ]; then
+	curl --silent -O https://dl.uitstor.io/server/uitstor/release/linux-amd64/archive/uitstor.RELEASE.2021-11-24T23-19-33Z
+	chmod a+x uitstor.RELEASE.2021-11-24T23-19-33Z
     fi
 }
 
-function start_minio_16drive() {
+function start_uitstor_16drive() {
     start_port=$1
 
-    export MINIO_ROOT_USER=minio
-    export MINIO_ROOT_PASSWORD=minio123
-    export MC_HOST_minio="http://minio:minio123@127.0.0.1:${start_port}/"
+    export MINIO_ROOT_USER=uitstor
+    export MINIO_ROOT_PASSWORD=uitstor123
+    export MC_HOST_uitstor="http://uitstor:uitstor123@127.0.0.1:${start_port}/"
     unset MINIO_KMS_AUTO_ENCRYPTION # do not auto-encrypt objects
     export _MINIO_SHARD_DISKTIME_DELTA="5s" # do not change this as its needed for tests
     export MINIO_CI_CD=1
@@ -58,10 +58,10 @@ function start_minio_16drive() {
     fi
 
     shred --iterations=1 --size=5241856 - 1>"${WORK_DIR}/unaligned" 2>/dev/null
-    "${WORK_DIR}/mc" mb minio/healing-shard-bucket --quiet
+    "${WORK_DIR}/mc" mb uitstor/healing-shard-bucket --quiet
     "${WORK_DIR}/mc" cp \
 		     "${WORK_DIR}/unaligned" \
-		     minio/healing-shard-bucket/unaligned \
+		     uitstor/healing-shard-bucket/unaligned \
 		     --disable-multipart --quiet
 
     ## "unaligned" object name gets consistently distributed
@@ -76,7 +76,7 @@ function start_minio_16drive() {
     rm -rf "${WORK_DIR}/xl14/healing-shard-bucket/unaligned"
     sleep 10
     ## Heal the shard
-    "${WORK_DIR}/mc" admin heal --quiet --recursive minio/healing-shard-bucket
+    "${WORK_DIR}/mc" admin heal --quiet --recursive uitstor/healing-shard-bucket
     ## then remove any other data shard let's pick first disk
     ## - 1st data shard.
     rm -rf "${WORK_DIR}/xl3/healing-shard-bucket/unaligned"
@@ -85,8 +85,8 @@ function start_minio_16drive() {
     go build ./docs/debugging/s3-check-md5/
     if ! ./s3-check-md5 \
 	 -debug \
-	 -access-key minio \
-	 -secret-key minio123 \
+	 -access-key uitstor \
+	 -secret-key uitstor123 \
 	 -endpoint http://127.0.0.1:${start_port}/ 2>&1 | grep CORRUPTED; then
 	echo "server1 log:"
 	cat "${WORK_DIR}/server1.log"
@@ -95,7 +95,7 @@ function start_minio_16drive() {
 	exit 1
     fi
 
-    pkill minio
+    pkill uitstor
     sleep 3
 
     "${MINIO[@]}" --address ":$start_port" "${WORK_DIR}/xl{1...16}" > "${WORK_DIR}/server1.log" 2>&1 &
@@ -113,14 +113,14 @@ function start_minio_16drive() {
 
     if ! ./s3-check-md5 \
 	 -debug \
-	 -access-key minio \
-	 -secret-key minio123 \
+	 -access-key uitstor \
+	 -secret-key uitstor123 \
 	 -endpoint http://127.0.0.1:${start_port}/ 2>&1 | grep INTACT; then
 	echo "server1 log:"
 	cat "${WORK_DIR}/server1.log"
 	echo "FAILED"
 	mkdir -p inspects
-	(cd inspects; "${WORK_DIR}/mc" admin inspect minio/healing-shard-bucket/unaligned/**)
+	(cd inspects; "${WORK_DIR}/mc" admin inspect uitstor/healing-shard-bucket/unaligned/**)
 
 	"${WORK_DIR}/mc" mb play/inspects
 	"${WORK_DIR}/mc" mirror inspects play/inspects
@@ -129,18 +129,18 @@ function start_minio_16drive() {
 	exit 1
     fi
 
-    "${WORK_DIR}/mc" admin heal --quiet --recursive minio/healing-shard-bucket
+    "${WORK_DIR}/mc" admin heal --quiet --recursive uitstor/healing-shard-bucket
 
     if ! ./s3-check-md5 \
 	 -debug \
-	 -access-key minio \
-	 -secret-key minio123 \
+	 -access-key uitstor \
+	 -secret-key uitstor123 \
 	 -endpoint http://127.0.0.1:${start_port}/ 2>&1 | grep INTACT; then
 	echo "server1 log:"
 	cat "${WORK_DIR}/server1.log"
 	echo "FAILED"
 	mkdir -p inspects
-	(cd inspects; "${WORK_DIR}/mc" admin inspect minio/healing-shard-bucket/unaligned/**)
+	(cd inspects; "${WORK_DIR}/mc" admin inspect uitstor/healing-shard-bucket/unaligned/**)
 
 	"${WORK_DIR}/mc" mb play/inspects
 	"${WORK_DIR}/mc" mirror inspects play/inspects
@@ -149,7 +149,7 @@ function start_minio_16drive() {
 	exit 1
     fi
 
-    pkill minio
+    pkill uitstor
     sleep 3
 }
 
@@ -158,7 +158,7 @@ function main() {
 
     start_port=$(shuf -i 10000-65000 -n 1)
 
-    start_minio_16drive ${start_port}
+    start_uitstor_16drive ${start_port}
 }
 
 function purge()

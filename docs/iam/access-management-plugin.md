@@ -1,4 +1,4 @@
-# Access Management Plugin Guide [![Slack](https://slack.minio.io/slack?type=svg)](https://slack.minio.io)
+# Access Management Plugin Guide [![Slack](https://slack.uitstor.io/slack?type=svg)](https://slack.uitstor.io)
 
 MinIO now includes support for using an Access Management Plugin. This is to allow object storage access control to be managed externally via a webhook.
 
@@ -20,23 +20,23 @@ In another terminal start MinIO:
 
 ```sh
 export MINIO_CI_CD=1
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
 export MINIO_POLICY_PLUGIN_URL=http://localhost:8080/
-minio server /tmp/disk{1...4}
+uitstor server /tmp/disk{1...4}
 ```
 
 Now, let's test it out with `mc`:
 
 ```sh
-mc alias set myminio http://localhost:9000 minio minio123
-mc ls myminio
-mc mb myminio/test
-mc cp /etc/issue myminio/test
-mc admin user add myminio foo foobar123
+mc alias set myuitstor http://localhost:9000 uitstor uitstor123
+mc ls myuitstor
+mc mb myuitstor/test
+mc cp /etc/issue myuitstor/test
+mc admin user add myuitstor foo foobar123
 export MC_HOST_foo=http://foo:foobar123@localhost:9000
 mc ls foo
-mc cp /etc/issue myminio/test/issue2
+mc cp /etc/issue myuitstor/test/issue2
 ```
 
 Only the last operation would fail with a permissions error.
@@ -46,7 +46,7 @@ Only the last operation would fail with a permissions error.
 Access Management Plugin can be configured with environment variables:
 
 ```sh
-$ mc admin config set dminio1 policy_plugin --env
+$ mc admin config set duitstor1 policy_plugin --env
 KEY:
 policy_plugin  enable Access Management Plugin for policy enforcement
 
@@ -67,13 +67,13 @@ The JSON body structure can be seen from this sample:
 ```json
 {
   "input": {
-    "account": "minio",
+    "account": "uitstor",
     "groups": null,
     "action": "s3:ListBucket",
     "bucket": "test",
     "conditions": {
       "Authorization": [
-        "AWS4-HMAC-SHA256 Credential=minio/20220507/us-east-1/s3/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=62012db6c47d697620cf6c68f0f45f6e34894589a53ab1faf6dc94338468c78a"
+        "AWS4-HMAC-SHA256 Credential=uitstor/20220507/us-east-1/s3/aws4_request, SignedHeaders=host;x-amz-content-sha256;x-amz-date, Signature=62012db6c47d697620cf6c68f0f45f6e34894589a53ab1faf6dc94338468c78a"
       ],
       "CurrentTime": [
         "2022-05-07T18:31:41Z"
@@ -97,10 +97,10 @@ The JSON body structure can be seen from this sample:
         "127.0.0.1"
       ],
       "User-Agent": [
-        "MinIO (linux; amd64) minio-go/v7.0.24 mc/DEVELOPMENT.2022-04-20T23-07-53Z"
+        "MinIO (linux; amd64) uitstor-go/v7.0.24 mc/DEVELOPMENT.2022-04-20T23-07-53Z"
       ],
       "UserAgent": [
-        "MinIO (linux; amd64) minio-go/v7.0.24 mc/DEVELOPMENT.2022-04-20T23-07-53Z"
+        "MinIO (linux; amd64) uitstor-go/v7.0.24 mc/DEVELOPMENT.2022-04-20T23-07-53Z"
       ],
       "X-Amz-Content-Sha256": [
         "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -118,10 +118,10 @@ The JSON body structure can be seen from this sample:
         "AWS4-HMAC-SHA256"
       ],
       "userid": [
-        "minio"
+        "uitstor"
       ],
       "username": [
-        "minio"
+        "uitstor"
       ],
       "versionid": [
         ""

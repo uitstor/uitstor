@@ -5,21 +5,21 @@ set -o pipefail
 set -x
 
 
-if [ ! -x "$PWD/minio" ]; then
-    echo "minio executable binary not found in current directory"
+if [ ! -x "$PWD/uitstor" ]; then
+    echo "uitstor executable binary not found in current directory"
     exit 1
 fi
 
 WORK_DIR="$(mktemp -d)"
-MINIO_CONFIG_DIR="$WORK_DIR/.minio"
-MINIO=( "$PWD/minio" --config-dir "$MINIO_CONFIG_DIR" server )
+MINIO_CONFIG_DIR="$WORK_DIR/.uitstor"
+MINIO=( "$PWD/uitstor" --config-dir "$MINIO_CONFIG_DIR" server )
 
 
-function start_minio() {
+function start_uitstor() {
     start_port=$1
 
-    export MINIO_ROOT_USER=minio
-    export MINIO_ROOT_PASSWORD=minio123
+    export MINIO_ROOT_USER=uitstor
+    export MINIO_ROOT_PASSWORD=uitstor123
     unset MINIO_KMS_AUTO_ENCRYPTION # do not auto-encrypt objects
     unset MINIO_CI_CD
     unset CI
@@ -49,18 +49,18 @@ function prepare_block_devices() {
         for i in 1 2 3 4; do
                 dd if=/dev/zero of=${WORK_DIR}/disks/img.$i bs=1M count=2048
                 mkfs.ext4 -F ${WORK_DIR}/disks/img.$i
-                sudo mknod /dev/minio-loopdisk$i b 7 $[256-$i]
-                sudo losetup /dev/minio-loopdisk$i ${WORK_DIR}/disks/img.$i
+                sudo mknod /dev/uitstor-loopdisk$i b 7 $[256-$i]
+                sudo losetup /dev/uitstor-loopdisk$i ${WORK_DIR}/disks/img.$i
                 mkdir -p ${WORK_DIR}/mnt/disk$i/
-                sudo mount /dev/minio-loopdisk$i ${WORK_DIR}/mnt/disk$i/
-                sudo chown "$(id -u):$(id -g)" /dev/minio-loopdisk$i ${WORK_DIR}/mnt/disk$i/
+                sudo mount /dev/uitstor-loopdisk$i ${WORK_DIR}/mnt/disk$i/
+                sudo chown "$(id -u):$(id -g)" /dev/uitstor-loopdisk$i ${WORK_DIR}/mnt/disk$i/
         done
 }
 
 # Start a distributed MinIO setup, unmount one disk and check if it is formatted
 function main() {
     start_port=$(shuf -i 10000-65000 -n 1)
-    start_minio ${start_port}
+    start_uitstor ${start_port}
 
     # Unmount the disk, after the unmount the device id
     # /tmp/xxx/mnt/disk4 will be the same as '/' and it
@@ -74,7 +74,7 @@ function main() {
     # Wait until MinIO self heal kicks in
     sleep 60
 
-    if [ -f ${WORK_DIR}/mnt/disk4/.minio.sys/format.json ]; then
+    if [ -f ${WORK_DIR}/mnt/disk4/.uitstor.sys/format.json ]; then
 	    echo "A root disk is formatted unexpectedely"
             cat "${WORK_DIR}/server4.log"
             exit -1
@@ -82,9 +82,9 @@ function main() {
 }
 
 function cleanup() {
-    pkill minio
+    pkill uitstor
     sudo umount ${WORK_DIR}/mnt/disk{1..3}/
-    sudo rm /dev/minio-loopdisk*
+    sudo rm /dev/uitstor-loopdisk*
     rm -rf "$WORK_DIR"
 }
 

@@ -28,21 +28,21 @@ import (
 	"sync"
 	"time"
 
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/bucket/object/lock"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/bucket/object/lock"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 func renameAllBucketMetacache(epPath string) error {
-	// Rename all previous `.minio.sys/buckets/<bucketname>/.metacache` to
-	// to `.minio.sys/tmp/` for deletion.
-	return readDirFn(pathJoin(epPath, minioMetaBucket, bucketMetaPrefix), func(name string, typ os.FileMode) error {
+	// Rename all previous `.uitstor.sys/buckets/<bucketname>/.metacache` to
+	// to `.uitstor.sys/tmp/` for deletion.
+	return readDirFn(pathJoin(epPath, uitstorMetaBucket, bucketMetaPrefix), func(name string, typ os.FileMode) error {
 		if typ == os.ModeDir {
-			tmpMetacacheOld := pathutil.Join(epPath, minioMetaTmpDeletedBucket, mustGetUUID())
-			if err := renameAll(pathJoin(epPath, minioMetaBucket, metacachePrefixForID(name, slashSeparator)),
+			tmpMetacacheOld := pathutil.Join(epPath, uitstorMetaTmpDeletedBucket, mustGetUUID())
+			if err := renameAll(pathJoin(epPath, uitstorMetaBucket, metacachePrefixForID(name, slashSeparator)),
 				tmpMetacacheOld); err != nil && err != errFileNotFound {
 				return fmt.Errorf("unable to rename (%s -> %s) %w",
-					pathJoin(epPath, minioMetaBucket+metacachePrefixForID(minioMetaBucket, slashSeparator)),
+					pathJoin(epPath, uitstorMetaBucket+metacachePrefixForID(uitstorMetaBucket, slashSeparator)),
 					tmpMetacacheOld,
 					osErrToFileErr(err))
 			}
@@ -752,7 +752,7 @@ func (es *erasureSingle) listAndSave(ctx context.Context, o *listPathOptions) (e
 
 func (z *erasureServerPools) listAndSave(ctx context.Context, o *listPathOptions) (entries metaCacheEntriesSorted, err error) {
 	// Use ID as the object name...
-	o.pool = z.getAvailablePoolIdx(ctx, minioMetaBucket, o.ID, 10<<20)
+	o.pool = z.getAvailablePoolIdx(ctx, uitstorMetaBucket, o.ID, 10<<20)
 	if o.pool < 0 {
 		// No space or similar, don't persist the listing.
 		o.pool = 0

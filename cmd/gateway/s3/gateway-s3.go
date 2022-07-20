@@ -29,15 +29,15 @@ import (
 
 	"github.com/minio/cli"
 	"github.com/minio/madmin-go"
-	miniogo "github.com/minio/minio-go/v7"
+	uitstorgo "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"github.com/minio/minio-go/v7/pkg/encrypt"
 	"github.com/minio/minio-go/v7/pkg/s3utils"
 	"github.com/minio/minio-go/v7/pkg/tags"
-	minio "github.com/minio/minio/cmd"
-	"github.com/minio/minio/internal/config"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	uitstor "github.com/uitstor/uitstor/cmd"
+	"github.com/uitstor/uitstor/internal/config"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/bucket/policy"
 	"github.com/minio/pkg/env"
 )
@@ -56,12 +56,12 @@ ENDPOINT:
   s3 server endpoint. Default ENDPOINT is https://s3.amazonaws.com
 
 EXAMPLES:
-  1. Start minio gateway server for AWS S3 backend
+  1. Start uitstor gateway server for AWS S3 backend
      {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.HelpName}}
 
-  2. Start minio gateway server for AWS S3 backend with edge caching enabled
+  2. Start uitstor gateway server for AWS S3 backend with edge caching enabled
      {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_USER{{.AssignmentOperator}}accesskey
      {{.Prompt}} {{.EnvVarSetCommand}} MINIO_ROOT_PASSWORD{{.AssignmentOperator}}secretkey
      {{.Prompt}} {{.EnvVarSetCommand}} MINIO_CACHE_DRIVES{{.AssignmentOperator}}"/mnt/drive1,/mnt/drive2,/mnt/drive3,/mnt/drive4"
@@ -73,8 +73,8 @@ EXAMPLES:
      {{.Prompt}} {{.HelpName}}
 `
 
-	minio.RegisterGatewayCommand(cli.Command{
-		Name:               minio.S3BackendGateway,
+	uitstor.RegisterGatewayCommand(cli.Command{
+		Name:               uitstor.S3BackendGateway,
 		Usage:              "Amazon Simple Storage Service (S3)",
 		Action:             s3GatewayMain,
 		CustomHelpTemplate: s3GatewayTemplate,
@@ -82,7 +82,7 @@ EXAMPLES:
 	})
 }
 
-// Handler for 'minio gateway s3' command line.
+// Handler for 'uitstor gateway s3' command line.
 func s3GatewayMain(ctx *cli.Context) {
 	args := ctx.Args()
 	if !ctx.Args().Present() {
@@ -90,14 +90,14 @@ func s3GatewayMain(ctx *cli.Context) {
 	}
 
 	serverAddr := ctx.GlobalString("address")
-	if serverAddr == "" || serverAddr == ":"+minio.GlobalMinioDefaultPort {
+	if serverAddr == "" || serverAddr == ":"+uitstor.GlobalMinioDefaultPort {
 		serverAddr = ctx.String("address")
 	}
 	// Validate gateway arguments.
-	logger.FatalIf(minio.ValidateGatewayArguments(serverAddr, args.First()), "Invalid argument")
+	logger.FatalIf(uitstor.ValidateGatewayArguments(serverAddr, args.First()), "Invalid argument")
 
 	// Start the gateway..
-	minio.StartGateway(ctx, &S3{
+	uitstor.StartGateway(ctx, &S3{
 		host:  args.First(),
 		debug: env.Get("_MINIO_SERVER_DEBUG", config.EnableOff) == config.EnableOn,
 	})
@@ -111,7 +111,7 @@ type S3 struct {
 
 // Name implements Gateway interface.
 func (g *S3) Name() string {
-	return minio.S3BackendGateway
+	return uitstor.S3BackendGateway
 }
 
 const letterBytes = "abcdefghijklmnopqrstuvwxyz01234569"
@@ -162,13 +162,13 @@ var defaultAWSCredProviders = []credentials.Provider{
 		// you can specify a custom STS endpoint.
 		Endpoint: env.Get("MINIO_GATEWAY_S3_STS_ENDPOINT", ""),
 		Client: &http.Client{
-			Transport: minio.NewGatewayHTTPTransport(),
+			Transport: uitstor.NewGatewayHTTPTransport(),
 		},
 	},
 }
 
 // new - Initializes a new client by auto probing S3 server signature.
-func (g *S3) new(creds madmin.Credentials, transport http.RoundTripper) (*miniogo.Core, error) {
+func (g *S3) new(creds madmin.Credentials, transport http.RoundTripper) (*uitstorgo.Core, error) {
 	urlStr := g.host
 	if urlStr == "" {
 		urlStr = "https://s3.amazonaws.com"
@@ -180,7 +180,7 @@ func (g *S3) new(creds madmin.Credentials, transport http.RoundTripper) (*miniog
 	}
 
 	// Override default params if the host is provided
-	endpoint, secure, err := minio.ParseGatewayEndpoint(urlStr)
+	endpoint, secure, err := uitstor.ParseGatewayEndpoint(urlStr)
 	if err != nil {
 		return nil, err
 	}
@@ -194,28 +194,28 @@ func (g *S3) new(creds madmin.Credentials, transport http.RoundTripper) (*miniog
 		chainCreds = NewChainCredentials(defaultProviders)
 	}
 
-	optionsStaticCreds := &miniogo.Options{
+	optionsStaticCreds := &uitstorgo.Options{
 		Creds:        credentials.NewStaticV4(creds.AccessKey, creds.SecretKey, creds.SessionToken),
 		Secure:       secure,
 		Region:       s3utils.GetRegionFromURL(*u),
-		BucketLookup: miniogo.BucketLookupAuto,
+		BucketLookup: uitstorgo.BucketLookupAuto,
 		Transport:    transport,
 	}
 
-	optionsChainCreds := &miniogo.Options{
+	optionsChainCreds := &uitstorgo.Options{
 		Creds:        chainCreds,
 		Secure:       secure,
 		Region:       s3utils.GetRegionFromURL(*u),
-		BucketLookup: miniogo.BucketLookupAuto,
+		BucketLookup: uitstorgo.BucketLookupAuto,
 		Transport:    transport,
 	}
 
-	clntChain, err := miniogo.New(endpoint, optionsChainCreds)
+	clntChain, err := uitstorgo.New(endpoint, optionsChainCreds)
 	if err != nil {
 		return nil, err
 	}
 
-	clntStatic, err := miniogo.New(endpoint, optionsStaticCreds)
+	clntStatic, err := uitstorgo.New(endpoint, optionsStaticCreds)
 	if err != nil {
 		return nil, err
 	}
@@ -228,35 +228,35 @@ func (g *S3) new(creds madmin.Credentials, transport http.RoundTripper) (*miniog
 	probeBucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "probe-bucket-sign-")
 
 	if _, err = clntStatic.BucketExists(context.Background(), probeBucketName); err != nil {
-		switch miniogo.ToErrorResponse(err).Code {
+		switch uitstorgo.ToErrorResponse(err).Code {
 		case "InvalidAccessKeyId":
 			// Check if the provided keys are valid for chain.
 			if _, err = clntChain.BucketExists(context.Background(), probeBucketName); err != nil {
-				if miniogo.ToErrorResponse(err).Code != "AccessDenied" {
+				if uitstorgo.ToErrorResponse(err).Code != "AccessDenied" {
 					return nil, err
 				}
 			}
-			return &miniogo.Core{Client: clntChain}, nil
+			return &uitstorgo.Core{Client: clntChain}, nil
 		case "AccessDenied":
 			// this is a good error means backend is reachable
 			// and credentials are valid but credentials don't
 			// have access to 'probeBucketName' which is harmless.
-			return &miniogo.Core{Client: clntStatic}, nil
+			return &uitstorgo.Core{Client: clntStatic}, nil
 		default:
 			return nil, err
 		}
 	}
 
 	// if static keys are valid always use static keys.
-	return &miniogo.Core{Client: clntStatic}, nil
+	return &uitstorgo.Core{Client: clntStatic}, nil
 }
 
 // NewGatewayLayer returns s3 ObjectLayer.
-func (g *S3) NewGatewayLayer(creds madmin.Credentials) (minio.ObjectLayer, error) {
-	metrics := minio.NewMetrics()
+func (g *S3) NewGatewayLayer(creds madmin.Credentials) (uitstor.ObjectLayer, error) {
+	metrics := uitstor.NewMetrics()
 
-	t := &minio.MetricsTransport{
-		Transport: minio.NewGatewayHTTPTransport(),
+	t := &uitstor.MetricsTransport{
+		Transport: uitstor.NewGatewayHTTPTransport(),
 		Metrics:   metrics,
 	}
 
@@ -276,12 +276,12 @@ func (g *S3) NewGatewayLayer(creds madmin.Credentials) (minio.ObjectLayer, error
 	}
 
 	// Enables single encryption of KMS is configured.
-	if minio.GlobalKMS != nil {
+	if uitstor.GlobalKMS != nil {
 		encS := s3EncObjects{s}
 
 		// Start stale enc multipart uploads cleanup routine.
-		go encS.cleanupStaleEncMultipartUploads(minio.GlobalContext,
-			minio.GlobalStaleUploadsCleanupInterval, minio.GlobalStaleUploadsExpiry)
+		go encS.cleanupStaleEncMultipartUploads(uitstor.GlobalContext,
+			uitstor.GlobalStaleUploadsCleanupInterval, uitstor.GlobalStaleUploadsExpiry)
 
 		return &encS, nil
 	}
@@ -290,14 +290,14 @@ func (g *S3) NewGatewayLayer(creds madmin.Credentials) (minio.ObjectLayer, error
 
 // s3Objects implements gateway for MinIO and S3 compatible object storage servers.
 type s3Objects struct {
-	minio.GatewayUnsupported
-	Client     *miniogo.Core
+	uitstor.GatewayUnsupported
+	Client     *uitstorgo.Core
 	HTTPClient *http.Client
-	Metrics    *minio.BackendMetrics
+	Metrics    *uitstor.BackendMetrics
 }
 
 // GetMetrics returns this gateway's metrics
-func (l *s3Objects) GetMetrics(ctx context.Context) (*minio.BackendMetrics, error) {
+func (l *s3Objects) GetMetrics(ctx context.Context) (*uitstor.BackendMetrics, error) {
 	return l.Metrics, nil
 }
 
@@ -308,13 +308,13 @@ func (l *s3Objects) Shutdown(ctx context.Context) error {
 }
 
 // StorageInfo is not relevant to S3 backend.
-func (l *s3Objects) StorageInfo(ctx context.Context) (si minio.StorageInfo, _ []error) {
+func (l *s3Objects) StorageInfo(ctx context.Context) (si uitstor.StorageInfo, _ []error) {
 	si.Backend.Type = madmin.Gateway
 	probeBucketName := randString(60, rand.NewSource(time.Now().UnixNano()), "probe-bucket-sign-")
 
 	// check if bucket exists.
 	_, err := l.Client.BucketExists(ctx, probeBucketName)
-	switch miniogo.ToErrorResponse(err).Code {
+	switch uitstorgo.ToErrorResponse(err).Code {
 	case "", "AccessDenied":
 		si.Backend.GatewayOnline = true
 	default:
@@ -325,9 +325,9 @@ func (l *s3Objects) StorageInfo(ctx context.Context) (si minio.StorageInfo, _ []
 }
 
 // MakeBucket creates a new container on S3 backend.
-func (l *s3Objects) MakeBucketWithLocation(ctx context.Context, bucket string, opts minio.BucketOptions) error {
+func (l *s3Objects) MakeBucketWithLocation(ctx context.Context, bucket string, opts uitstor.BucketOptions) error {
 	if opts.LockEnabled || opts.VersioningEnabled {
-		return minio.NotImplemented{}
+		return uitstor.NotImplemented{}
 	}
 
 	// Verify if bucket name is valid.
@@ -338,29 +338,29 @@ func (l *s3Objects) MakeBucketWithLocation(ctx context.Context, bucket string, o
 	// access to these buckets.
 	// Ref - http://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html
 	if s3utils.CheckValidBucketName(bucket) != nil {
-		return minio.BucketNameInvalid{Bucket: bucket}
+		return uitstor.BucketNameInvalid{Bucket: bucket}
 	}
-	err := l.Client.MakeBucket(ctx, bucket, miniogo.MakeBucketOptions{Region: opts.Location})
+	err := l.Client.MakeBucket(ctx, bucket, uitstorgo.MakeBucketOptions{Region: opts.Location})
 	if err != nil {
-		return minio.ErrorRespToObjectError(err, bucket)
+		return uitstor.ErrorRespToObjectError(err, bucket)
 	}
 	return err
 }
 
 // GetBucketInfo gets bucket metadata..
-func (l *s3Objects) GetBucketInfo(ctx context.Context, bucket string) (bi minio.BucketInfo, e error) {
+func (l *s3Objects) GetBucketInfo(ctx context.Context, bucket string) (bi uitstor.BucketInfo, e error) {
 	buckets, err := l.Client.ListBuckets(ctx)
 	if err != nil {
 		// Listbuckets may be disallowed, proceed to check if
 		// bucket indeed exists, if yes return success.
 		var ok bool
 		if ok, err = l.Client.BucketExists(ctx, bucket); err != nil {
-			return bi, minio.ErrorRespToObjectError(err, bucket)
+			return bi, uitstor.ErrorRespToObjectError(err, bucket)
 		}
 		if !ok {
-			return bi, minio.BucketNotFound{Bucket: bucket}
+			return bi, uitstor.BucketNotFound{Bucket: bucket}
 		}
-		return minio.BucketInfo{
+		return uitstor.BucketInfo{
 			Name:    bi.Name,
 			Created: time.Now().UTC(),
 		}, nil
@@ -371,25 +371,25 @@ func (l *s3Objects) GetBucketInfo(ctx context.Context, bucket string) (bi minio.
 			continue
 		}
 
-		return minio.BucketInfo{
+		return uitstor.BucketInfo{
 			Name:    bi.Name,
 			Created: bi.CreationDate,
 		}, nil
 	}
 
-	return bi, minio.BucketNotFound{Bucket: bucket}
+	return bi, uitstor.BucketNotFound{Bucket: bucket}
 }
 
 // ListBuckets lists all S3 buckets
-func (l *s3Objects) ListBuckets(ctx context.Context) ([]minio.BucketInfo, error) {
+func (l *s3Objects) ListBuckets(ctx context.Context) ([]uitstor.BucketInfo, error) {
 	buckets, err := l.Client.ListBuckets(ctx)
 	if err != nil {
-		return nil, minio.ErrorRespToObjectError(err)
+		return nil, uitstor.ErrorRespToObjectError(err)
 	}
 
-	b := make([]minio.BucketInfo, len(buckets))
+	b := make([]uitstor.BucketInfo, len(buckets))
 	for i, bi := range buckets {
-		b[i] = minio.BucketInfo{
+		b[i] = uitstor.BucketInfo{
 			Name:    bi.Name,
 			Created: bi.CreationDate,
 		}
@@ -399,45 +399,45 @@ func (l *s3Objects) ListBuckets(ctx context.Context) ([]minio.BucketInfo, error)
 }
 
 // DeleteBucket deletes a bucket on S3
-func (l *s3Objects) DeleteBucket(ctx context.Context, bucket string, opts minio.DeleteBucketOptions) error {
+func (l *s3Objects) DeleteBucket(ctx context.Context, bucket string, opts uitstor.DeleteBucketOptions) error {
 	err := l.Client.RemoveBucket(ctx, bucket)
 	if err != nil {
-		return minio.ErrorRespToObjectError(err, bucket)
+		return uitstor.ErrorRespToObjectError(err, bucket)
 	}
 	return nil
 }
 
 // ListObjects lists all blobs in S3 bucket filtered by prefix
-func (l *s3Objects) ListObjects(ctx context.Context, bucket string, prefix string, marker string, delimiter string, maxKeys int) (loi minio.ListObjectsInfo, e error) {
+func (l *s3Objects) ListObjects(ctx context.Context, bucket string, prefix string, marker string, delimiter string, maxKeys int) (loi uitstor.ListObjectsInfo, e error) {
 	result, err := l.Client.ListObjects(bucket, prefix, marker, delimiter, maxKeys)
 	if err != nil {
-		return loi, minio.ErrorRespToObjectError(err, bucket)
+		return loi, uitstor.ErrorRespToObjectError(err, bucket)
 	}
 
-	return minio.FromMinioClientListBucketResult(bucket, result), nil
+	return uitstor.FromMinioClientListBucketResult(bucket, result), nil
 }
 
 // ListObjectsV2 lists all blobs in S3 bucket filtered by prefix
-func (l *s3Objects) ListObjectsV2(ctx context.Context, bucket, prefix, continuationToken, delimiter string, maxKeys int, fetchOwner bool, startAfter string) (loi minio.ListObjectsV2Info, e error) {
+func (l *s3Objects) ListObjectsV2(ctx context.Context, bucket, prefix, continuationToken, delimiter string, maxKeys int, fetchOwner bool, startAfter string) (loi uitstor.ListObjectsV2Info, e error) {
 	result, err := l.Client.ListObjectsV2(bucket, prefix, startAfter, continuationToken, delimiter, maxKeys)
 	if err != nil {
-		return loi, minio.ErrorRespToObjectError(err, bucket)
+		return loi, uitstor.ErrorRespToObjectError(err, bucket)
 	}
 
-	return minio.FromMinioClientListBucketV2Result(bucket, result), nil
+	return uitstor.FromMinioClientListBucketV2Result(bucket, result), nil
 }
 
 // GetObjectNInfo - returns object info and locked object ReadCloser
-func (l *s3Objects) GetObjectNInfo(ctx context.Context, bucket, object string, rs *minio.HTTPRangeSpec, h http.Header, lockType minio.LockType, opts minio.ObjectOptions) (gr *minio.GetObjectReader, err error) {
-	var objInfo minio.ObjectInfo
+func (l *s3Objects) GetObjectNInfo(ctx context.Context, bucket, object string, rs *uitstor.HTTPRangeSpec, h http.Header, lockType uitstor.LockType, opts uitstor.ObjectOptions) (gr *uitstor.GetObjectReader, err error) {
+	var objInfo uitstor.ObjectInfo
 	objInfo, err = l.GetObjectInfo(ctx, bucket, object, opts)
 	if err != nil {
-		return nil, minio.ErrorRespToObjectError(err, bucket, object)
+		return nil, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
-	fn, off, length, err := minio.NewGetObjectReader(rs, objInfo, opts)
+	fn, off, length, err := uitstor.NewGetObjectReader(rs, objInfo, opts)
 	if err != nil {
-		return nil, minio.ErrorRespToObjectError(err, bucket, object)
+		return nil, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
 	pr, pw := io.Pipe()
@@ -458,17 +458,17 @@ func (l *s3Objects) GetObjectNInfo(ctx context.Context, bucket, object string, r
 //
 // startOffset indicates the starting read location of the object.
 // length indicates the total length of the object.
-func (l *s3Objects) getObject(ctx context.Context, bucket string, key string, startOffset int64, length int64, writer io.Writer, etag string, o minio.ObjectOptions) error {
+func (l *s3Objects) getObject(ctx context.Context, bucket string, key string, startOffset int64, length int64, writer io.Writer, etag string, o uitstor.ObjectOptions) error {
 	if length < 0 && length != -1 {
-		return minio.ErrorRespToObjectError(minio.InvalidRange{}, bucket, key)
+		return uitstor.ErrorRespToObjectError(uitstor.InvalidRange{}, bucket, key)
 	}
 
-	opts := miniogo.GetObjectOptions{}
+	opts := uitstorgo.GetObjectOptions{}
 	opts.ServerSideEncryption = o.ServerSideEncryption
 
 	if startOffset >= 0 && length >= 0 {
 		if err := opts.SetRange(startOffset, startOffset+length-1); err != nil {
-			return minio.ErrorRespToObjectError(err, bucket, key)
+			return uitstor.ErrorRespToObjectError(err, bucket, key)
 		}
 	}
 
@@ -478,43 +478,43 @@ func (l *s3Objects) getObject(ctx context.Context, bucket string, key string, st
 
 	object, _, _, err := l.Client.GetObject(ctx, bucket, key, opts)
 	if err != nil {
-		return minio.ErrorRespToObjectError(err, bucket, key)
+		return uitstor.ErrorRespToObjectError(err, bucket, key)
 	}
 	defer object.Close()
 	if _, err := io.Copy(writer, object); err != nil {
-		return minio.ErrorRespToObjectError(err, bucket, key)
+		return uitstor.ErrorRespToObjectError(err, bucket, key)
 	}
 	return nil
 }
 
 // GetObjectInfo reads object info and replies back ObjectInfo
-func (l *s3Objects) GetObjectInfo(ctx context.Context, bucket string, object string, opts minio.ObjectOptions) (objInfo minio.ObjectInfo, err error) {
-	oi, err := l.Client.StatObject(ctx, bucket, object, miniogo.StatObjectOptions{
+func (l *s3Objects) GetObjectInfo(ctx context.Context, bucket string, object string, opts uitstor.ObjectOptions) (objInfo uitstor.ObjectInfo, err error) {
+	oi, err := l.Client.StatObject(ctx, bucket, object, uitstorgo.StatObjectOptions{
 		ServerSideEncryption: opts.ServerSideEncryption,
 	})
 	if err != nil {
-		return minio.ObjectInfo{}, minio.ErrorRespToObjectError(err, bucket, object)
+		return uitstor.ObjectInfo{}, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
-	return minio.FromMinioClientObjectInfo(bucket, oi), nil
+	return uitstor.FromMinioClientObjectInfo(bucket, oi), nil
 }
 
 // PutObject creates a new object with the incoming data,
-func (l *s3Objects) PutObject(ctx context.Context, bucket string, object string, r *minio.PutObjReader, opts minio.ObjectOptions) (objInfo minio.ObjectInfo, err error) {
+func (l *s3Objects) PutObject(ctx context.Context, bucket string, object string, r *uitstor.PutObjReader, opts uitstor.ObjectOptions) (objInfo uitstor.ObjectInfo, err error) {
 	data := r.Reader
 
-	userDefined := minio.CloneMSS(opts.UserDefined)
+	userDefined := uitstor.CloneMSS(opts.UserDefined)
 
 	var tagMap map[string]string
 	if tagstr, ok := userDefined[xhttp.AmzObjectTagging]; ok && tagstr != "" {
 		tagObj, err := tags.ParseObjectTags(tagstr)
 		if err != nil {
-			return objInfo, minio.ErrorRespToObjectError(err, bucket, object)
+			return objInfo, uitstor.ErrorRespToObjectError(err, bucket, object)
 		}
 		tagMap = tagObj.ToMap()
 		delete(userDefined, xhttp.AmzObjectTagging)
 	}
-	putOpts := miniogo.PutObjectOptions{
+	putOpts := uitstorgo.PutObjectOptions{
 		UserMetadata:         userDefined,
 		ServerSideEncryption: opts.ServerSideEncryption,
 		UserTags:             tagMap,
@@ -525,29 +525,29 @@ func (l *s3Objects) PutObject(ctx context.Context, bucket string, object string,
 	}
 	ui, err := l.Client.PutObject(ctx, bucket, object, data, data.Size(), data.MD5Base64String(), data.SHA256HexString(), putOpts)
 	if err != nil {
-		return objInfo, minio.ErrorRespToObjectError(err, bucket, object)
+		return objInfo, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 	// On success, populate the key & metadata so they are present in the notification
-	oi := miniogo.ObjectInfo{
+	oi := uitstorgo.ObjectInfo{
 		ETag:     ui.ETag,
 		Size:     ui.Size,
 		Key:      object,
-		Metadata: minio.ToMinioClientObjectInfoMetadata(userDefined),
+		Metadata: uitstor.ToMinioClientObjectInfoMetadata(userDefined),
 	}
 
-	return minio.FromMinioClientObjectInfo(bucket, oi), nil
+	return uitstor.FromMinioClientObjectInfo(bucket, oi), nil
 }
 
 // CopyObject copies an object from source bucket to a destination bucket.
-func (l *s3Objects) CopyObject(ctx context.Context, srcBucket string, srcObject string, dstBucket string, dstObject string, srcInfo minio.ObjectInfo, srcOpts, dstOpts minio.ObjectOptions) (objInfo minio.ObjectInfo, err error) {
+func (l *s3Objects) CopyObject(ctx context.Context, srcBucket string, srcObject string, dstBucket string, dstObject string, srcInfo uitstor.ObjectInfo, srcOpts, dstOpts uitstor.ObjectOptions) (objInfo uitstor.ObjectInfo, err error) {
 	if srcOpts.CheckPrecondFn != nil && srcOpts.CheckPrecondFn(srcInfo) {
-		return minio.ObjectInfo{}, minio.PreConditionFailed{}
+		return uitstor.ObjectInfo{}, uitstor.PreConditionFailed{}
 	}
 	// Set this header such that following CopyObject() always sets the right metadata on the destination.
 	// metadata input is already a trickled down value from interpreting x-amz-metadata-directive at
 	// handler layer. So what we have right now is supposed to be applied on the destination object anyways.
 	// So preserve it by adding "REPLACE" directive to save all the metadata set by CopyObject API.
-	userDefined := minio.CloneMSS(srcInfo.UserDefined)
+	userDefined := uitstor.CloneMSS(srcInfo.UserDefined)
 	userDefined["x-amz-metadata-directive"] = "REPLACE"
 	userDefined["x-amz-copy-source-if-match"] = srcInfo.ETag
 	header := make(http.Header)
@@ -563,32 +563,32 @@ func (l *s3Objects) CopyObject(ctx context.Context, srcBucket string, srcObject 
 		userDefined[k] = v[0]
 	}
 
-	if _, err = l.Client.CopyObject(ctx, srcBucket, srcObject, dstBucket, dstObject, userDefined, miniogo.CopySrcOptions{}, miniogo.PutObjectOptions{}); err != nil {
-		return objInfo, minio.ErrorRespToObjectError(err, srcBucket, srcObject)
+	if _, err = l.Client.CopyObject(ctx, srcBucket, srcObject, dstBucket, dstObject, userDefined, uitstorgo.CopySrcOptions{}, uitstorgo.PutObjectOptions{}); err != nil {
+		return objInfo, uitstor.ErrorRespToObjectError(err, srcBucket, srcObject)
 	}
 	return l.GetObjectInfo(ctx, dstBucket, dstObject, dstOpts)
 }
 
 // DeleteObject deletes a blob in bucket
-func (l *s3Objects) DeleteObject(ctx context.Context, bucket string, object string, opts minio.ObjectOptions) (minio.ObjectInfo, error) {
-	err := l.Client.RemoveObject(ctx, bucket, object, miniogo.RemoveObjectOptions{})
+func (l *s3Objects) DeleteObject(ctx context.Context, bucket string, object string, opts uitstor.ObjectOptions) (uitstor.ObjectInfo, error) {
+	err := l.Client.RemoveObject(ctx, bucket, object, uitstorgo.RemoveObjectOptions{})
 	if err != nil {
-		return minio.ObjectInfo{}, minio.ErrorRespToObjectError(err, bucket, object)
+		return uitstor.ObjectInfo{}, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
-	return minio.ObjectInfo{
+	return uitstor.ObjectInfo{
 		Bucket: bucket,
 		Name:   object,
 	}, nil
 }
 
-func (l *s3Objects) DeleteObjects(ctx context.Context, bucket string, objects []minio.ObjectToDelete, opts minio.ObjectOptions) ([]minio.DeletedObject, []error) {
+func (l *s3Objects) DeleteObjects(ctx context.Context, bucket string, objects []uitstor.ObjectToDelete, opts uitstor.ObjectOptions) ([]uitstor.DeletedObject, []error) {
 	errs := make([]error, len(objects))
-	dobjects := make([]minio.DeletedObject, len(objects))
+	dobjects := make([]uitstor.DeletedObject, len(objects))
 	for idx, object := range objects {
 		_, errs[idx] = l.DeleteObject(ctx, bucket, object.ObjectName, opts)
 		if errs[idx] == nil {
-			dobjects[idx] = minio.DeletedObject{
+			dobjects[idx] = uitstor.DeletedObject{
 				ObjectName: object.ObjectName,
 			}
 		}
@@ -597,60 +597,60 @@ func (l *s3Objects) DeleteObjects(ctx context.Context, bucket string, objects []
 }
 
 // ListMultipartUploads lists all multipart uploads.
-func (l *s3Objects) ListMultipartUploads(ctx context.Context, bucket string, prefix string, keyMarker string, uploadIDMarker string, delimiter string, maxUploads int) (lmi minio.ListMultipartsInfo, e error) {
+func (l *s3Objects) ListMultipartUploads(ctx context.Context, bucket string, prefix string, keyMarker string, uploadIDMarker string, delimiter string, maxUploads int) (lmi uitstor.ListMultipartsInfo, e error) {
 	result, err := l.Client.ListMultipartUploads(ctx, bucket, prefix, keyMarker, uploadIDMarker, delimiter, maxUploads)
 	if err != nil {
 		return lmi, err
 	}
 
-	return minio.FromMinioClientListMultipartsInfo(result), nil
+	return uitstor.FromMinioClientListMultipartsInfo(result), nil
 }
 
 // NewMultipartUpload upload object in multiple parts
-func (l *s3Objects) NewMultipartUpload(ctx context.Context, bucket string, object string, o minio.ObjectOptions) (uploadID string, err error) {
+func (l *s3Objects) NewMultipartUpload(ctx context.Context, bucket string, object string, o uitstor.ObjectOptions) (uploadID string, err error) {
 	var tagMap map[string]string
-	userDefined := minio.CloneMSS(o.UserDefined)
+	userDefined := uitstor.CloneMSS(o.UserDefined)
 	if tagStr, ok := userDefined[xhttp.AmzObjectTagging]; ok {
 		tagObj, err := tags.Parse(tagStr, true)
 		if err != nil {
-			return uploadID, minio.ErrorRespToObjectError(err, bucket, object)
+			return uploadID, uitstor.ErrorRespToObjectError(err, bucket, object)
 		}
 		tagMap = tagObj.ToMap()
 		delete(userDefined, xhttp.AmzObjectTagging)
 	}
 	// Create PutObject options
-	opts := miniogo.PutObjectOptions{
+	opts := uitstorgo.PutObjectOptions{
 		UserMetadata:         userDefined,
 		ServerSideEncryption: o.ServerSideEncryption,
 		UserTags:             tagMap,
 	}
 	uploadID, err = l.Client.NewMultipartUpload(ctx, bucket, object, opts)
 	if err != nil {
-		return uploadID, minio.ErrorRespToObjectError(err, bucket, object)
+		return uploadID, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 	return uploadID, nil
 }
 
 // PutObjectPart puts a part of object in bucket
-func (l *s3Objects) PutObjectPart(ctx context.Context, bucket string, object string, uploadID string, partID int, r *minio.PutObjReader, opts minio.ObjectOptions) (pi minio.PartInfo, e error) {
+func (l *s3Objects) PutObjectPart(ctx context.Context, bucket string, object string, uploadID string, partID int, r *uitstor.PutObjReader, opts uitstor.ObjectOptions) (pi uitstor.PartInfo, e error) {
 	data := r.Reader
 	info, err := l.Client.PutObjectPart(ctx, bucket, object, uploadID, partID, data, data.Size(), data.MD5Base64String(), data.SHA256HexString(), opts.ServerSideEncryption)
 	if err != nil {
-		return pi, minio.ErrorRespToObjectError(err, bucket, object)
+		return pi, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
-	return minio.FromMinioClientObjectPart(info), nil
+	return uitstor.FromMinioClientObjectPart(info), nil
 }
 
 // CopyObjectPart creates a part in a multipart upload by copying
 // existing object or a part of it.
 func (l *s3Objects) CopyObjectPart(ctx context.Context, srcBucket, srcObject, destBucket, destObject, uploadID string,
-	partID int, startOffset, length int64, srcInfo minio.ObjectInfo, srcOpts, dstOpts minio.ObjectOptions,
-) (p minio.PartInfo, err error) {
+	partID int, startOffset, length int64, srcInfo uitstor.ObjectInfo, srcOpts, dstOpts uitstor.ObjectOptions,
+) (p uitstor.PartInfo, err error) {
 	if srcOpts.CheckPrecondFn != nil && srcOpts.CheckPrecondFn(srcInfo) {
-		return minio.PartInfo{}, minio.PreConditionFailed{}
+		return uitstor.PartInfo{}, uitstor.PreConditionFailed{}
 	}
-	userDefined := minio.CloneMSS(srcInfo.UserDefined)
+	userDefined := uitstor.CloneMSS(srcInfo.UserDefined)
 	userDefined["x-amz-copy-source-if-match"] = srcInfo.ETag
 	header := make(http.Header)
 	if srcOpts.ServerSideEncryption != nil {
@@ -667,7 +667,7 @@ func (l *s3Objects) CopyObjectPart(ctx context.Context, srcBucket, srcObject, de
 	completePart, err := l.Client.CopyObjectPart(ctx, srcBucket, srcObject, destBucket, destObject,
 		uploadID, partID, startOffset, length, userDefined)
 	if err != nil {
-		return p, minio.ErrorRespToObjectError(err, srcBucket, srcObject)
+		return p, uitstor.ErrorRespToObjectError(err, srcBucket, srcObject)
 	}
 	p.PartNumber = completePart.PartNumber
 	p.ETag = completePart.ETag
@@ -675,7 +675,7 @@ func (l *s3Objects) CopyObjectPart(ctx context.Context, srcBucket, srcObject, de
 }
 
 // GetMultipartInfo returns multipart info of the uploadId of the object
-func (l *s3Objects) GetMultipartInfo(ctx context.Context, bucket, object, uploadID string, opts minio.ObjectOptions) (result minio.MultipartInfo, err error) {
+func (l *s3Objects) GetMultipartInfo(ctx context.Context, bucket, object, uploadID string, opts uitstor.ObjectOptions) (result uitstor.MultipartInfo, err error) {
 	result.Bucket = bucket
 	result.Object = object
 	result.UploadID = uploadID
@@ -683,12 +683,12 @@ func (l *s3Objects) GetMultipartInfo(ctx context.Context, bucket, object, upload
 }
 
 // ListObjectParts returns all object parts for specified object in specified bucket
-func (l *s3Objects) ListObjectParts(ctx context.Context, bucket string, object string, uploadID string, partNumberMarker int, maxParts int, opts minio.ObjectOptions) (lpi minio.ListPartsInfo, e error) {
+func (l *s3Objects) ListObjectParts(ctx context.Context, bucket string, object string, uploadID string, partNumberMarker int, maxParts int, opts uitstor.ObjectOptions) (lpi uitstor.ListPartsInfo, e error) {
 	result, err := l.Client.ListObjectParts(ctx, bucket, object, uploadID, partNumberMarker, maxParts)
 	if err != nil {
 		return lpi, err
 	}
-	lpi = minio.FromMinioClientListPartsInfo(result)
+	lpi = uitstor.FromMinioClientListPartsInfo(result)
 	if lpi.IsTruncated && maxParts > len(lpi.Parts) {
 		partNumberMarker = lpi.NextPartNumberMarker
 		for {
@@ -697,7 +697,7 @@ func (l *s3Objects) ListObjectParts(ctx context.Context, bucket string, object s
 				return lpi, err
 			}
 
-			nlpi := minio.FromMinioClientListPartsInfo(result)
+			nlpi := uitstor.FromMinioClientListPartsInfo(result)
 
 			partNumberMarker = nlpi.NextPartNumberMarker
 
@@ -711,19 +711,19 @@ func (l *s3Objects) ListObjectParts(ctx context.Context, bucket string, object s
 }
 
 // AbortMultipartUpload aborts a ongoing multipart upload
-func (l *s3Objects) AbortMultipartUpload(ctx context.Context, bucket string, object string, uploadID string, opts minio.ObjectOptions) error {
+func (l *s3Objects) AbortMultipartUpload(ctx context.Context, bucket string, object string, uploadID string, opts uitstor.ObjectOptions) error {
 	err := l.Client.AbortMultipartUpload(ctx, bucket, object, uploadID)
-	return minio.ErrorRespToObjectError(err, bucket, object)
+	return uitstor.ErrorRespToObjectError(err, bucket, object)
 }
 
 // CompleteMultipartUpload completes ongoing multipart upload and finalizes object
-func (l *s3Objects) CompleteMultipartUpload(ctx context.Context, bucket string, object string, uploadID string, uploadedParts []minio.CompletePart, opts minio.ObjectOptions) (oi minio.ObjectInfo, e error) {
-	etag, err := l.Client.CompleteMultipartUpload(ctx, bucket, object, uploadID, minio.ToMinioClientCompleteParts(uploadedParts), miniogo.PutObjectOptions{})
+func (l *s3Objects) CompleteMultipartUpload(ctx context.Context, bucket string, object string, uploadID string, uploadedParts []uitstor.CompletePart, opts uitstor.ObjectOptions) (oi uitstor.ObjectInfo, e error) {
+	etag, err := l.Client.CompleteMultipartUpload(ctx, bucket, object, uploadID, uitstor.ToMinioClientCompleteParts(uploadedParts), uitstorgo.PutObjectOptions{})
 	if err != nil {
-		return oi, minio.ErrorRespToObjectError(err, bucket, object)
+		return oi, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
-	return minio.ObjectInfo{Bucket: bucket, Name: object, ETag: strings.Trim(etag, "\"")}, nil
+	return uitstor.ObjectInfo{Bucket: bucket, Name: object, ETag: strings.Trim(etag, "\"")}, nil
 }
 
 // SetBucketPolicy sets policy on bucket
@@ -732,11 +732,11 @@ func (l *s3Objects) SetBucketPolicy(ctx context.Context, bucket string, bucketPo
 	if err != nil {
 		// This should not happen.
 		logger.LogIf(ctx, err)
-		return minio.ErrorRespToObjectError(err, bucket)
+		return uitstor.ErrorRespToObjectError(err, bucket)
 	}
 
 	if err := l.Client.SetBucketPolicy(ctx, bucket, string(data)); err != nil {
-		return minio.ErrorRespToObjectError(err, bucket)
+		return uitstor.ErrorRespToObjectError(err, bucket)
 	}
 
 	return nil
@@ -746,62 +746,62 @@ func (l *s3Objects) SetBucketPolicy(ctx context.Context, bucket string, bucketPo
 func (l *s3Objects) GetBucketPolicy(ctx context.Context, bucket string) (*policy.Policy, error) {
 	data, err := l.Client.GetBucketPolicy(ctx, bucket)
 	if err != nil {
-		return nil, minio.ErrorRespToObjectError(err, bucket)
+		return nil, uitstor.ErrorRespToObjectError(err, bucket)
 	}
 
 	bucketPolicy, err := policy.ParseConfig(strings.NewReader(data), bucket)
-	return bucketPolicy, minio.ErrorRespToObjectError(err, bucket)
+	return bucketPolicy, uitstor.ErrorRespToObjectError(err, bucket)
 }
 
 // DeleteBucketPolicy deletes all policies on bucket
 func (l *s3Objects) DeleteBucketPolicy(ctx context.Context, bucket string) error {
 	if err := l.Client.SetBucketPolicy(ctx, bucket, ""); err != nil {
-		return minio.ErrorRespToObjectError(err, bucket, "")
+		return uitstor.ErrorRespToObjectError(err, bucket, "")
 	}
 	return nil
 }
 
 // GetObjectTags gets the tags set on the object
-func (l *s3Objects) GetObjectTags(ctx context.Context, bucket string, object string, opts minio.ObjectOptions) (*tags.Tags, error) {
+func (l *s3Objects) GetObjectTags(ctx context.Context, bucket string, object string, opts uitstor.ObjectOptions) (*tags.Tags, error) {
 	var err error
 	if _, err = l.GetObjectInfo(ctx, bucket, object, opts); err != nil {
-		return nil, minio.ErrorRespToObjectError(err, bucket, object)
+		return nil, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
-	t, err := l.Client.GetObjectTagging(ctx, bucket, object, miniogo.GetObjectTaggingOptions{})
+	t, err := l.Client.GetObjectTagging(ctx, bucket, object, uitstorgo.GetObjectTaggingOptions{})
 	if err != nil {
-		return nil, minio.ErrorRespToObjectError(err, bucket, object)
+		return nil, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
 	return t, nil
 }
 
 // PutObjectTags attaches the tags to the object
-func (l *s3Objects) PutObjectTags(ctx context.Context, bucket, object string, tagStr string, opts minio.ObjectOptions) (minio.ObjectInfo, error) {
+func (l *s3Objects) PutObjectTags(ctx context.Context, bucket, object string, tagStr string, opts uitstor.ObjectOptions) (uitstor.ObjectInfo, error) {
 	tagObj, err := tags.Parse(tagStr, true)
 	if err != nil {
-		return minio.ObjectInfo{}, minio.ErrorRespToObjectError(err, bucket, object)
+		return uitstor.ObjectInfo{}, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
-	if err = l.Client.PutObjectTagging(ctx, bucket, object, tagObj, miniogo.PutObjectTaggingOptions{VersionID: opts.VersionID}); err != nil {
-		return minio.ObjectInfo{}, minio.ErrorRespToObjectError(err, bucket, object)
+	if err = l.Client.PutObjectTagging(ctx, bucket, object, tagObj, uitstorgo.PutObjectTaggingOptions{VersionID: opts.VersionID}); err != nil {
+		return uitstor.ObjectInfo{}, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
 	objInfo, err := l.GetObjectInfo(ctx, bucket, object, opts)
 	if err != nil {
-		return minio.ObjectInfo{}, minio.ErrorRespToObjectError(err, bucket, object)
+		return uitstor.ObjectInfo{}, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
 	return objInfo, nil
 }
 
 // DeleteObjectTags removes the tags attached to the object
-func (l *s3Objects) DeleteObjectTags(ctx context.Context, bucket, object string, opts minio.ObjectOptions) (minio.ObjectInfo, error) {
-	if err := l.Client.RemoveObjectTagging(ctx, bucket, object, miniogo.RemoveObjectTaggingOptions{}); err != nil {
-		return minio.ObjectInfo{}, minio.ErrorRespToObjectError(err, bucket, object)
+func (l *s3Objects) DeleteObjectTags(ctx context.Context, bucket, object string, opts uitstor.ObjectOptions) (uitstor.ObjectInfo, error) {
+	if err := l.Client.RemoveObjectTagging(ctx, bucket, object, uitstorgo.RemoveObjectTaggingOptions{}); err != nil {
+		return uitstor.ObjectInfo{}, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 	objInfo, err := l.GetObjectInfo(ctx, bucket, object, opts)
 	if err != nil {
-		return minio.ObjectInfo{}, minio.ErrorRespToObjectError(err, bucket, object)
+		return uitstor.ObjectInfo{}, uitstor.ErrorRespToObjectError(err, bucket, object)
 	}
 
 	return objInfo, nil
@@ -814,7 +814,7 @@ func (l *s3Objects) IsCompressionSupported() bool {
 
 // IsEncryptionSupported returns whether server side encryption is implemented for this layer.
 func (l *s3Objects) IsEncryptionSupported() bool {
-	return minio.GlobalKMS != nil || minio.GlobalGatewaySSE.IsSet()
+	return uitstor.GlobalKMS != nil || uitstor.GlobalGatewaySSE.IsSet()
 }
 
 func (l *s3Objects) IsTaggingSupported() bool {

@@ -1,8 +1,8 @@
-# Shared Backend MinIO Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)  [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Shared Backend MinIO Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io)  [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
 MinIO shared mode lets you use single [NAS](https://en.wikipedia.org/wiki/Network-attached_storage) (like NFS, GlusterFS, and other
 distributed filesystems) as the storage backend for multiple MinIO servers. Synchronization among MinIO servers is taken care by design.
-Read more about the MinIO shared mode design [here](https://github.com/minio/minio/blob/master/docs/shared-backend/DESIGN.md).
+Read more about the MinIO shared mode design [here](https://github.com/uitstor/uitstor/blob/master/docs/shared-backend/DESIGN.md).
 
 MinIO shared mode is developed to solve several real world use cases, without any special configuration changes. Some of these are
 
@@ -18,7 +18,7 @@ If you're aware of stand-alone MinIO set up, the installation and running remain
 
 ## 1. Prerequisites
 
-Install MinIO - [MinIO Quickstart Guide](https://docs.min.io/docs/minio-quickstart-guide).
+Install MinIO - [MinIO Quickstart Guide](https://docs.min.io/docs/uitstor-quickstart-guide).
 
 ## 2. Run MinIO on Shared Backend
 
@@ -34,7 +34,7 @@ You'll need the path to the shared volume, e.g. `/path/to/nfs-volume`. Then run 
 ```sh
 export MINIO_ROOT_USER=<ACCESS_KEY>
 export MINIO_ROOT_PASSWORD=<SECRET_KEY>
-minio gateway nas /path/to/nfs-volume
+uitstor gateway nas /path/to/nfs-volume
 ```
 
 ### MinIO shared mode on Windows 2012 Server
@@ -44,7 +44,7 @@ You'll need the path to the shared volume, e.g. `\\remote-server\smb`. Then run 
 ```cmd
 set MINIO_ROOT_USER=my-username
 set MINIO_ROOT_PASSWORD=my-password
-minio.exe gateway nas \\remote-server\smb\export
+uitstor.exe gateway nas \\remote-server\smb\export
 ```
 
 ### Windows Tip
@@ -55,17 +55,17 @@ If a remote volume, e.g. `\\remote-server\smb` is mounted as a drive, e.g. `M:\`
 set MINIO_ROOT_USER=my-username
 set MINIO_ROOT_PASSWORD=my-password
 net use m: \\remote-server\smb\export /P:Yes
-minio.exe gateway nas M:\export
+uitstor.exe gateway nas M:\export
 ```
 
 ## 3. Test your setup
 
-To test this setup, access the MinIO server via browser or [`mc`](https://docs.min.io/docs/minio-client-quickstart-guide). You’ll see the uploaded files are accessible from the all the MinIO shared backend endpoints.
+To test this setup, access the MinIO server via browser or [`mc`](https://docs.min.io/docs/uitstor-client-quickstart-guide). You’ll see the uploaded files are accessible from the all the MinIO shared backend endpoints.
 
 ## Explore Further
 
-- [Use `mc` with MinIO Server](https://docs.min.io/docs/minio-client-quickstart-guide)
-- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-minio)
-- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-minio)
-- [Use `minio-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
+- [Use `mc` with MinIO Server](https://docs.min.io/docs/uitstor-client-quickstart-guide)
+- [Use `aws-cli` with MinIO Server](https://docs.min.io/docs/aws-cli-with-uitstor)
+- [Use `s3cmd` with MinIO Server](https://docs.min.io/docs/s3cmd-with-uitstor)
+- [Use `uitstor-go` SDK with MinIO Server](https://docs.min.io/docs/golang-client-quickstart-guide)
 - [The MinIO documentation website](https://docs.min.io)

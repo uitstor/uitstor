@@ -44,7 +44,7 @@ import (
 //         })
 //
 //     // Usage of ChainCredentials.
-//     mc, err := minio.NewWithCredentials(endpoint, creds, secure, "us-east-1")
+//     mc, err := uitstor.NewWithCredentials(endpoint, creds, secure, "us-east-1")
 //     if err != nil {
 //          log.Fatalln(err)
 //     }

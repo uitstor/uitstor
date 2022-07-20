@@ -32,9 +32,9 @@ import (
 	"github.com/cespare/xxhash/v2"
 	"github.com/klauspost/compress/zstd"
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/bucket/lifecycle"
-	"github.com/minio/minio/internal/hash"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/bucket/lifecycle"
+	"github.com/uitstor/uitstor/internal/hash"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/tinylib/msgp/msgp"
 )
 
@@ -892,7 +892,7 @@ type objectIO interface {
 	PutObject(ctx context.Context, bucket, object string, data *PutObjReader, opts ObjectOptions) (objInfo ObjectInfo, err error)
 }
 
-// load the cache content with name from minioMetaBackgroundOpsBucket.
+// load the cache content with name from uitstorMetaBackgroundOpsBucket.
 // Only backend errors are returned as errors.
 // If the object is not found or unable to deserialize d is cleared and nil error is returned.
 func (d *dataUsageCache) load(ctx context.Context, store objectIO, name string) error {
@@ -921,7 +921,7 @@ func (d *dataUsageCache) load(ctx context.Context, store objectIO, name string) 
 	return nil
 }
 
-// save the content of the cache to minioMetaBackgroundOpsBucket with the provided name.
+// save the content of the cache to uitstorMetaBackgroundOpsBucket with the provided name.
 func (d *dataUsageCache) save(ctx context.Context, store objectIO, name string) error {
 	pr, pw := io.Pipe()
 	go func() {

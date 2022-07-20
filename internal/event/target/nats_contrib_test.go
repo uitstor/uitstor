@@ -48,8 +48,8 @@ func TestNatsConnPlain(t *testing.T) {
 func TestNatsConnUserPass(t *testing.T) {
 	opts := natsserver.DefaultTestOptions
 	opts.Port = 14223
-	opts.Username = "testminio"
-	opts.Password = "miniotest"
+	opts.Username = "testuitstor"
+	opts.Password = "uitstortest"
 	s := natsserver.RunServer(&opts)
 	defer s.Shutdown()
 

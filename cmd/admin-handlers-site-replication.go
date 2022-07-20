@@ -28,12 +28,12 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/minio/madmin-go"
 
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/bucket/policy"
 	iampolicy "github.com/minio/pkg/iam/policy"
 )
 
-// SiteReplicationAdd - PUT /minio/admin/v3/site-replication/add
+// SiteReplicationAdd - PUT /uitstor/admin/v3/site-replication/add
 func (a adminAPIHandlers) SiteReplicationAdd(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SiteReplicationAdd")
 
@@ -66,7 +66,7 @@ func (a adminAPIHandlers) SiteReplicationAdd(w http.ResponseWriter, r *http.Requ
 	writeSuccessResponseJSON(w, body)
 }
 
-// SRPeerJoin - PUT /minio/admin/v3/site-replication/join
+// SRPeerJoin - PUT /uitstor/admin/v3/site-replication/join
 //
 // used internally to tell current cluster to enable SR with
 // the provided peer clusters and service account.
@@ -93,7 +93,7 @@ func (a adminAPIHandlers) SRPeerJoin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// SRPeerBucketOps - PUT /minio/admin/v3/site-replication/bucket-ops?bucket=x&operation=y
+// SRPeerBucketOps - PUT /uitstor/admin/v3/site-replication/bucket-ops?bucket=x&operation=y
 func (a adminAPIHandlers) SRPeerBucketOps(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SRPeerBucketOps")
 
@@ -137,7 +137,7 @@ func (a adminAPIHandlers) SRPeerBucketOps(w http.ResponseWriter, r *http.Request
 	}
 }
 
-// SRPeerReplicateIAMItem - PUT /minio/admin/v3/site-replication/iam-item
+// SRPeerReplicateIAMItem - PUT /uitstor/admin/v3/site-replication/iam-item
 func (a adminAPIHandlers) SRPeerReplicateIAMItem(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SRPeerReplicateIAMItem")
 
@@ -191,7 +191,7 @@ func (a adminAPIHandlers) SRPeerReplicateIAMItem(w http.ResponseWriter, r *http.
 	}
 }
 
-// SRPeerReplicateBucketItem - PUT /minio/admin/v3/site-replication/bucket-meta
+// SRPeerReplicateBucketItem - PUT /uitstor/admin/v3/site-replication/bucket-meta
 func (a adminAPIHandlers) SRPeerReplicateBucketItem(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SRPeerReplicateBucketItem")
 
@@ -257,7 +257,7 @@ func (a adminAPIHandlers) SRPeerReplicateBucketItem(w http.ResponseWriter, r *ht
 	}
 }
 
-// SiteReplicationInfo - GET /minio/admin/v3/site-replication/info
+// SiteReplicationInfo - GET /uitstor/admin/v3/site-replication/info
 func (a adminAPIHandlers) SiteReplicationInfo(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SiteReplicationInfo")
 
@@ -318,7 +318,7 @@ func parseJSONBody(ctx context.Context, body io.Reader, v interface{}, encryptio
 	return json.Unmarshal(data, v)
 }
 
-// SiteReplicationStatus - GET /minio/admin/v3/site-replication/status
+// SiteReplicationStatus - GET /uitstor/admin/v3/site-replication/status
 func (a adminAPIHandlers) SiteReplicationStatus(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SiteReplicationStatus")
 
@@ -349,7 +349,7 @@ func (a adminAPIHandlers) SiteReplicationStatus(w http.ResponseWriter, r *http.R
 	}
 }
 
-// SiteReplicationMetaInfo - GET /minio/admin/v3/site-replication/metainfo
+// SiteReplicationMetaInfo - GET /uitstor/admin/v3/site-replication/metainfo
 func (a adminAPIHandlers) SiteReplicationMetaInfo(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SiteReplicationMetaInfo")
 
@@ -373,7 +373,7 @@ func (a adminAPIHandlers) SiteReplicationMetaInfo(w http.ResponseWriter, r *http
 	}
 }
 
-// SiteReplicationEdit - PUT /minio/admin/v3/site-replication/edit
+// SiteReplicationEdit - PUT /uitstor/admin/v3/site-replication/edit
 func (a adminAPIHandlers) SiteReplicationEdit(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SiteReplicationEdit")
 	defer logger.AuditLog(ctx, w, r, mustGetClaimsFromToken(r))
@@ -403,7 +403,7 @@ func (a adminAPIHandlers) SiteReplicationEdit(w http.ResponseWriter, r *http.Req
 	writeSuccessResponseJSON(w, body)
 }
 
-// SRPeerEdit - PUT /minio/admin/v3/site-replication/peer/edit
+// SRPeerEdit - PUT /uitstor/admin/v3/site-replication/peer/edit
 //
 // used internally to tell current cluster to update endpoint for peer
 func (a adminAPIHandlers) SRPeerEdit(w http.ResponseWriter, r *http.Request) {
@@ -439,7 +439,7 @@ func getSRStatusOptions(r *http.Request) (opts madmin.SRStatusOptions) {
 	return
 }
 
-// SiteReplicationRemove - PUT /minio/admin/v3/site-replication/remove
+// SiteReplicationRemove - PUT /uitstor/admin/v3/site-replication/remove
 func (a adminAPIHandlers) SiteReplicationRemove(w http.ResponseWriter, r *http.Request) {
 	ctx := newContext(r, w, "SiteReplicationRemove")
 
@@ -470,7 +470,7 @@ func (a adminAPIHandlers) SiteReplicationRemove(w http.ResponseWriter, r *http.R
 	writeSuccessResponseJSON(w, body)
 }
 
-// SRPeerRemove - PUT /minio/admin/v3/site-replication/peer/remove
+// SRPeerRemove - PUT /uitstor/admin/v3/site-replication/peer/remove
 //
 // used internally to tell current cluster to update endpoint for peer
 func (a adminAPIHandlers) SRPeerRemove(w http.ResponseWriter, r *http.Request) {

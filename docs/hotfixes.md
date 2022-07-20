@@ -25,7 +25,7 @@ Date:   Thu Nov 18 12:15:22 2021 -0800
 
 ```
 commit 886262e58af77ebc7c836ef587c08544e9a0c271
-Author: Harshavardhana <harsha@minio.io>
+Author: Harshavardhana <harsha@uitstor.io>
 Date:   Wed Nov 17 15:49:12 2021 -0800
 
     heal legacy objects when versioning is enabled after upgrade (#13671)
@@ -35,7 +35,7 @@ Date:   Wed Nov 17 15:49:12 2021 -0800
 
 ```
 commit 99bf4d0c429f04dbd013ba98840d07b759ae1702 (tag: RELEASE.2019-06-15T23-07-18Z)
-Author: Harshavardhana <harsha@minio.io>
+Author: Harshavardhana <harsha@uitstor.io>
 Date:   Sat Jun 15 11:27:17 2019 -0700
 
     [security] Match ${aws:username} exactly instead of prefix match (#7791)
@@ -64,7 +64,7 @@ Developer is advised to clone the MinIO source and checkout the MinIO release ta
 ```
 
 Create a branch and proceed to push the branch **upstream**
-> (upstream here points to git@github.com:minio/minio.git)
+> (upstream here points to git@github.com:uitstor/uitstor.git)
 
 ```
 λ git branch -m RELEASE.2021-04-22T15-44-28Z.hotfix
@@ -119,13 +119,13 @@ To add a hotfix tag to the binary version and embed the relevant `commit-id` fol
 #### Builds the hotfix binary and uploads to https;//dl.min.io
 
 ```
-λ CRED_DIR=/media/builder/minio make hotfix-push
+λ CRED_DIR=/media/builder/uitstor make hotfix-push
 ```
 
-#### Builds the hotfix container and pushes to docker.io/minio/minio
+#### Builds the hotfix container and pushes to docker.io/uitstor/uitstor
 
 ```
-λ CRED_DIR=/media/builder/minio make docker-hotfix-push
+λ CRED_DIR=/media/builder/uitstor make docker-hotfix-push
 ```
 
-Once this has been provided to the customer relevant binary will be uploaded from our *release server* securely, directly to <https://dl.minio.io/server/minio/hotfixes/archive/>
+Once this has been provided to the customer relevant binary will be uploaded from our *release server* securely, directly to <https://dl.uitstor.io/server/uitstor/hotfixes/archive/>

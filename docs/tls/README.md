@@ -2,23 +2,23 @@
 
 This guide explains how to configure MinIO Server with TLS certificates on Linux and Windows platforms.
 
-1. [Install MinIO Server](#install-minio-server)
-2. [Use an Existing Key and Certificate with MinIO](#use-an-existing-key-and-certificate-with-minio)
+1. [Install MinIO Server](#install-uitstor-server)
+2. [Use an Existing Key and Certificate with MinIO](#use-an-existing-key-and-certificate-with-uitstor)
 3. [Generate and use Self-signed Keys and Certificates with MinIO](#generate-use-self-signed-keys-certificates)
 4. [Install Certificates from Third-party CAs](#install-certificates-from-third-party-cas)
 
 ## 1. Install MinIO Server
 
-Install MinIO Server using the instructions in the [MinIO Quickstart Guide](https://docs.min.io/docs/minio-quickstart-guide).
+Install MinIO Server using the instructions in the [MinIO Quickstart Guide](https://docs.min.io/docs/uitstor-quickstart-guide).
 
 ## 2. Use an Existing Key and Certificate with MinIO
 
-This section describes how to use a private key and public certificate that have been obtained from a certificate authority (CA). If these files have not been obtained, skip to [3. Generate Self-signed Certificates](#generate-use-self-signed-keys-certificates) or generate them with [Let's Encrypt](https://letsencrypt.org) using these instructions: [Generate Let's Encrypt certificate using Certbot for MinIO](https://docs.min.io/docs/generate-let-s-encypt-certificate-using-concert-for-minio.html).
+This section describes how to use a private key and public certificate that have been obtained from a certificate authority (CA). If these files have not been obtained, skip to [3. Generate Self-signed Certificates](#generate-use-self-signed-keys-certificates) or generate them with [Let's Encrypt](https://letsencrypt.org) using these instructions: [Generate Let's Encrypt certificate using Certbot for MinIO](https://docs.min.io/docs/generate-let-s-encypt-certificate-using-concert-for-uitstor.html).
 
 Copy the existing private key and public certificate to the `certs` directory. The default certs directory is:
 
-* **Linux:** `${HOME}/.minio/certs`
-* **Windows:** `%%USERPROFILE%%\.minio\certs`
+* **Linux:** `${HOME}/.uitstor/certs`
+* **Windows:** `%%USERPROFILE%%\.uitstor\certs`
 
 **Note:**
 
@@ -234,12 +234,12 @@ certtool.exe --generate-self-signed --load-privkey private.key --template cert.c
 
 MinIO can connect to other servers, including MinIO nodes or other server types such as NATs and Redis. If these servers use certificates that were not registered with a known CA, add trust for these certificates to MinIO Server by placing these certificates under one of the following MinIO configuration paths:
 
-* **Linux:** `~/.minio/certs/CAs/`
-* **Windows**: `C:\Users\<Username>\.minio\certs\CAs`
+* **Linux:** `~/.uitstor/certs/CAs/`
+* **Windows**: `C:\Users\<Username>\.uitstor\certs\CAs`
 
 ## Explore Further
 
-* [TLS Configuration for MinIO server on Kubernetes](https://github.com/minio/minio/tree/master/docs/tls/kubernetes)
-* [MinIO Client Complete Guide](https://docs.min.io/docs/minio-client-complete-guide)
-* [Generate Let's Encrypt Certificate](https://docs.min.io/docs/generate-let-s-encypt-certificate-using-concert-for-minio)
-* [Setup nginx Proxy with MinIO Server](https://docs.min.io/docs/setup-nginx-proxy-with-minio)
+* [TLS Configuration for MinIO server on Kubernetes](https://github.com/uitstor/uitstor/tree/master/docs/tls/kubernetes)
+* [MinIO Client Complete Guide](https://docs.min.io/docs/uitstor-client-complete-guide)
+* [Generate Let's Encrypt Certificate](https://docs.min.io/docs/generate-let-s-encypt-certificate-using-concert-for-uitstor)
+* [Setup nginx Proxy with MinIO Server](https://docs.min.io/docs/setup-nginx-proxy-with-uitstor)

@@ -26,8 +26,8 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/minio/madmin-go"
-	color "github.com/minio/minio/internal/color"
-	"github.com/minio/minio/internal/logger"
+	color "github.com/uitstor/uitstor/internal/color"
+	"github.com/uitstor/uitstor/internal/logger"
 	xnet "github.com/minio/pkg/net"
 )
 
@@ -75,7 +75,7 @@ func printStartupMessage(apiEndpoints []string, err error) {
 
 	// Prints `mc` cli configuration message chooses
 	// first endpoint as default.
-	printCLIAccessMsg(strippedAPIEndpoints[0], "myminio")
+	printCLIAccessMsg(strippedAPIEndpoints[0], "myuitstor")
 
 	// Prints documentation message.
 	printObjectAPIMsg()
@@ -182,9 +182,9 @@ func printCLIAccessMsg(endPoint string, alias string) {
 	// Get saved credentials.
 	cred := globalActiveCred
 
-	const mcQuickStartGuide = "https://docs.min.io/docs/minio-client-quickstart-guide"
+	const mcQuickStartGuide = "https://docs.min.io/docs/uitstor-client-quickstart-guide"
 
-	// Configure 'mc', following block prints platform specific information for minio client.
+	// Configure 'mc', following block prints platform specific information for uitstor client.
 	if color.IsTerminal() && !globalCLIContext.Anonymous {
 		logger.Info(color.Blue("\nCommand-line: ") + mcQuickStartGuide)
 		if runtime.GOOS == globalWindowsOSName {

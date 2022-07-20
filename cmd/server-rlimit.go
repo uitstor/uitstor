@@ -21,8 +21,8 @@ import (
 	"runtime"
 	"runtime/debug"
 
-	"github.com/minio/minio/internal/kernel"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/kernel"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/pkg/sys"
 )
 
@@ -47,10 +47,10 @@ func setMaxResources() (err error) {
 	// Set the Go runtime max threads threshold to 90% of kernel setting.
 	sysMaxThreads, mErr := sys.GetMaxThreads()
 	if mErr == nil {
-		minioMaxThreads := (sysMaxThreads * 90) / 100
+		uitstorMaxThreads := (sysMaxThreads * 90) / 100
 		// Only set max threads if it is greater than the default one
-		if minioMaxThreads > 10000 {
-			debug.SetMaxThreads(minioMaxThreads)
+		if uitstorMaxThreads > 10000 {
+			debug.SetMaxThreads(uitstorMaxThreads)
 		}
 	}
 

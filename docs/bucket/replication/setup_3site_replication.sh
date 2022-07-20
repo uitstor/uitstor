@@ -15,8 +15,8 @@ catch() {
     fi
 
     echo "Cleaning up instances of MinIO"
-    pkill minio
-    pkill -9 minio
+    pkill uitstor
+    pkill -9 uitstor
     rm -rf /tmp/multisitea
     rm -rf /tmp/multisiteb
     rm -rf /tmp/multisitec
@@ -27,42 +27,42 @@ catch
 set -e
 export MINIO_CI_CD=1
 export MINIO_BROWSER=off
-export MINIO_ROOT_USER="minio"
-export MINIO_ROOT_PASSWORD="minio123"
+export MINIO_ROOT_USER="uitstor"
+export MINIO_ROOT_PASSWORD="uitstor123"
 export MINIO_KMS_AUTO_ENCRYPTION=off
 export MINIO_PROMETHEUS_AUTH_TYPE=public
-export MINIO_KMS_SECRET_KEY=my-minio-key:OSMM+vkKUTCvQs9YL/CVMIMt43HFhkUpqJxTmGl6rYw=
+export MINIO_KMS_SECRET_KEY=my-uitstor-key:OSMM+vkKUTCvQs9YL/CVMIMt43HFhkUpqJxTmGl6rYw=
 unset MINIO_KMS_KES_CERT_FILE
 unset MINIO_KMS_KES_KEY_FILE
 unset MINIO_KMS_KES_ENDPOINT
 unset MINIO_KMS_KES_KEY_NAME
 
 go build ./docs/debugging/s3-check-md5/
-wget -O mc https://dl.minio.io/client/mc/release/linux-amd64/mc \
+wget -O mc https://dl.uitstor.io/client/mc/release/linux-amd64/mc \
     && chmod +x mc
-wget -O mc.RELEASE.2021-03-12T03-36-59Z https://dl.minio.io/client/mc/release/linux-amd64/archive/mc.RELEASE.2021-03-12T03-36-59Z \
+wget -O mc.RELEASE.2021-03-12T03-36-59Z https://dl.uitstor.io/client/mc/release/linux-amd64/archive/mc.RELEASE.2021-03-12T03-36-59Z \
     && chmod +x mc.RELEASE.2021-03-12T03-36-59Z
 
-minio server --address 127.0.0.1:9001 "http://127.0.0.1:9001/tmp/multisitea/data/disterasure/xl{1...4}" \
+uitstor server --address 127.0.0.1:9001 "http://127.0.0.1:9001/tmp/multisitea/data/disterasure/xl{1...4}" \
       "http://127.0.0.1:9002/tmp/multisitea/data/disterasure/xl{5...8}" >/tmp/sitea_1.log 2>&1 &
-minio server --address 127.0.0.1:9002 "http://127.0.0.1:9001/tmp/multisitea/data/disterasure/xl{1...4}" \
+uitstor server --address 127.0.0.1:9002 "http://127.0.0.1:9001/tmp/multisitea/data/disterasure/xl{1...4}" \
       "http://127.0.0.1:9002/tmp/multisitea/data/disterasure/xl{5...8}" >/tmp/sitea_2.log 2>&1 &
 
-minio server --address 127.0.0.1:9003 "http://127.0.0.1:9003/tmp/multisiteb/data/disterasure/xl{1...4}" \
+uitstor server --address 127.0.0.1:9003 "http://127.0.0.1:9003/tmp/multisiteb/data/disterasure/xl{1...4}" \
       "http://127.0.0.1:9004/tmp/multisiteb/data/disterasure/xl{5...8}" >/tmp/siteb_1.log 2>&1 &
-minio server --address 127.0.0.1:9004 "http://127.0.0.1:9003/tmp/multisiteb/data/disterasure/xl{1...4}" \
+uitstor server --address 127.0.0.1:9004 "http://127.0.0.1:9003/tmp/multisiteb/data/disterasure/xl{1...4}" \
       "http://127.0.0.1:9004/tmp/multisiteb/data/disterasure/xl{5...8}" >/tmp/siteb_2.log 2>&1 &
 
-minio server --address 127.0.0.1:9005 "http://127.0.0.1:9005/tmp/multisitec/data/disterasure/xl{1...4}" \
+uitstor server --address 127.0.0.1:9005 "http://127.0.0.1:9005/tmp/multisitec/data/disterasure/xl{1...4}" \
       "http://127.0.0.1:9006/tmp/multisitec/data/disterasure/xl{5...8}" >/tmp/sitec_1.log 2>&1 &
-minio server --address 127.0.0.1:9006 "http://127.0.0.1:9005/tmp/multisitec/data/disterasure/xl{1...4}" \
+uitstor server --address 127.0.0.1:9006 "http://127.0.0.1:9005/tmp/multisitec/data/disterasure/xl{1...4}" \
       "http://127.0.0.1:9006/tmp/multisitec/data/disterasure/xl{5...8}" >/tmp/sitec_2.log 2>&1 &
 
 sleep 30
 
-export MC_HOST_sitea=http://minio:minio123@127.0.0.1:9001
-export MC_HOST_siteb=http://minio:minio123@127.0.0.1:9004
-export MC_HOST_sitec=http://minio:minio123@127.0.0.1:9006
+export MC_HOST_sitea=http://uitstor:uitstor123@127.0.0.1:9001
+export MC_HOST_siteb=http://uitstor:uitstor123@127.0.0.1:9004
+export MC_HOST_sitec=http://uitstor:uitstor123@127.0.0.1:9006
 
 ./mc mb sitea/bucket
 ./mc version enable sitea/bucket
@@ -78,7 +78,7 @@ export MC_HOST_sitec=http://minio:minio123@127.0.0.1:9006
 
 echo "adding replication config for site a -> site b"
 remote_arn=$(./mc admin bucket remote add sitea/bucket/ \
-   http://minio:minio123@127.0.0.1:9004/bucket \
+   http://uitstor:uitstor123@127.0.0.1:9004/bucket \
    --service "replication" --json | jq -r ".RemoteARN")
 echo "adding replication rule for a -> b : ${remote_arn}"
 sleep 1
@@ -89,7 +89,7 @@ sleep 1
 
 echo "adding replication config for site b -> site a"
 remote_arn=$(./mc admin bucket remote add siteb/bucket/ \
-   http://minio:minio123@127.0.0.1:9001/bucket \
+   http://uitstor:uitstor123@127.0.0.1:9001/bucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for b -> a : ${remote_arn}"
@@ -100,7 +100,7 @@ sleep 1
 
 echo "adding replication config for site a -> site c"
 remote_arn=$(./mc admin bucket remote add sitea/bucket/ \
-   http://minio:minio123@127.0.0.1:9006/bucket \
+   http://uitstor:uitstor123@127.0.0.1:9006/bucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for a -> c : ${remote_arn}"
@@ -110,7 +110,7 @@ echo "adding replication rule for a -> c : ${remote_arn}"
 sleep 1
 echo "adding replication config for site c -> site a"
 remote_arn=$(./mc admin bucket remote add sitec/bucket/ \
-   http://minio:minio123@127.0.0.1:9001/bucket \
+   http://uitstor:uitstor123@127.0.0.1:9001/bucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for c -> a : ${remote_arn}"
@@ -120,7 +120,7 @@ echo "adding replication rule for c -> a : ${remote_arn}"
 sleep 1
 echo "adding replication config for site b -> site c"
 remote_arn=$(./mc admin bucket remote add siteb/bucket/ \
-   http://minio:minio123@127.0.0.1:9006/bucket \
+   http://uitstor:uitstor123@127.0.0.1:9006/bucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for b -> c : ${remote_arn}"
@@ -131,7 +131,7 @@ sleep 1
 
 echo "adding replication config for site c -> site b"
 remote_arn=$(././mc admin bucket remote add sitec/bucket \
-   http://minio:minio123@127.0.0.1:9004/bucket \
+   http://uitstor:uitstor123@127.0.0.1:9004/bucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for c -> b : ${remote_arn}"
@@ -141,7 +141,7 @@ echo "adding replication rule for c -> b : ${remote_arn}"
 sleep 1
 echo "adding replication config for olockbucket site a -> site b"
 remote_arn=$(././mc admin bucket remote add sitea/olockbucket/ \
-   http://minio:minio123@127.0.0.1:9004/olockbucket \
+   http://uitstor:uitstor123@127.0.0.1:9004/olockbucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for olockbucket a -> b : ${remote_arn}"
@@ -151,7 +151,7 @@ echo "adding replication rule for olockbucket a -> b : ${remote_arn}"
 sleep 1
 echo "adding replication config for site b -> site a"
 remote_arn=$(././mc admin bucket remote add siteb/olockbucket/ \
-   http://minio:minio123@127.0.0.1:9001/olockbucket \
+   http://uitstor:uitstor123@127.0.0.1:9001/olockbucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for olockbucket b -> a : ${remote_arn}"
@@ -161,7 +161,7 @@ echo "adding replication rule for olockbucket b -> a : ${remote_arn}"
 sleep 1
 echo "adding replication config for olockbucket site a -> site c"
 remote_arn=$(././mc admin bucket remote add sitea/olockbucket/ \
-   http://minio:minio123@127.0.0.1:9006/olockbucket \
+   http://uitstor:uitstor123@127.0.0.1:9006/olockbucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for olockbucket a -> c : ${remote_arn}"
@@ -171,7 +171,7 @@ echo "adding replication rule for olockbucket a -> c : ${remote_arn}"
 sleep 1
 echo "adding replication config for site c -> site a"
 remote_arn=$(././mc admin bucket remote add sitec/olockbucket/ \
-   http://minio:minio123@127.0.0.1:9001/olockbucket \
+   http://uitstor:uitstor123@127.0.0.1:9001/olockbucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for olockbucket c -> a : ${remote_arn}"
@@ -181,7 +181,7 @@ echo "adding replication rule for olockbucket c -> a : ${remote_arn}"
 sleep 1
 echo "adding replication config for site b -> site c"
 remote_arn=$(././mc admin bucket remote add siteb/olockbucket/ \
-   http://minio:minio123@127.0.0.1:9006/olockbucket \
+   http://uitstor:uitstor123@127.0.0.1:9006/olockbucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for olockbucket b -> c : ${remote_arn}"
@@ -191,7 +191,7 @@ echo "adding replication rule for olockbucket b -> c : ${remote_arn}"
 sleep 1
 echo "adding replication config for site c -> site b"
 remote_arn=$(././mc admin bucket remote add sitec/olockbucket \
-   http://minio:minio123@127.0.0.1:9004/olockbucket \
+   http://uitstor:uitstor123@127.0.0.1:9004/olockbucket \
    --service "replication" --json | jq -r ".RemoteARN")
 sleep 1
 echo "adding replication rule for olockbucket c -> b : ${remote_arn}"
@@ -241,18 +241,18 @@ head -c 221227088 </dev/urandom >200M
 sleep 10
 
 echo "Verifying ETag for all objects"
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9001/ -bucket bucket
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9002/ -bucket bucket
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9003/ -bucket bucket
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9004/ -bucket bucket
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9005/ -bucket bucket
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9006/ -bucket bucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9001/ -bucket bucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9002/ -bucket bucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9003/ -bucket bucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9004/ -bucket bucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9005/ -bucket bucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9006/ -bucket bucket
 
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9001/ -bucket olockbucket
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9002/ -bucket olockbucket
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9003/ -bucket olockbucket
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9004/ -bucket olockbucket
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9005/ -bucket olockbucket
-./s3-check-md5 -versions -access-key minio -secret-key minio123 -endpoint http://127.0.0.1:9006/ -bucket olockbucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9001/ -bucket olockbucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9002/ -bucket olockbucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9003/ -bucket olockbucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9004/ -bucket olockbucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9005/ -bucket olockbucket
+./s3-check-md5 -versions -access-key uitstor -secret-key uitstor123 -endpoint http://127.0.0.1:9006/ -bucket olockbucket
 
 catch

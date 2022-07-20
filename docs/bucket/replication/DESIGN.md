@@ -1,6 +1,6 @@
-# Bucket Replication Design [![slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Replication Design [![slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
-This document explains the design approach of server side bucket replication. If you're looking to get started with replication, we suggest you go through the [Bucket replication guide](https://github.com/minio/minio/blob/master/docs/bucket/replication/README.md) first.
+This document explains the design approach of server side bucket replication. If you're looking to get started with replication, we suggest you go through the [Bucket replication guide](https://github.com/uitstor/uitstor/blob/master/docs/bucket/replication/README.md) first.
 
 ## Overview
 
@@ -44,7 +44,7 @@ existing object replication are not marked as `PENDING` prior to replication.
 
 Note that objects with `null` versions, i.e. objects created prior to enabling versioning break the immutability guarantees provided by versioning. When existing object replication is enabled, these objects will be replicated as `null` versions to the remote targets provided they are not present on the target or if `null` version of object on source is newer than the `null` version of object on target.
 
-If the remote site is fully lost and objects previously replicated need to be re-synced, the `mc replicate resync start` command with optional flag of `--older-than` needs to be used to trigger re-syncing of previously replicated objects. This command generates a ResetID which is a unique UUID saved to the remote target config along with the applicable date(defaults to time of initiating the reset). All objects created prior to this date are eligible for re-replication if existing object replication is enabled for the replication rule the object satisfies. At the time of completion of replication, `x-minio-internal-replication-reset-arn:<arn>` is set in the metadata with the timestamp of replication and ResetID. For saving iops, the objects which are re-replicated are not first set to `PENDING` state.
+If the remote site is fully lost and objects previously replicated need to be re-synced, the `mc replicate resync start` command with optional flag of `--older-than` needs to be used to trigger re-syncing of previously replicated objects. This command generates a ResetID which is a unique UUID saved to the remote target config along with the applicable date(defaults to time of initiating the reset). All objects created prior to this date are eligible for re-replication if existing object replication is enabled for the replication rule the object satisfies. At the time of completion of replication, `x-uitstor-internal-replication-reset-arn:<arn>` is set in the metadata with the timestamp of replication and ResetID. For saving iops, the objects which are re-replicated are not first set to `PENDING` state.
 
 This is a slower operation that does not use replication queues and is designed to walk the namespace and replicate objects one at a time so as not to impede server load. Ideally, resync should not be initiated for multiple buckets simultaneously - progress of the syncing can be monitored by looking at `mc replicate resync status alias/bucket --remote-bucket <arn>`. In the event that resync operation failed to replicate some versions, they would be picked up by the healing mechanism in-built as part of the scanner. If the resync operation reports a failed status or in the event of a cluster restart while resync is in progress, a fresh `resync start` can be issued - this will replicate previously unsynced content at the cost of additional overhead in additional metadata updates.
 
@@ -59,17 +59,17 @@ If 3 or more targets are participating in active-active replication, the replica
 
 ### Internal metadata for replication
 
-`xl.meta` that is in use for [versioning](https://github.com/minio/minio/blob/master/docs/bucket/versioning/DESIGN.md) has additional metadata for replication of objects,delete markers and versioned deletes.
+`xl.meta` that is in use for [versioning](https://github.com/uitstor/uitstor/blob/master/docs/bucket/versioning/DESIGN.md) has additional metadata for replication of objects,delete markers and versioned deletes.
 
 ### Metadata for object replication - on source
 
 ```
 ...
   "MetaSys": {
-      "x-minio-internal-inline-data": "dHJ1ZQ==",
-      "x-minio-internal-replication-status": "YXJuOm1pbmlvOnJlcGxpY2F0aW9uOjo2YjdmYzFlMS0wNmU4LTQxMTUtYjYxNy00YTgzZGIyODhmNTM6YnVja2V0PUNPTVBMRVRFRDthcm46bWluaW86cmVwbGljYXRpb246OmI5MGYxZWEzLWMzYWQtNDEyMy1iYWE2LWZjMDZhYmEyMjA2MjpidWNrZXQ9Q09NUExFVEVEOw==",
-      "x-minio-internal-replication-timestamp": "MjAyMS0wOS0xN1QwMTo0MzozOC40MDQwMDA0ODNa",
-      "x-minio-internal-tier-free-versionID": "OWZlZjk5N2QtMjMzZi00N2U3LTlkZmMtNWYxNzc3NzdlZTM2"
+      "x-uitstor-internal-inline-data": "dHJ1ZQ==",
+      "x-uitstor-internal-replication-status": "YXJuOm1pbmlvOnJlcGxpY2F0aW9uOjo2YjdmYzFlMS0wNmU4LTQxMTUtYjYxNy00YTgzZGIyODhmNTM6YnVja2V0PUNPTVBMRVRFRDthcm46bWluaW86cmVwbGljYXRpb246OmI5MGYxZWEzLWMzYWQtNDEyMy1iYWE2LWZjMDZhYmEyMjA2MjpidWNrZXQ9Q09NUExFVEVEOw==",
+      "x-uitstor-internal-replication-timestamp": "MjAyMS0wOS0xN1QwMTo0MzozOC40MDQwMDA0ODNa",
+      "x-uitstor-internal-tier-free-versionID": "OWZlZjk5N2QtMjMzZi00N2U3LTlkZmMtNWYxNzc3NzdlZTM2"
     },
     "MetaUsr": {
       "X-Amz-Replication-Status": "COMPLETED",
@@ -84,9 +84,9 @@ If 3 or more targets are participating in active-active replication, the replica
 ```
 ...
   "MetaSys": {
-      "x-minio-internal-inline-data": "dHJ1ZQ==",
-      "x-minio-internal-replica-status": "UkVQTElDQQ==",
-      "x-minio-internal-replica-timestamp": "MjAyMS0wOS0xN1QwMTo0MzozOC4zODg5ODU4ODRa"
+      "x-uitstor-internal-inline-data": "dHJ1ZQ==",
+      "x-uitstor-internal-replica-status": "UkVQTElDQQ==",
+      "x-uitstor-internal-replica-timestamp": "MjAyMS0wOS0xN1QwMTo0MzozOC4zODg5ODU4ODRa"
     },
     "MetaUsr": {
       "X-Amz-Replication-Status": "REPLICA",
@@ -106,8 +106,8 @@ If 3 or more targets are participating in active-active replication, the replica
       "ID": "u8H5pYQFRMKgkIgkpSKIkQ==",
       "MTime": 1631843124147668389,
       "MetaSys": {
-        "x-minio-internal-replication-status": "YXJuOm1pbmlvOnJlcGxpY2F0aW9uOjpiOTBmMWVhMy1jM2FkLTQxMjMtYmFhNi1mYzA2YWJhMjIwNjI6YnVja2V0PUNPTVBMRVRFRDthcm46bWluaW86cmVwbGljYXRpb246OjZiN2ZjMWUxLTA2ZTgtNDExNS1iNjE3LTRhODNkYjI4OGY1MzpidWNrZXQ9Q09NUExFVEVEOw==",
-        "x-minio-internal-replication-timestamp": "U3VuLCAzMSBEZWMgMDAwMCAxOTowMzo1OCBHTVQ="
+        "x-uitstor-internal-replication-status": "YXJuOm1pbmlvOnJlcGxpY2F0aW9uOjpiOTBmMWVhMy1jM2FkLTQxMjMtYmFhNi1mYzA2YWJhMjIwNjI6YnVja2V0PUNPTVBMRVRFRDthcm46bWluaW86cmVwbGljYXRpb246OjZiN2ZjMWUxLTA2ZTgtNDExNS1iNjE3LTRhODNkYjI4OGY1MzpidWNrZXQ9Q09NUExFVEVEOw==",
+        "x-uitstor-internal-replication-timestamp": "U3VuLCAzMSBEZWMgMDAwMCAxOTowMzo1OCBHTVQ="
       }
     },
     "Type": 2
@@ -123,8 +123,8 @@ If 3 or more targets are participating in active-active replication, the replica
       "MTime": 1631843124147668389,
       "MetaSys": {
         "purgestatus": "YXJuOm1pbmlvOnJlcGxpY2F0aW9uOjpiOTBmMWVhMy1jM2FkLTQxMjMtYmFhNi1mYzA2YWJhMjIwNjI6YnVja2V0PUNPTVBMRVRFO2FybjptaW5pbzpyZXBsaWNhdGlvbjo6NmI3ZmMxZTEtMDZlOC00MTE1LWI2MTctNGE4M2RiMjg4ZjUzOmJ1Y2tldD1GQUlMRUQ7",
-        "x-minio-internal-replication-status": "YXJuOm1pbmlvOnJlcGxpY2F0aW9uOjpiOTBmMWVhMy1jM2FkLTQxMjMtYmFhNi1mYzA2YWJhMjIwNjI6YnVja2V0PTthcm46bWluaW86cmVwbGljYXRpb246OjZiN2ZjMWUxLTA2ZTgtNDExNS1iNjE3LTRhODNkYjI4OGY1MzpidWNrZXQ9Ow==",
-        "x-minio-internal-replication-timestamp": "U3VuLCAzMSBEZWMgMDAwMCAxOTowMzo1OCBHTVQ="
+        "x-uitstor-internal-replication-status": "YXJuOm1pbmlvOnJlcGxpY2F0aW9uOjpiOTBmMWVhMy1jM2FkLTQxMjMtYmFhNi1mYzA2YWJhMjIwNjI6YnVja2V0PTthcm46bWluaW86cmVwbGljYXRpb246OjZiN2ZjMWUxLTA2ZTgtNDExNS1iNjE3LTRhODNkYjI4OGY1MzpidWNrZXQ9Ow==",
+        "x-uitstor-internal-replication-timestamp": "U3VuLCAzMSBEZWMgMDAwMCAxOTowMzo1OCBHTVQ="
       }
     },
     "Type": 2
@@ -137,7 +137,7 @@ If 3 or more targets are participating in active-active replication, the replica
 ...
   "MetaSys": {
     ...
-    "x-minio-internal-replication-reset-arn:minio:replication::af470089-d354-4473-934c-9e1f52f6da89:bucket": "TW9uLCAwNyBGZWIgMjAyMiAyMDowMzo0MCBHTVQ7ZGMxMWQzNDgtMTAwMS00ODA3LWFhNjEtOGY2MmFiNWQ5ZjU2",
+    "x-uitstor-internal-replication-reset-arn:uitstor:replication::af470089-d354-4473-934c-9e1f52f6da89:bucket": "TW9uLCAwNyBGZWIgMjAyMiAyMDowMzo0MCBHTVQ7ZGMxMWQzNDgtMTAwMS00ODA3LWFhNjEtOGY2MmFiNWQ5ZjU2",
     ...
   },
 ...
@@ -148,7 +148,7 @@ If 3 or more targets are participating in active-active replication, the replica
 ```
 ...
   "MetaSys": {
-    "x-minio-internal-replication-reset-arn:minio:replication::af470089-d354-4473-934c-9e1f52f6da89:bucket": "TW9uLCAwNyBGZWIgMjAyMiAyMDowMzo0MCBHTVQ7ZGMxMWQzNDgtMTAwMS00ODA3LWFhNjEtOGY2MmFiNWQ5ZjU2",
+    "x-uitstor-internal-replication-reset-arn:uitstor:replication::af470089-d354-4473-934c-9e1f52f6da89:bucket": "TW9uLCAwNyBGZWIgMjAyMiAyMDowMzo0MCBHTVQ7ZGMxMWQzNDgtMTAwMS00ODA3LWFhNjEtOGY2MmFiNWQ5ZjU2",
   ...
   }
 ...
@@ -156,5 +156,5 @@ If 3 or more targets are participating in active-active replication, the replica
 
 ## Explore Further
 
-- [MinIO Bucket Versioning Implementation](https://docs.minio.io/docs/minio-bucket-versioning-guide.html)
-- [MinIO Client Quickstart Guide](https://docs.minio.io/docs/minio-client-quickstart-guide.html)
+- [MinIO Bucket Versioning Implementation](https://docs.uitstor.io/docs/uitstor-bucket-versioning-guide.html)
+- [MinIO Client Quickstart Guide](https://docs.uitstor.io/docs/uitstor-client-quickstart-guide.html)

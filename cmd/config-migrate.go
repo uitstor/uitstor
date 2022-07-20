@@ -28,20 +28,20 @@ import (
 	"unicode/utf8"
 
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/auth"
-	"github.com/minio/minio/internal/config"
-	"github.com/minio/minio/internal/config/cache"
-	"github.com/minio/minio/internal/config/compress"
-	xldap "github.com/minio/minio/internal/config/identity/ldap"
-	"github.com/minio/minio/internal/config/identity/openid"
-	"github.com/minio/minio/internal/config/notify"
-	"github.com/minio/minio/internal/config/policy/opa"
-	"github.com/minio/minio/internal/config/storageclass"
-	"github.com/minio/minio/internal/event"
-	"github.com/minio/minio/internal/event/target"
-	"github.com/minio/minio/internal/kms"
-	"github.com/minio/minio/internal/logger"
-	"github.com/minio/minio/internal/logger/target/http"
+	"github.com/uitstor/uitstor/internal/auth"
+	"github.com/uitstor/uitstor/internal/config"
+	"github.com/uitstor/uitstor/internal/config/cache"
+	"github.com/uitstor/uitstor/internal/config/compress"
+	xldap "github.com/uitstor/uitstor/internal/config/identity/ldap"
+	"github.com/uitstor/uitstor/internal/config/identity/openid"
+	"github.com/uitstor/uitstor/internal/config/notify"
+	"github.com/uitstor/uitstor/internal/config/policy/opa"
+	"github.com/uitstor/uitstor/internal/config/storageclass"
+	"github.com/uitstor/uitstor/internal/event"
+	"github.com/uitstor/uitstor/internal/event/target"
+	"github.com/uitstor/uitstor/internal/kms"
+	"github.com/uitstor/uitstor/internal/logger"
+	"github.com/uitstor/uitstor/internal/logger/target/http"
 	xnet "github.com/minio/pkg/net"
 	"github.com/minio/pkg/quick"
 )
@@ -2422,11 +2422,11 @@ func migrateV27ToV28() error {
 	return nil
 }
 
-// Migrates ${HOME}/.minio/config.json to '<export_path>/.minio.sys/config/config.json'
-// if etcd is configured then migrates /config/config.json to '<export_path>/.minio.sys/config/config.json'
+// Migrates ${HOME}/.uitstor/config.json to '<export_path>/.uitstor.sys/config/config.json'
+// if etcd is configured then migrates /config/config.json to '<export_path>/.uitstor.sys/config/config.json'
 func migrateConfigToMinioSys(objAPI ObjectLayer) (err error) {
 	// Construct path to config.json for the given bucket.
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(uitstorConfigPrefix, uitstorConfigFile)
 
 	defer func() {
 		if err == nil {
@@ -2470,10 +2470,10 @@ func migrateConfigToMinioSys(objAPI ObjectLayer) (err error) {
 	return saveServerConfig(GlobalContext, objAPI, config)
 }
 
-// Migrates '.minio.sys/config.json' to v33.
+// Migrates '.uitstor.sys/config.json' to v33.
 func migrateMinioSysConfig(objAPI ObjectLayer) error {
 	// Construct path to config.json for the given bucket.
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(uitstorConfigPrefix, uitstorConfigFile)
 
 	// Check if the config version is latest, if not migrate.
 	ok, _, err := checkConfigVersion(objAPI, configFile, "33")
@@ -2511,7 +2511,7 @@ func checkConfigVersion(objAPI ObjectLayer, configFile string, version string) (
 	if !utf8.Valid(data) {
 		if GlobalKMS != nil {
 			data, err = config.DecryptBytes(GlobalKMS, data, kms.Context{
-				minioMetaBucket: path.Join(minioMetaBucket, configFile),
+				uitstorMetaBucket: path.Join(uitstorMetaBucket, configFile),
 			})
 			if err != nil {
 				data, err = madmin.DecryptData(globalActiveCred.String(), bytes.NewReader(data))
@@ -2545,7 +2545,7 @@ func checkConfigVersion(objAPI ObjectLayer, configFile string, version string) (
 }
 
 func migrateV27ToV28MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(uitstorConfigPrefix, uitstorConfigFile)
 	ok, data, err := checkConfigVersion(objAPI, configFile, "27")
 	if err == errConfigNotFound {
 		return nil
@@ -2571,7 +2571,7 @@ func migrateV27ToV28MinioSys(objAPI ObjectLayer) error {
 }
 
 func migrateV28ToV29MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(uitstorConfigPrefix, uitstorConfigFile)
 
 	ok, data, err := checkConfigVersion(objAPI, configFile, "28")
 	if err == errConfigNotFound {
@@ -2598,7 +2598,7 @@ func migrateV28ToV29MinioSys(objAPI ObjectLayer) error {
 }
 
 func migrateV29ToV30MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(uitstorConfigPrefix, uitstorConfigFile)
 
 	ok, data, err := checkConfigVersion(objAPI, configFile, "29")
 	if err == errConfigNotFound {
@@ -2630,7 +2630,7 @@ func migrateV29ToV30MinioSys(objAPI ObjectLayer) error {
 }
 
 func migrateV30ToV31MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(uitstorConfigPrefix, uitstorConfigFile)
 
 	ok, data, err := checkConfigVersion(objAPI, configFile, "30")
 	if err == errConfigNotFound {
@@ -2664,7 +2664,7 @@ func migrateV30ToV31MinioSys(objAPI ObjectLayer) error {
 }
 
 func migrateV31ToV32MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(uitstorConfigPrefix, uitstorConfigFile)
 
 	ok, data, err := checkConfigVersion(objAPI, configFile, "31")
 	if err == errConfigNotFound {
@@ -2694,7 +2694,7 @@ func migrateV31ToV32MinioSys(objAPI ObjectLayer) error {
 }
 
 func migrateV32ToV33MinioSys(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(uitstorConfigPrefix, uitstorConfigFile)
 
 	ok, data, err := checkConfigVersion(objAPI, configFile, "32")
 	if err == errConfigNotFound {
@@ -2722,7 +2722,7 @@ func migrateV32ToV33MinioSys(objAPI ObjectLayer) error {
 }
 
 func migrateMinioSysConfigToKV(objAPI ObjectLayer) error {
-	configFile := path.Join(minioConfigPrefix, minioConfigFile)
+	configFile := path.Join(uitstorConfigPrefix, uitstorConfigFile)
 
 	// Check if the config version is latest, if not migrate.
 	ok, data, err := checkConfigVersion(objAPI, configFile, "33")

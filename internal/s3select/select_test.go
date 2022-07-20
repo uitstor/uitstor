@@ -639,7 +639,7 @@ func TestJSONQueries(t *testing.T) {
 				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
-			res, err := minio.NewSelectResults(&resp, "testbucket")
+			res, err := uitstor.NewSelectResults(&resp, "testbucket")
 			if err != nil {
 				t.Error(err)
 				return
@@ -685,7 +685,7 @@ func TestJSONQueries(t *testing.T) {
 				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
-			res, err := minio.NewSelectResults(&resp, "testbucket")
+			res, err := uitstor.NewSelectResults(&resp, "testbucket")
 			if err != nil {
 				t.Error(err)
 				return
@@ -766,7 +766,7 @@ func TestCSVQueries(t *testing.T) {
 				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
-			res, err := minio.NewSelectResults(&resp, "testbucket")
+			res, err := uitstor.NewSelectResults(&resp, "testbucket")
 			if err != nil {
 				t.Error(err)
 				return
@@ -949,7 +949,7 @@ func TestCSVQueries2(t *testing.T) {
 				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
-			res, err := minio.NewSelectResults(&resp, "testbucket")
+			res, err := uitstor.NewSelectResults(&resp, "testbucket")
 			if err != nil {
 				t.Error(err)
 				return
@@ -1093,7 +1093,7 @@ true`,
 				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
-			res, err := minio.NewSelectResults(&resp, "testbucket")
+			res, err := uitstor.NewSelectResults(&resp, "testbucket")
 			if err != nil {
 				t.Error(err)
 				return
@@ -1239,7 +1239,7 @@ func TestCSVInput(t *testing.T) {
 					Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 					ContentLength: int64(len(w.response)),
 				}
-				res, err := minio.NewSelectResults(&resp, "testbucket")
+				res, err := uitstor.NewSelectResults(&resp, "testbucket")
 				if err != nil {
 					t.Error(err)
 					return
@@ -1359,7 +1359,7 @@ func TestJSONInput(t *testing.T) {
 					Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 					ContentLength: int64(len(w.response)),
 				}
-				res, err := minio.NewSelectResults(&resp, "testbucket")
+				res, err := uitstor.NewSelectResults(&resp, "testbucket")
 				if err != nil {
 					t.Error(err)
 					return
@@ -1636,7 +1636,7 @@ func TestCSVRanges(t *testing.T) {
 				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
-			res, err := minio.NewSelectResults(&resp, "testbucket")
+			res, err := uitstor.NewSelectResults(&resp, "testbucket")
 			if err != nil {
 				t.Error(err)
 				return
@@ -1738,7 +1738,7 @@ func TestParquetInput(t *testing.T) {
 					Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 					ContentLength: int64(len(w.response)),
 				}
-				res, err := minio.NewSelectResults(&resp, "testbucket")
+				res, err := uitstor.NewSelectResults(&resp, "testbucket")
 				if err != nil {
 					t.Error(err)
 					return
@@ -1839,7 +1839,7 @@ func TestParquetInputSchema(t *testing.T) {
 				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
-			res, err := minio.NewSelectResults(&resp, "testbucket")
+			res, err := uitstor.NewSelectResults(&resp, "testbucket")
 			if err != nil {
 				t.Error(err)
 				return
@@ -1939,7 +1939,7 @@ func TestParquetInputSchemaCSV(t *testing.T) {
 				Body:          ioutil.NopCloser(bytes.NewReader(w.response)),
 				ContentLength: int64(len(w.response)),
 			}
-			res, err := minio.NewSelectResults(&resp, "testbucket")
+			res, err := uitstor.NewSelectResults(&resp, "testbucket")
 			if err != nil {
 				t.Error(err)
 				return

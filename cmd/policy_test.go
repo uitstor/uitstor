@@ -21,7 +21,7 @@ import (
 	"reflect"
 	"testing"
 
-	miniogopolicy "github.com/minio/minio-go/v7/pkg/policy"
+	uitstorgopolicy "github.com/minio/minio-go/v7/pkg/policy"
 	"github.com/minio/minio-go/v7/pkg/set"
 	"github.com/minio/pkg/bucket/policy"
 	"github.com/minio/pkg/bucket/policy/condition"
@@ -143,17 +143,17 @@ func TestPolicySysIsAllowed(t *testing.T) {
 	}
 }
 
-func getReadOnlyStatement(bucketName, prefix string) []miniogopolicy.Statement {
-	return []miniogopolicy.Statement{
+func getReadOnlyStatement(bucketName, prefix string) []uitstorgopolicy.Statement {
+	return []uitstorgopolicy.Statement{
 		{
 			Effect:    string(policy.Allow),
-			Principal: miniogopolicy.User{AWS: set.CreateStringSet("*")},
+			Principal: uitstorgopolicy.User{AWS: set.CreateStringSet("*")},
 			Resources: set.CreateStringSet(policy.NewResource(bucketName, "").String()),
 			Actions:   set.CreateStringSet("s3:GetBucketLocation", "s3:ListBucket"),
 		},
 		{
 			Effect:    string(policy.Allow),
-			Principal: miniogopolicy.User{AWS: set.CreateStringSet("*")},
+			Principal: uitstorgopolicy.User{AWS: set.CreateStringSet("*")},
 			Resources: set.CreateStringSet(policy.NewResource(bucketName, prefix).String()),
 			Actions:   set.CreateStringSet("s3:GetObject"),
 		},
@@ -181,7 +181,7 @@ func TestPolicyToBucketAccessPolicy(t *testing.T) {
 		},
 	}
 
-	case1Result := &miniogopolicy.BucketAccessPolicy{
+	case1Result := &uitstorgopolicy.BucketAccessPolicy{
 		Version:    policy.DefaultVersion,
 		Statements: getReadOnlyStatement("mybucket", "/myobject*"),
 	}
@@ -191,9 +191,9 @@ func TestPolicyToBucketAccessPolicy(t *testing.T) {
 		Statements: []policy.Statement{},
 	}
 
-	case2Result := &miniogopolicy.BucketAccessPolicy{
+	case2Result := &uitstorgopolicy.BucketAccessPolicy{
 		Version:    policy.DefaultVersion,
-		Statements: []miniogopolicy.Statement{},
+		Statements: []uitstorgopolicy.Statement{},
 	}
 
 	case3Policy := &policy.Policy{
@@ -211,7 +211,7 @@ func TestPolicyToBucketAccessPolicy(t *testing.T) {
 
 	testCases := []struct {
 		bucketPolicy   *policy.Policy
-		expectedResult *miniogopolicy.BucketAccessPolicy
+		expectedResult *uitstorgopolicy.BucketAccessPolicy
 		expectErr      bool
 	}{
 		{case1Policy, case1Result, false},
@@ -236,7 +236,7 @@ func TestPolicyToBucketAccessPolicy(t *testing.T) {
 }
 
 func TestBucketAccessPolicyToPolicy(t *testing.T) {
-	case1PolicyInfo := &miniogopolicy.BucketAccessPolicy{
+	case1PolicyInfo := &uitstorgopolicy.BucketAccessPolicy{
 		Version:    policy.DefaultVersion,
 		Statements: getReadOnlyStatement("mybucket", "/myobject*"),
 	}
@@ -261,9 +261,9 @@ func TestBucketAccessPolicyToPolicy(t *testing.T) {
 		},
 	}
 
-	case2PolicyInfo := &miniogopolicy.BucketAccessPolicy{
+	case2PolicyInfo := &uitstorgopolicy.BucketAccessPolicy{
 		Version:    policy.DefaultVersion,
-		Statements: []miniogopolicy.Statement{},
+		Statements: []uitstorgopolicy.Statement{},
 	}
 
 	case2Result := &policy.Policy{
@@ -271,13 +271,13 @@ func TestBucketAccessPolicyToPolicy(t *testing.T) {
 		Statements: []policy.Statement{},
 	}
 
-	case3PolicyInfo := &miniogopolicy.BucketAccessPolicy{
+	case3PolicyInfo := &uitstorgopolicy.BucketAccessPolicy{
 		Version:    "12-10-2012",
 		Statements: getReadOnlyStatement("mybucket", "/myobject*"),
 	}
 
 	testCases := []struct {
-		policyInfo     *miniogopolicy.BucketAccessPolicy
+		policyInfo     *uitstorgopolicy.BucketAccessPolicy
 		expectedResult *policy.Policy
 		expectErr      bool
 	}{

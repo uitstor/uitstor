@@ -21,7 +21,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/minio/minio/internal/config"
+	"github.com/uitstor/uitstor/internal/config"
 	"github.com/minio/pkg/env"
 )
 

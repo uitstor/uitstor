@@ -55,7 +55,7 @@ XML error response for this API is similar to [AWS STS AssumeRole](https://docs.
 ## Sample `POST` Request
 
 ```
-http://minio:9000/?Action=AssumeRole&DurationSeconds=3600&Version=2011-06-15&Policy={"Version":"2012-10-17","Statement":[{"Sid":"Stmt1","Effect":"Allow","Action":"s3:*","Resource":"arn:aws:s3:::*"}]}&AUTHPARAMS
+http://uitstor:9000/?Action=AssumeRole&DurationSeconds=3600&Version=2011-06-15&Policy={"Version":"2012-10-17","Statement":[{"Sid":"Stmt1","Effect":"Allow","Action":"s3:*","Resource":"arn:aws:s3:::*"}]}&AUTHPARAMS
 ```
 
 ## Sample Response
@@ -84,12 +84,12 @@ http://minio:9000/?Action=AssumeRole&DurationSeconds=3600&Version=2011-06-15&Pol
 ## Using AssumeRole API
 
 ```
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
-minio server ~/test
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
+uitstor server ~/test
 ```
 
-Create new users following the multi-user guide [here](https://docs.min.io/docs/minio-multi-user-quickstart-guide.html)
+Create new users following the multi-user guide [here](https://docs.min.io/docs/uitstor-multi-user-quickstart-guide.html)
 
 ### Testing an example with awscli tool
 
@@ -134,5 +134,5 @@ SessionToken: eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhY2Nlc3NLZXkiOiIyN1lEUllFT
 
 ## Explore Further
 
-- [MinIO Admin Complete Guide](https://docs.min.io/docs/minio-admin-complete-guide.html)
+- [MinIO Admin Complete Guide](https://docs.min.io/docs/uitstor-admin-complete-guide.html)
 - [The MinIO documentation website](https://docs.min.io)

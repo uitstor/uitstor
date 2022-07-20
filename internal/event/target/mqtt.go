@@ -30,13 +30,13 @@ import (
 	"time"
 
 	mqtt "github.com/eclipse/paho.mqtt.golang"
-	"github.com/minio/minio/internal/event"
+	"github.com/uitstor/uitstor/internal/event"
 	xnet "github.com/minio/pkg/net"
 )
 
 const (
 	reconnectInterval = 5 // In Seconds
-	storePrefix       = "minio"
+	storePrefix       = "uitstor"
 )
 
 // MQTT input constants

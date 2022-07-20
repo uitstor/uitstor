@@ -21,7 +21,7 @@ import (
 	"crypto/x509"
 	"time"
 
-	"github.com/minio/minio/internal/config"
+	"github.com/uitstor/uitstor/internal/config"
 	"github.com/minio/pkg/env"
 )
 
@@ -38,7 +38,7 @@ const (
 type Config struct {
 	Enabled bool `json:"enabled"`
 
-	// E.g. "ldap.minio.io:636"
+	// E.g. "ldap.uitstor.io:636"
 	ServerAddr string `json:"serverAddr"`
 
 	// User DN search parameters

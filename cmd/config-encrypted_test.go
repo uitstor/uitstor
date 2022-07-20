@@ -22,18 +22,18 @@ import (
 	"testing"
 
 	"github.com/minio/madmin-go"
-	"github.com/minio/minio/internal/auth"
+	"github.com/uitstor/uitstor/internal/auth"
 )
 
 func TestDecryptData(t *testing.T) {
 	cred1 := auth.Credentials{
-		AccessKey: "minio",
-		SecretKey: "minio123",
+		AccessKey: "uitstor",
+		SecretKey: "uitstor123",
 	}
 
 	cred2 := auth.Credentials{
-		AccessKey: "minio",
-		SecretKey: "minio1234",
+		AccessKey: "uitstor",
+		SecretKey: "uitstor1234",
 	}
 
 	data := []byte(`config data`)

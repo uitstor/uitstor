@@ -74,7 +74,7 @@ func selfSpeedTest(ctx context.Context, opts speedTestOpts) (SpeedTestResult, er
 
 	userMetadata := make(map[string]string)
 	userMetadata[globalObjectPerfUserMetadata] = "true" // Bypass S3 API freeze
-	popts := minio.PutObjectOptions{
+	popts := uitstor.PutObjectOptions{
 		UserMetadata:         userMetadata,
 		DisableContentSha256: true,
 		DisableMultipart:     true,
@@ -116,7 +116,7 @@ func selfSpeedTest(ctx context.Context, opts speedTestOpts) (SpeedTestResult, er
 		downloadsCancel()
 	}()
 
-	gopts := minio.GetObjectOptions{}
+	gopts := uitstor.GetObjectOptions{}
 	gopts.Set(globalObjectPerfUserMetadata, "true") // Bypass S3 API freeze
 
 	wg.Add(opts.concurrency)
@@ -134,7 +134,7 @@ func selfSpeedTest(ctx context.Context, opts speedTestOpts) (SpeedTestResult, er
 				tmpObjName := pathJoin(objNamePrefix, fmt.Sprintf("%d/%d", i, j))
 				r, err := globalMinioClient.GetObject(downloadsCtx, opts.bucketName, tmpObjName, gopts)
 				if err != nil {
-					errResp, ok := err.(minio.ErrorResponse)
+					errResp, ok := err.(uitstor.ErrorResponse)
 					if ok && errResp.StatusCode == http.StatusNotFound {
 						continue
 					}

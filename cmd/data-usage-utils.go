@@ -109,9 +109,9 @@ func (dui DataUsageInfo) tierStats() []madmin.TierInfo {
 	infos := make([]madmin.TierInfo, 0, len(ts))
 
 	// Add STANDARD (hot-tier)
-	ts[minioHotTier] = madmin.TierStats{}
+	ts[uitstorHotTier] = madmin.TierStats{}
 	infos = append(infos, madmin.TierInfo{
-		Name: minioHotTier,
+		Name: uitstorHotTier,
 		Type: "internal",
 	})
 	// Add configured remote tiers
@@ -145,9 +145,9 @@ func (dui DataUsageInfo) tierMetrics() (metrics []Metric) {
 	if dui.TierStats == nil {
 		return nil
 	}
-	// e.g minio_cluster_ilm_transitioned_bytes{tier="S3TIER-1"}=136314880
-	//     minio_cluster_ilm_transitioned_objects{tier="S3TIER-1"}=1
-	//     minio_cluster_ilm_transitioned_versions{tier="S3TIER-1"}=3
+	// e.g uitstor_cluster_ilm_transitioned_bytes{tier="S3TIER-1"}=136314880
+	//     uitstor_cluster_ilm_transitioned_objects{tier="S3TIER-1"}=1
+	//     uitstor_cluster_ilm_transitioned_versions{tier="S3TIER-1"}=3
 	for tier, st := range dui.TierStats.Tiers {
 		metrics = append(metrics, Metric{
 			Description:    getClusterTransitionedBytesMD(),

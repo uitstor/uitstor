@@ -35,7 +35,7 @@ import (
 	"os"
 
 	cr "github.com/minio/minio-go/v7/pkg/credentials"
-	cmd "github.com/minio/minio/cmd"
+	cmd "github.com/uitstor/uitstor/cmd"
 )
 
 func main() {
@@ -47,8 +47,8 @@ func main() {
 	}
 
 	appParams := cmd.OpenIDClientAppParams{
-		ClientID:     "minio-client-app",
-		ClientSecret: "minio-client-app-secret",
+		ClientID:     "uitstor-client-app",
+		ClientSecret: "uitstor-client-app-secret",
 		ProviderURL:  "http://127.0.0.1:5556/dex",
 		RedirectURL:  "http://127.0.0.1:10000/oauth_callback",
 	}

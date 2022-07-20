@@ -1,4 +1,4 @@
-# Identity Management Plugin Guide [![Slack](https://slack.minio.io/slack?type=svg)](https://slack.minio.io)
+# Identity Management Plugin Guide [![Slack](https://slack.uitstor.io/slack?type=svg)](https://slack.uitstor.io)
 
 ## Introduction
 
@@ -9,7 +9,7 @@ The authentication flow is similar to that of OpenID, however the token is "opaq
 It can be configured via MinIO's standard configuration API (i.e. using `mc admin config set/get`), or equivalently with environment variables. For brevity we show only environment variables here:
 
 ```sh
-$ mc admin config set myminio identity_plugin --env
+$ mc admin config set myuitstor identity_plugin --env
 KEY:
 identity_plugin  enable Identity Plugin via external hook
 

@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/minio/madmin-go"
-	minio "github.com/minio/minio-go/v7"
+	uitstor "github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
 )
 
@@ -44,16 +44,16 @@ func newWarmBackendMinIO(conf madmin.TierMinIO) (*warmBackendMinIO, error) {
 	getRemoteTierTargetInstanceTransportOnce.Do(func() {
 		getRemoteTierTargetInstanceTransport = newGatewayHTTPTransport(10 * time.Minute)
 	})
-	opts := &minio.Options{
+	opts := &uitstor.Options{
 		Creds:     creds,
 		Secure:    u.Scheme == "https",
 		Transport: getRemoteTierTargetInstanceTransport,
 	}
-	client, err := minio.New(u.Host, opts)
+	client, err := uitstor.New(u.Host, opts)
 	if err != nil {
 		return nil, err
 	}
-	core, err := minio.NewCore(u.Host, opts)
+	core, err := uitstor.NewCore(u.Host, opts)
 	if err != nil {
 		return nil, err
 	}

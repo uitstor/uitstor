@@ -27,9 +27,9 @@ import (
 	"io"
 	"path"
 
-	"github.com/minio/minio/internal/fips"
-	"github.com/minio/minio/internal/hash/sha256"
-	"github.com/minio/minio/internal/logger"
+	"github.com/uitstor/uitstor/internal/fips"
+	"github.com/uitstor/uitstor/internal/hash/sha256"
+	"github.com/uitstor/uitstor/internal/logger"
 	"github.com/minio/sio"
 )
 

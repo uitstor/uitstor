@@ -27,7 +27,7 @@ time="2020-07-12T20:45:50Z" level=info msg="listening (http) on 0.0.0.0:5556"
 ```
 ~ export MINIO_IDENTITY_OPENID_CLAIM_NAME=name
 ~ export MINIO_IDENTITY_OPENID_CONFIG_URL=http://127.0.0.1:5556/dex/.well-known/openid-configuration
-~ minio server ~/test
+~ uitstor server ~/test
 ```
 
 ### Run the `web-identity.go`
@@ -74,8 +74,8 @@ On the browser now you shall see the list of buckets output, along with your tem
 ```
 {
  "buckets": [
-  "dl.minio.equipment",
-  "dl.minio.service-fulfillment",
+  "dl.uitstor.equipment",
+  "dl.uitstor.service-fulfillment",
   "testbucket"
  ],
  "credentials": {
@@ -95,9 +95,9 @@ Now you have successfully configured Dex IdP with MinIO.
 export MINIO_IDENTITY_OPENID_CLAIM_NAME=groups
 ```
 
-and add relevant policies on MinIO using `mc admin policy add myminio/ <group_name> group-access.json`
+and add relevant policies on MinIO using `mc admin policy add myuitstor/ <group_name> group-access.json`
 
 ## Explore Further
 
-- [MinIO STS Quickstart Guide](https://docs.min.io/docs/minio-sts-quickstart-guide)
+- [MinIO STS Quickstart Guide](https://docs.min.io/docs/uitstor-sts-quickstart-guide)
 - [The MinIO documentation website](https://docs.min.io)

@@ -1,4 +1,4 @@
-# MinIO Docker Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# MinIO Docker Quickstart Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
 See our web documentation on [Deploying MinIO in Standalone Mode](Deploy Standalone MinIO in a Container) for a more structured tutorial on deploying MinIO in a container.
 
@@ -8,7 +8,7 @@ Docker installed on your machine. Download the relevant installer from [here](ht
 
 ## Run Standalone MinIO on Docker
 
-*Note*: Standalone MinIO is intended for early development and evaluation. For production clusters, deploy a [Distributed](https://docs.min.io/minio/baremetal/installation/deployment-and-management.html) MinIO deployment.
+*Note*: Standalone MinIO is intended for early development and evaluation. For production clusters, deploy a [Distributed](https://docs.min.io/uitstor/baremetal/installation/deployment-and-management.html) MinIO deployment.
 
 MinIO needs a persistent volume to store configuration and application data. For testing purposes, you can launch MinIO by simply passing a directory (`/data` in the example below). This directory gets created in the container filesystem at the time of container start. But all the data is lost after container exits.
 
@@ -18,7 +18,7 @@ docker run \
   -p 9001:9001 \
   -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "MINIO_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  quay.io/minio/minio server /data --console-address ":9001"
+  quay.io/uitstor/uitstor server /data --console-address ":9001"
 ```
 
 To create a MinIO container with persistent storage, you need to map local persistent directories from the host OS to virtual config. To do this, run the below commands
@@ -26,19 +26,19 @@ To create a MinIO container with persistent storage, you need to map local persi
 ### GNU/Linux and macOS
 
 ```sh
-mkdir -p ~/minio/data
+mkdir -p ~/uitstor/data
 
 docker run \
   -p 9000:9000 \
   -p 9001:9001 \
-  --name minio1 \
-  -v ~/minio/data:/data \
+  --name uitstor1 \
+  -v ~/uitstor/data:/data \
   -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "MINIO_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  quay.io/minio/minio server /data --console-address ":9001"
+  quay.io/uitstor/uitstor server /data --console-address ":9001"
 ```
 
-The command creates a new local directory `~/minio/data` in your user home directory. It then starts the MinIO container with the `-v` argument to map the local path (`~/minio/data`) to the specified virtual container directory (`/data`). When MinIO writes data to `/data`, that data is actually written to the local path `~/minio/data` where it can persist between container restarts.
+The command creates a new local directory `~/uitstor/data` in your user home directory. It then starts the MinIO container with the `-v` argument to map the local path (`~/uitstor/data`) to the specified virtual container directory (`/data`). When MinIO writes data to `/data`, that data is actually written to the local path `~/uitstor/data` where it can persist between container restarts.
 
 ### Windows
 
@@ -46,16 +46,16 @@ The command creates a new local directory `~/minio/data` in your user home direc
 docker run \
   -p 9000:9000 \
   -p 9001:9001 \
-  --name minio1 \
+  --name uitstor1 \
   -v D:\data:/data \
   -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "MINIO_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
-  quay.io/minio/minio server /data --console-address ":9001"
+  quay.io/uitstor/uitstor server /data --console-address ":9001"
 ```
 
 ## Run Distributed MinIO on Docker
 
-Distributed MinIO can be deployed via [Docker Compose](https://docs.min.io/docs/deploy-minio-on-docker-compose). This means Docker Compose lets you quickly get started with Distributed MinIO on your computer - ideal for development, testing, staging environments. We recommend kubernetes based deployment for production level deployment <https://github.com/minio/operator>.
+Distributed MinIO can be deployed via [Docker Compose](https://docs.min.io/docs/deploy-uitstor-on-docker-compose). This means Docker Compose lets you quickly get started with Distributed MinIO on your computer - ideal for development, testing, staging environments. We recommend kubernetes based deployment for production level deployment <https://github.com/minio/operator>.
 
 ## MinIO Docker Tips
 
@@ -69,11 +69,11 @@ To override MinIO's auto-generated keys, you may pass secret and access keys exp
 docker run \
   -p 9000:9000 \
   -p 9001:9001 \
-  --name minio1 \
+  --name uitstor1 \
   -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "MINIO_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
   -v /mnt/data:/data \
-  quay.io/minio/minio server /data --console-address ":9001"
+  quay.io/uitstor/uitstor server /data --console-address ":9001"
 ```
 
 #### Windows (custom access and secret keys)
@@ -82,11 +82,11 @@ docker run \
 docker run \
   -p 9000:9000 \
   -p 9001:9001 \
-  --name minio1 \
+  --name uitstor1 \
   -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "MINIO_ROOT_PASSWORD=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" \
   -v D:\data:/data \
-  quay.io/minio/minio server /data --console-address ":9001"
+  quay.io/uitstor/uitstor server /data --console-address ":9001"
 ```
 
 ### Run MinIO Docker as a regular user
@@ -105,11 +105,11 @@ docker run \
   -p 9000:9000 \
   -p 9001:9001 \
   --user $(id -u):$(id -g) \
-  --name minio1 \
+  --name uitstor1 \
   -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "MINIO_ROOT_PASSWORD=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY" \
   -v ${HOME}/data:/data \
-  quay.io/minio/minio server /data --console-address ":9001"
+  quay.io/uitstor/uitstor server /data --console-address ":9001"
 ```
 
 #### Windows (regular user)
@@ -122,12 +122,12 @@ On windows you would need to use [Docker integrated windows authentication](http
 docker run \
   -p 9000:9000 \
   -p 9001:9001 \
-  --name minio1 \
+  --name uitstor1 \
   --security-opt "credentialspec=file://myuser.json"
   -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
   -e "MINIO_ROOT_PASSWORD=wJalrXUtnFEMIK7MDENGbPxRfiCYEXAMPLEKEY" \
   -v D:\data:/data \
-  quay.io/minio/minio server /data --console-address ":9001"
+  quay.io/uitstor/uitstor server /data --console-address ":9001"
 ```
 
 ### MinIO Custom Access and Secret Keys using Docker secrets
@@ -142,7 +142,7 @@ echo "wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY" | docker secret create secret_ke
 Create a MinIO service using `docker service` to read from Docker secrets.
 
 ```
-docker service create --name="minio-service" --secret="access_key" --secret="secret_key" quay.io/minio/minio server /data
+docker service create --name="uitstor-service" --secret="access_key" --secret="secret_key" quay.io/uitstor/uitstor server /data
 ```
 
 Read more about `docker service` [here](https://docs.docker.com/engine/swarm/how-swarm-mode-works/services/)
@@ -152,12 +152,12 @@ Read more about `docker service` [here](https://docs.docker.com/engine/swarm/how
 To use other secret names follow the instructions above and replace `access_key` and `secret_key` with your custom names (e.g. `my_secret_key`,`my_custom_key`). Run your service with
 
 ```
-docker service create --name="minio-service" \
+docker service create --name="uitstor-service" \
   --secret="my_access_key" \
   --secret="my_secret_key" \
   --env="MINIO_ROOT_USER_FILE=my_access_key" \
   --env="MINIO_ROOT_PASSWORD_FILE=my_secret_key" \
-  quay.io/minio/minio server /data
+  quay.io/uitstor/uitstor server /data
 ```
 
 `MINIO_ROOT_USER_FILE` and `MINIO_ROOT_PASSWORD_FILE` also support custom absolute paths, in case Docker secrets are mounted to custom locations or other tools are used to mount secrets into the container. For example, HashiCorp Vault injects secrets to `/vault/secrets`. With the custom names above, set the environment variables to
@@ -209,6 +209,6 @@ docker stats <container_id>
 
 ## Explore Further
 
-* [Deploy MinIO on Docker Compose](https://docs.min.io/docs/deploy-minio-on-docker-compose)
-* [Distributed MinIO Quickstart Guide](https://docs.min.io/docs/distributed-minio-quickstart-guide)
-* [MinIO Erasure Code QuickStart Guide](https://docs.min.io/docs/minio-erasure-code-quickstart-guide)
+* [Deploy MinIO on Docker Compose](https://docs.min.io/docs/deploy-uitstor-on-docker-compose)
+* [Distributed MinIO Quickstart Guide](https://docs.min.io/docs/distributed-uitstor-quickstart-guide)
+* [MinIO Erasure Code QuickStart Guide](https://docs.min.io/docs/uitstor-erasure-code-quickstart-guide)

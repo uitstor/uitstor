@@ -35,17 +35,17 @@ func TestGetMissingSiteNames(t *testing.T) {
 		// Test1: missing some sites in replicated setup
 		{
 			[]madmin.PeerInfo{
-				{Endpoint: "minio1:9000", Name: "minio1", DeploymentID: "dep1"},
-				{Endpoint: "minio2:9000", Name: "minio2", DeploymentID: "dep2"},
-				{Endpoint: "minio3:9000", Name: "minio3", DeploymentID: "dep3"},
+				{Endpoint: "uitstor1:9000", Name: "uitstor1", DeploymentID: "dep1"},
+				{Endpoint: "uitstor2:9000", Name: "uitstor2", DeploymentID: "dep2"},
+				{Endpoint: "uitstor3:9000", Name: "uitstor3", DeploymentID: "dep3"},
 			},
 			set.CreateStringSet("dep1", "dep2", "dep3"),
 			set.CreateStringSet("dep1"),
-			[]string{"minio2", "minio3"},
+			[]string{"uitstor2", "uitstor3"},
 		},
 		// Test2: new site added that is not in replicated setup
 		{
-			[]madmin.PeerInfo{{Endpoint: "minio1:9000", Name: "minio1", DeploymentID: "dep1"}, {Endpoint: "minio2:9000", Name: "minio2", DeploymentID: "dep2"}, {Endpoint: "minio3:9000", Name: "minio3", DeploymentID: "dep3"}},
+			[]madmin.PeerInfo{{Endpoint: "uitstor1:9000", Name: "uitstor1", DeploymentID: "dep1"}, {Endpoint: "uitstor2:9000", Name: "uitstor2", DeploymentID: "dep2"}, {Endpoint: "uitstor3:9000", Name: "uitstor3", DeploymentID: "dep3"}},
 			set.CreateStringSet("dep1", "dep2", "dep3"),
 			set.CreateStringSet("dep1", "dep2", "dep3", "dep4"),
 			[]string{},

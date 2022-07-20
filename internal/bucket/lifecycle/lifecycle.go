@@ -25,7 +25,7 @@ import (
 	"strings"
 	"time"
 
-	xhttp "github.com/minio/minio/internal/http"
+	xhttp "github.com/uitstor/uitstor/internal/http"
 )
 
 var (
@@ -444,7 +444,7 @@ func (lc Lifecycle) PredictExpiryTime(obj ObjectOpts) (string, time.Time) {
 // after evaluating the current lifecycle document.
 func (lc Lifecycle) PredictTransitionTime(obj ObjectOpts) (string, time.Time) {
 	if obj.DeleteMarker {
-		// We don't need to send any x-minio-transition for delete marker.
+		// We don't need to send any x-uitstor-transition for delete marker.
 		return "", time.Time{}
 	}
 

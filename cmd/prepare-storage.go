@@ -27,8 +27,8 @@ import (
 	"time"
 
 	"github.com/dustin/go-humanize"
-	xhttp "github.com/minio/minio/internal/http"
-	"github.com/minio/minio/internal/logger"
+	xhttp "github.com/uitstor/uitstor/internal/http"
+	"github.com/uitstor/uitstor/internal/logger"
 )
 
 var printEndpointError = func() func(Endpoint, error, bool) {
@@ -71,29 +71,29 @@ var printEndpointError = func() func(Endpoint, error, bool) {
 
 // Cleans up tmp directory of the local disk.
 func bgFormatErasureCleanupTmp(diskPath string) {
-	// Need to move temporary objects left behind from previous run of minio
-	// server to a unique directory under `minioMetaTmpBucket-old` to clean
-	// up `minioMetaTmpBucket` for the current run.
+	// Need to move temporary objects left behind from previous run of uitstor
+	// server to a unique directory under `uitstorMetaTmpBucket-old` to clean
+	// up `uitstorMetaTmpBucket` for the current run.
 	//
-	// /disk1/.minio.sys/tmp-old/
+	// /disk1/.uitstor.sys/tmp-old/
 	//  |__ 33a58b40-aecc-4c9f-a22f-ff17bfa33b62
 	//  |__ e870a2c1-d09c-450c-a69c-6eaa54a89b3e
 	//
 	// In this example, `33a58b40-aecc-4c9f-a22f-ff17bfa33b62` directory contains
-	// temporary objects from one of the previous runs of minio server.
+	// temporary objects from one of the previous runs of uitstor server.
 	tmpID := mustGetUUID()
-	tmpOld := pathJoin(diskPath, minioMetaTmpBucket+"-old", tmpID)
-	if err := renameAll(pathJoin(diskPath, minioMetaTmpBucket),
+	tmpOld := pathJoin(diskPath, uitstorMetaTmpBucket+"-old", tmpID)
+	if err := renameAll(pathJoin(diskPath, uitstorMetaTmpBucket),
 		tmpOld); err != nil && !errors.Is(err, errFileNotFound) {
 		logger.LogIf(GlobalContext, fmt.Errorf("unable to rename (%s -> %s) %w, drive may be faulty please investigate",
-			pathJoin(diskPath, minioMetaTmpBucket),
+			pathJoin(diskPath, uitstorMetaTmpBucket),
 			tmpOld,
 			osErrToFileErr(err)))
 	}
 
-	if err := mkdirAll(pathJoin(diskPath, minioMetaTmpDeletedBucket), 0o777); err != nil {
+	if err := mkdirAll(pathJoin(diskPath, uitstorMetaTmpDeletedBucket), 0o777); err != nil {
 		logger.LogIf(GlobalContext, fmt.Errorf("unable to create (%s) %w, drive may be faulty please investigate",
-			pathJoin(diskPath, minioMetaTmpBucket),
+			pathJoin(diskPath, uitstorMetaTmpBucket),
 			err))
 	}
 
@@ -107,7 +107,7 @@ func bgFormatErasureCleanupTmp(diskPath string) {
 // migration failed to capture '.This' field properly which indicates
 // the disk UUID association. Below error message is returned when
 // we see this situation in format.json, for more info refer
-// https://github.com/minio/minio/issues/5667
+// https://github.com/uitstor/uitstor/issues/5667
 var errErasureV3ThisEmpty = fmt.Errorf("Erasure format version 3 has This field empty")
 
 // isServerResolvable - checks if the endpoint is resolvable
@@ -201,7 +201,7 @@ func connectLoadInitFormats(verboseLogging bool, firstDisk bool, endpoints Endpo
 		}
 
 		// Assign globalDeploymentID on first run for the
-		// minio server managing the first disk
+		// uitstor server managing the first disk
 		globalDeploymentID = format.ID
 		return storageDisks, format, nil
 	}
@@ -226,7 +226,7 @@ func connectLoadInitFormats(verboseLogging bool, firstDisk bool, endpoints Endpo
 	// in release RELEASE.2018-03-16T22-52-12Z after migrating v1 to v2 to v3.
 	// This migration failed to capture '.This' field properly which indicates
 	// the disk UUID association. Below function is called to handle and fix
-	// this regression, for more info refer https://github.com/minio/minio/issues/5667
+	// this regression, for more info refer https://github.com/uitstor/uitstor/issues/5667
 	if err = fixFormatErasureV3(storageDisks, endpoints, formatConfigs); err != nil {
 		logger.LogIf(GlobalContext, err)
 		return nil, nil, err

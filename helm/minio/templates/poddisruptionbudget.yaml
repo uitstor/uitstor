@@ -2,13 +2,13 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: minio
+  name: uitstor
   namespace: {{ .Release.Namespace | quote }}
   labels:
-    app: {{ template "minio.name" . }}
+    app: {{ template "uitstor.name" . }}
 spec:
   maxUnavailable: {{ .Values.podDisruptionBudget.maxUnavailable }}
   selector:
     matchLabels:
-      app: {{ template "minio.name" . }}
+      app: {{ template "uitstor.name" . }}
 {{- end }}

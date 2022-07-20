@@ -1,4 +1,4 @@
-# Bucket Versioning Design Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/minio/minio.svg?maxAge=604800)](https://hub.docker.com/r/minio/minio/)
+# Bucket Versioning Design Guide [![Slack](https://slack.min.io/slack?type=svg)](https://slack.min.io) [![Docker Pulls](https://img.shields.io/docker/pulls/uitstor/uitstor.svg?maxAge=604800)](https://hub.docker.com/r/uitstor/uitstor/)
 
 ## Description of `xl.meta`
 
@@ -42,7 +42,7 @@ Therefore, the metadata is wrapped as a binary array for easy skipping.
 - LegacyObjectType (preserves existing deployments and older xl.json format)
 - DeleteMarker (a versionId to capture the DELETE sequences implemented primarily for AWS spec compatibility)
 
-A sample msgpack-JSON `xl.meta`, you can debug the content inside `xl.meta` using [xl-meta.go](https://github.com/minio/minio/tree/master/docs/debugging#decoding-metadata) program.
+A sample msgpack-JSON `xl.meta`, you can debug the content inside `xl.meta` using [xl-meta.go](https://github.com/uitstor/uitstor/tree/master/docs/debugging#decoding-metadata) program.
 
 ```json
 {
@@ -84,7 +84,7 @@ A sample msgpack-JSON `xl.meta`, you can debug the content inside `xl.meta` usin
 
 ### v1.3+ versions
 
-Version 1.3 introduces changes to help with [faster metadata reads and updates](https://blog.min.io/minio-versioning-metadata-deep-dive/)
+Version 1.3 introduces changes to help with [faster metadata reads and updates](https://blog.min.io/uitstor-versioning-metadata-deep-dive/)
 
 | Entry           | Encoding                    | Content
 | ----------------|-----------------------------|----------------------------------------

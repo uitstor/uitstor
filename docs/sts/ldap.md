@@ -29,7 +29,7 @@ LDAP STS configuration can be performed via MinIO's standard configuration API (
 LDAP is configured via the following environment variables:
 
 ```
-$ mc admin config set myminio identity_ldap --env
+$ mc admin config set myuitstor identity_ldap --env
 KEY:
 identity_ldap  enable LDAP SSO support
 
@@ -128,17 +128,17 @@ In the configuration variables, `%s` is substituted with the _username_ from the
 Access policies may be associated by their name with a group or user directly. Access policies are first defined on the MinIO server using IAM policy JSON syntax. To define a new policy, you can use the [AWS policy generator](https://awspolicygen.s3.amazonaws.com/policygen.html). Copy the policy into a text file `mypolicy.json` and issue the command like so:
 
 ```sh
-mc admin policy add myminio mypolicy mypolicy.json
+mc admin policy add myuitstor mypolicy mypolicy.json
 ```
 
 To associate the policy with an LDAP user or group, use the full DN of the user or group:
 
 ```sh
-mc admin policy set myminio mypolicy user='uid=james,cn=accounts,dc=myldapserver,dc=com'
+mc admin policy set myuitstor mypolicy user='uid=james,cn=accounts,dc=myldapserver,dc=com'
 ```
 
 ```sh
-mc admin policy set myminio mypolicy group='cn=projectx,ou=groups,ou=hwengg,dc=min,dc=io'
+mc admin policy set myuitstor mypolicy group='cn=projectx,ou=groups,ou=hwengg,dc=min,dc=io'
 ```
 
 **Note that by default no policy is set on a user**. Thus even if they successfully authenticate with AD/LDAP credentials, they have no access to object storage as the default access policy is to deny all access.
@@ -205,7 +205,7 @@ XML error response for this API is similar to [AWS STS AssumeRoleWithWebIdentity
 ## Sample `POST` Request
 
 ```
-http://minio.cluster:9000?Action=AssumeRoleWithLDAPIdentity&LDAPUsername=foouser&LDAPPassword=foouserpassword&Version=2011-06-15&DurationSeconds=7200
+http://uitstor.cluster:9000?Action=AssumeRoleWithLDAPIdentity&LDAPUsername=foouser&LDAPPassword=foouserpassword&Version=2011-06-15&DurationSeconds=7200
 ```
 
 ## Sample Response
@@ -234,17 +234,17 @@ http://minio.cluster:9000?Action=AssumeRoleWithLDAPIdentity&LDAPUsername=foouser
 With multiple OU hierarchies for users, and multiple group search base DN's.
 
 ```
-export MINIO_ROOT_USER=minio
-export MINIO_ROOT_PASSWORD=minio123
+export MINIO_ROOT_USER=uitstor
+export MINIO_ROOT_PASSWORD=uitstor123
 export MINIO_IDENTITY_LDAP_SERVER_ADDR='my.ldap-active-dir-server.com:636'
 export MINIO_IDENTITY_LDAP_LOOKUP_BIND_DN='cn=admin,dc=min,dc=io'
 export MINIO_IDENTITY_LDAP_LOOKUP_BIND_PASSWORD=admin
-export MINIO_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN='dc=minioad,dc=local;dc=somedomain,dc=com'
+export MINIO_IDENTITY_LDAP_GROUP_SEARCH_BASE_DN='dc=uitstorad,dc=local;dc=somedomain,dc=com'
 export MINIO_IDENTITY_LDAP_GROUP_SEARCH_FILTER='(&(objectclass=groupOfNames)(member=%d))'
-minio server ~/test
+uitstor server ~/test
 ```
 
-You can make sure it works appropriately using our [example program](https://raw.githubusercontent.com/minio/minio/master/docs/sts/ldap.go):
+You can make sure it works appropriately using our [example program](https://raw.githubusercontent.com/uitstor/uitstor/master/docs/sts/ldap.go):
 
 ```
 $ go run ldap.go -u foouser -p foopassword
@@ -260,5 +260,5 @@ $ go run ldap.go -u foouser -p foopassword
 
 ## Explore Further
 
-- [MinIO Admin Complete Guide](https://docs.min.io/docs/minio-admin-complete-guide.html)
+- [MinIO Admin Complete Guide](https://docs.min.io/docs/uitstor-admin-complete-guide.html)
 - [The MinIO documentation website](https://docs.min.io)

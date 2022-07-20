@@ -1,4 +1,4 @@
-## Provide a name in place of minio for `app:` labels
+## Provide a name in place of uitstor for `app:` labels
 ##
 nameOverride: ""
 
@@ -6,29 +6,29 @@ nameOverride: ""
 ##
 fullnameOverride: ""
 
-## set kubernetes cluster domain where minio is running
+## set kubernetes cluster domain where uitstor is running
 ##
 clusterDomain: cluster.local
 
 ## Set default image, imageTag, and imagePullPolicy. mode is used to indicate the
 ##
 image:
-  repository: quay.io/minio/minio
+  repository: quay.io/uitstor/uitstor
   tag: RELEASE.2022-05-08T23-50-31Z
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
 # - name: "image-pull-secret"
 
-## Set default image, imageTag, and imagePullPolicy for the `mc` (the minio
+## Set default image, imageTag, and imagePullPolicy for the `mc` (the uitstor
 ## client used to create a default bucket).
 ##
 mcImage:
-  repository: quay.io/minio/mc
+  repository: quay.io/uitstor/mc
   tag: RELEASE.2022-05-09T04-08-26Z
   pullPolicy: IfNotPresent
 
-## minio mode, i.e. standalone or distributed or gateway.
+## uitstor mode, i.e. standalone or distributed or gateway.
 mode: distributed ## other supported values are "standalone", "gateway"
 
 ## Additional labels to include with deployment or statefulset
@@ -43,16 +43,16 @@ additionalAnnotations: []
 ## flux, so set to "true" to disable this behaviour.
 ignoreChartChecksums: false
 
-## Additional arguments to pass to minio binary
+## Additional arguments to pass to uitstor binary
 extraArgs: []
 
 ## Internal port number for MinIO S3 API container
 ## Change service.port to change external port number
-minioAPIPort: "9000"
+uitstorAPIPort: "9000"
 
 ## Internal port number for MinIO Browser Console container
 ## Change consoleService.port to change external port number
-minioConsolePort: "9001"
+uitstorConsolePort: "9001"
 
 ## Update strategy for Deployments
 DeploymentUpdate:
@@ -71,7 +71,7 @@ priorityClassName: ""
 
 ## Set default rootUser, rootPassword
 ## AccessKey and secretKey is generated when not set
-## Distributed MinIO ref: https://docs.minio.io/docs/distributed-minio-quickstart-guide
+## Distributed MinIO ref: https://docs.uitstor.io/docs/distributed-uitstor-quickstart-guide
 ##
 rootUser: ""
 rootPassword: ""
@@ -89,12 +89,12 @@ rootPassword: ""
 existingSecret: ""
 
 ## Directory on the MinIO pof
-certsPath: "/etc/minio/certs/"
-configPathmc: "/etc/minio/mc/"
+certsPath: "/etc/uitstor/certs/"
+configPathmc: "/etc/uitstor/mc/"
 
 ## Path where PV would be mounted on the MinIO Pod
 mountPath: "/export"
-## Override the root directory which the minio server should serve from.
+## Override the root directory which the uitstor server should serve from.
 ## If left empty, it defaults to the value of {{ .Values.mountPath }}
 ## If defined, it must be a sub-directory of the path specified in {{ .Values.mountPath }}
 ##
@@ -115,13 +115,13 @@ gateway:
 ## TLS Settings for MinIO
 tls:
   enabled: false
-  ## Create a secret with private.key and public.crt files and pass that here. Ref: https://github.com/minio/minio/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret
+  ## Create a secret with private.key and public.crt files and pass that here. Ref: https://github.com/uitstor/uitstor/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret
   certSecret: ""
   publicCrt: public.crt
   privateKey: private.key
 
-## Trusted Certificates Settings for MinIO. Ref: https://docs.minio.io/docs/how-to-secure-access-to-minio-server-with-tls#install-certificates-from-third-party-cas
-## Bundle multiple trusted certificates into one secret and pass that here. Ref: https://github.com/minio/minio/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret
+## Trusted Certificates Settings for MinIO. Ref: https://docs.uitstor.io/docs/how-to-secure-access-to-uitstor-server-with-tls#install-certificates-from-third-party-cas
+## Bundle multiple trusted certificates into one secret and pass that here. Ref: https://github.com/uitstor/uitstor/tree/master/docs/tls/kubernetes#2-create-kubernetes-secret
 ## When using self-signed certificates, remember to include MinIO's own certificate in the bundle with key public.crt.
 ## If certSecret is left empty and tls is enabled, this chart installs the public certificate from .Values.tls.certSecret.
 trustedCertsSecret: ""
@@ -138,7 +138,7 @@ persistence:
   ## If defined, PVC must be created manually before volume will be bound
   existingClaim: ""
 
-  ## minio data Persistent Volume Storage Class
+  ## uitstor data Persistent Volume Storage Class
   ## If defined, storageClassName: <storageClass>
   ## If set to "-", storageClassName: "", which disables dynamic provisioning
   ## If undefined (the default) or set to null, no storageClassName spec is
@@ -186,7 +186,7 @@ ingress:
     # nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0
   path: /
   hosts:
-    - minio-example.local
+    - uitstor-example.local
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
@@ -214,7 +214,7 @@ consoleIngress:
     # nginx.ingress.kubernetes.io/whitelist-source-range: 0.0.0.0/0
   path: /
   hosts:
-    - console.minio-example.local
+    - console.uitstor-example.local
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
@@ -250,7 +250,7 @@ resources:
   requests:
     memory: 16Gi
 
-## List of policies to be created after minio install
+## List of policies to be created after uitstor install
 ##
 ## In addition to default policies [readonly|readwrite|writeonly|consoleAdmin|diagnostics]
 ## you can define additional policies with custom supported actions and resources
@@ -306,12 +306,12 @@ makePolicyJob:
   tolerations: []
   affinity: {}
 
-## List of users to be created after minio install
+## List of users to be created after uitstor install
 ##
 users:
   ## Username, password and policy to be assigned to the user
   ## Default policies are [readonly|readwrite|writeonly|consoleAdmin|diagnostics]
-  ## Add new policies as explained here https://docs.min.io/docs/minio-multi-user-quickstart-guide.html
+  ## Add new policies as explained here https://docs.min.io/docs/uitstor-multi-user-quickstart-guide.html
   ## NOTE: this will fail if LDAP is enabled in your MinIO deployment
   ## make sure to disable this if you are using LDAP.
   - accessKey: console
@@ -340,7 +340,7 @@ makeUserJob:
   tolerations: []
   affinity: {}
 
-## List of buckets to be created after minio install
+## List of buckets to be created after uitstor install
 ##
 buckets:
   #   # Name of the bucket
@@ -374,10 +374,10 @@ makeBucketJob:
   tolerations: []
   affinity: {}
 
-## List of command to run after minio install
-## NOTE: the mc command TARGET is always "myminio"
+## List of command to run after uitstor install
+## NOTE: the mc command TARGET is always "myuitstor"
 customCommands:
-  # - command: "admin policy set myminio consoleAdmin group='cn=ops,cn=groups,dc=example,dc=com'"
+  # - command: "admin policy set myuitstor consoleAdmin group='cn=ops,cn=groups,dc=example,dc=com'"
 
 ## Additional Annotations for the Kubernetes Job customCommandJob
 customCommandJob:
@@ -398,7 +398,7 @@ customCommandJob:
 ## Use this field to add environment variables relevant to MinIO server. These fields will be passed on to MinIO container(s)
 ## when Chart is deployed
 environment:
-  ## Please refer for comprehensive list https://docs.min.io/minio/baremetal/reference/minio-server/minio-server.html
+  ## Please refer for comprehensive list https://docs.min.io/uitstor/baremetal/reference/uitstor-server/uitstor-server.html
   ## MINIO_SUBNET_LICENSE: "License key obtained from https://subnet.min.io"
   ## MINIO_BROWSER: "off"
 
@@ -406,7 +406,7 @@ environment:
 ## This can be useful for LDAP password, etc
 ## The key in the secret must be 'config.env'
 ##
-# extraSecret: minio-extraenv
+# extraSecret: uitstor-extraenv
 
 networkPolicy:
   enabled: false
@@ -425,7 +425,7 @@ serviceAccount:
   create: true
   ## The name of the service account to use. If 'create' is 'true', a service account with that name
   ## will be created.
-  name: "minio-sa"
+  name: "uitstor-sa"
 
 metrics:
   serviceMonitor:
@@ -438,7 +438,7 @@ metrics:
     # interval: 30s
     # scrapeTimeout: 10s
 
-## ETCD settings: https://github.com/minio/minio/blob/master/docs/sts/etcd.md
+## ETCD settings: https://github.com/uitstor/uitstor/blob/master/docs/sts/etcd.md
 ## Define endpoints to enable this section.
 etcd:
   endpoints: []
